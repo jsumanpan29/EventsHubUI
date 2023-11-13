@@ -3,10 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import axios from '../../api/axios'
 
 const Signup = () => {
-//   const [name, setName] = useState("")
-//   const [email, setEmail] = useState("")
-//   const [password, setPassword] = useState("")
-//   const [passwordConfirm, setPasswordConfirm] = useState("")
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -16,7 +12,7 @@ const Signup = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate()
 
-    const handleChange = (e) => {
+    const handleSignupChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
       };
@@ -47,10 +43,6 @@ const Signup = () => {
             );
         
             console.log('Registration successful:', response.data);
-            // setName('')
-            // setEmail('')
-            // setPassword('')
-            // setPasswordConfirm('')
             navigate("/login", { replace: true});
         } catch (err) {
             if (err?.response) {
@@ -72,25 +64,25 @@ const Signup = () => {
             <label className="label">
             <span className="label-text">Name</span>
             </label>
-            <input type="text" placeholder="Name" onChange={handleChange} name="name" value={formData.name} className="input input-bordered" required />
+            <input type="text" placeholder="Name" onChange={handleSignupChange} name="name" value={formData.name} className="input input-bordered" required />
         </div>
         <div className="form-control">
             <label className="label">
             <span className="label-text">Email</span>
             </label>
-            <input type="email" placeholder="Email" onChange={handleChange} name="email" value={formData.email} className="input input-bordered" required />
+            <input type="email" placeholder="Email" onChange={handleSignupChange} name="email" value={formData.email} className="input input-bordered" required />
         </div>
         <div className="form-control">
             <label className="label">
             <span className="label-text">Password</span>
             </label>
-            <input type="password" placeholder="Password" onChange={handleChange} name="password" value={formData.password} className="input input-bordered" required />
+            <input type="password" placeholder="Password" onChange={handleSignupChange} name="password" value={formData.password} className="input input-bordered" required />
         </div>
         <div className="form-control">
             <label className="label">
             <span className="label-text">Confirm Password</span>
             </label>
-            <input type="password" placeholder="Confirm Password" onChange={handleChange} name="passwordConfirm" value={formData.passwordConfirm} className="input input-bordered" required />
+            <input type="password" placeholder="Confirm Password" onChange={handleSignupChange} name="passwordConfirm" value={formData.passwordConfirm} className="input input-bordered" required />
         </div>
         <div className="form-control mt-6">
             <input className='btn btn-primary' type="submit" value="Submit" />

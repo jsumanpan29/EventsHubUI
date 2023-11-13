@@ -1,31 +1,51 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
 import axios from '../../api/axios'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
+import Cookies from 'js-cookie'
 
+// const Events = ({events}) => {
 const Events = () => {
 
     const [events, setEvents] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const getEvents = async () => {
             try {
-                const response = await axios.get('/events', {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer 15|CfMZHpehCDI7rP4QLqLlXfZTWafnFwoZb7lq41Ie6e50a11d`
-                    }
-                });
-                // if(response.data){
-                //     console.log(response.data.events.data)
-                // }
-                setEvents(response.data.events.data)
-            } catch (e) {
-                console.log(e);
-            }
-        }
-        getEvents();
-    }, []);
+                  const response = await axios.get('/events', {
+                      headers: {
+                          'Accept': 'application/json',
+                          // 'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
+                      }
+                  });
+                  // if(response.data){
+                  //     console.log(response.data.events.data)
+                  // }
+                  // console.log(JSON.parse(Cookies.get('user')).token)
+                  setEvents(response.data.events.data)
+              } catch (e) {
+                  console.log(e);
+              }
+          }
+          getEvents();
+      }, []);
+
+      const onDetails = (eventId) => {
+        // if (cookies.user.user.role == '0') {
+        //     toast.error('You need to be admin to enable action!', {
+        //         position: "bottom-right",
+        //         autoClose: 5000,
+        //         hideProgressBar: false,
+        //         closeOnClick: true,
+        //         pauseOnHover: true,
+        //         draggable: true,
+        //         progress: undefined,
+        //     });
+        // } else {
+            navigate('/events/'+eventId, { state: { id: eventId } });
+        // }
+      }
   return (
     <>
     <div className="flex flex-col w-full border-opacity-50">
@@ -36,12 +56,7 @@ const Events = () => {
                     <input className="input input-bordered join-item" placeholder="Search"/>
                     </div>
                 </div>
-                {/* <select className="select select-bordered join-item">
-                    <option disabled selected>Filter</option>
-                    <option>Sci-fi</option>
-                    <option>Drama</option>
-                    <option>Action</option>
-                </select> */}
+               
                 <div className="indicator">
                     <button className="btn join-item">Search</button>
                 </div>
@@ -72,7 +87,7 @@ const Events = () => {
                             <div className="flex items-center space-x-3">
                                 <div className="avatar">
                                 <div className="mask w-44 h-28">
-                                    <img src="/tailwind-css-component-profile-2@56w.png" alt="Event Image" />
+                                    <img src="" alt="Event Image" />
                                 </div>
                                 </div>
                             </div>
@@ -84,7 +99,10 @@ const Events = () => {
                             {event.location}
                             </td>
                             <th>
+                            {/* <Link to = {'/events/'+ event.id} >
                             <button className="btn btn-ghost btn-xs">details</button>
+                            </Link> */}
+                            <button className="btn btn-ghost btn-xs" onClick={() => onDetails(event.id)}>details</button>
                             </th>
                         </tr>
                         ))
