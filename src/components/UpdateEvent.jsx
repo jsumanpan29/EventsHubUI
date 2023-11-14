@@ -37,7 +37,7 @@ const UpdateEvent = ({
                     <label htmlFor="postBody">Post:</label>
                     <textarea 
                         id=""
-                        required
+                        required 
                         value={editBody}
                         onChange={(e) => setEditBody(e.target.value)} />
                     <button type="submit" onClick={() => updateEvent(post.id)}> Submit </button>

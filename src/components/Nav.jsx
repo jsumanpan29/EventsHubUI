@@ -22,7 +22,7 @@ const handleLogoutClick = () => {
     }
 }
   return (
-    <div className="navbar bg-base-100">
+    <div className="navbar bg-base-100 max-w-screen-xl m-auto">
     <div className="navbar-start">
         <div className="dropdown">
         <label tabIndex={0} className="btn btn-ghost lg:hidden">
@@ -72,7 +72,7 @@ const handleLogoutClick = () => {
                     <summary>
                     {JSON.parse(Cookies.get('user')).user.name}
                     </summary>
-                    <ul class="p-2 bg-base-100">
+                    <ul class="p-2 bg-base-100 z-10">
                         <li><a>Profile</a></li>
                         <li><a onClick={handleLogoutClick}>Logout</a></li>
                     </ul>

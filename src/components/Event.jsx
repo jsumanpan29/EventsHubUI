@@ -14,6 +14,10 @@ const Event = () => {
   const { cart, addToCart } = useCart();
 
   useEffect(() => {
+    console.log('Cart Data:', cart);
+}, [cart]);
+
+  useEffect(() => {
     const getEvents = async () => {
               try { const response = await axios.get('/event/'+state.id, {
                 headers: {
@@ -31,13 +35,13 @@ const Event = () => {
   }, []);
   const attendEvent = async (id,name) => {
     try {
-        console.log("attendEvent:"+JSON.parse(userCookie))
-        console.log("Name:"+name)
-        addToCart(name)
-        // console.log('Cart Data:', cart);
-        setTimeout(() => {
-          console.log('Cart Data:', cart);
-        }, 3500);
+        // console.log("attendEvent:"+JSON.parse(userCookie))
+        // console.log("Name:"+name)
+        await addToCart(name)
+        console.log('Cart Data:', cart);
+        // setTimeout(() => {
+        //   console.log('Cart Data:', cart);
+        // }, 3500);
     } catch (err) {
         console.log('Error: '+err.message);
     }
@@ -117,8 +121,6 @@ const updateEvent = async (eventID) => {
               <h1 className="text-5xl font-bold">{name}</h1>
               <p className="py-6">{description}</p>
               <button className="btn btn-primary" onClick={() => attendEvent(state.id,name)}>Attend</button>
-              {/* <button className="btn btn-secondary" onClick={() => updateEvent(state.id)}>Edit</button>
-              <button className="btn btn-secondary" onClick={() => deleteEvent(state.id)}>Delete</button> */}
             </div>
             </>
         }

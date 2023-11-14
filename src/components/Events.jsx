@@ -66,6 +66,24 @@ const Events = () => {
     </div>
     <div className="hero min-h-fit bg-base-200">
         <div className="hero-content text-center">
+        <nav className="flex flex-col w-64">
+            <div className="flex items-center justify-center h-14 text-white font-bold">
+                Filters
+            </div>
+            <div className="flex-grow">
+                <ul className="py-4">
+                <li className="px-4 py-2  hover:text-white">
+                    <Link to="/">Option 1</Link>
+                </li>
+                <li className="px-4 py-2  hover:text-white">
+                    <Link to="/about">Option 2</Link>
+                </li>
+                <li className="px-4 py-2  hover:text-white">
+                    <Link to="/contact">Option 3</Link>
+                </li>
+                </ul>
+            </div>
+        </nav>
             <div className="max-w-xl">
                 <div className="overflow-x-auto">
                 <table className="table">
