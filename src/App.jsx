@@ -9,11 +9,13 @@ import Event from './components/Event'
 import Contact from './components/Contact';
 import Missing from './components/Missing';
 import Login from './components/Login';
+import Dashboard from './components/Dashboard';
 
 import { CartProvider } from './components/CartContext';
 import axios from '../api/axios'
 import Cookies from 'js-cookie'
 import NotAuth from './components/NotAuth';
+
 
 
 function App() {
@@ -60,6 +62,7 @@ function App() {
       <Nav />
       <Routes>
         <Route path="/" element={<Home  />} />
+        <Route path='/dashboard' element={<Dashboard /> } />
         <Route path="/events">
           <Route index element={<Events
           />}/>

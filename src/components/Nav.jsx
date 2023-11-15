@@ -30,6 +30,7 @@ const handleLogoutClick = () => {
         </label>
         <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
             <li><a><Link to="/">Home</Link></a></li>
+            <li><a><Link to="/dashboard">My Events</Link></a></li>
             <li><a><Link to="/events">Find Events</Link></a></li>
             <li><a><Link to="/contact">Contact</Link></a></li>
         </ul>
@@ -39,6 +40,7 @@ const handleLogoutClick = () => {
     <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal text-base">
             <li className='mx-1'><a className='p-3'><Link to="/">Home</Link></a></li>
+            <li className='mx-1'><a className='p-3'><Link to="/dashboard">My Events</Link></a></li>
             <li className='mx-1'><a className='p-3'><Link to="/events">Find Events</Link></a></li>
             <li className='mx-1'><a className='p-3'><Link to="/contact">Contact</Link></a></li>
         </ul>
@@ -73,7 +75,9 @@ const handleLogoutClick = () => {
                     {JSON.parse(Cookies.get('user')).user.name}
                     </summary>
                     <ul class="p-2 bg-base-100 z-10">
-                        <li><a>Profile</a></li>
+                        <li><a>My Events</a></li>
+                        <li><a>Create Event</a></li>
+                        <li><a>Account</a></li>
                         <li><a onClick={handleLogoutClick}>Logout</a></li>
                     </ul>
                     </details>

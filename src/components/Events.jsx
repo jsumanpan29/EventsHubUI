@@ -48,12 +48,12 @@ const Events = () => {
       }
   return (
     <>
-    <div className="flex flex-col w-full border-opacity-50">
-        <div className="grid h-24 card bg-base-300 rounded-box place-items-center">
+    <div className="flex flex-col w-full">
+        <div className="grid h-24 bg-base-300 place-items-center">
             <div className="join">
                 <div>
                     <div>
-                    <input className="input input-bordered join-item" placeholder="Search"/>
+                    <input className="input input-bordered w-full sm:w-64 md:w-80 lg:w-96 xl:w-120 join-item" placeholder="Search"/>
                     </div>
                 </div>
                
