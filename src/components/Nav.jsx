@@ -1,6 +1,7 @@
 import React, { useState,useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Cookies from 'js-cookie'
+import { LuBookMarked } from "react-icons/lu";
 
 const Nav = () => {
     // const [user, setUser] = ([]);
@@ -29,8 +30,16 @@ const handleLogoutClick = () => {
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
         </label>
         <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-            <li><a><Link to="/">Home</Link></a></li>
-            <li><a><Link to="/dashboard">My Events</Link></a></li>
+            {Cookies.get('user') ?
+            <>
+                <li><a><Link to="/dashboard">My Events</Link></a></li>
+            </>
+            :
+            <>
+                <li><a><Link to="/">Home</Link></a></li>
+            </>
+            }
+            
             <li><a><Link to="/events">Find Events</Link></a></li>
             <li><a><Link to="/contact">Contact</Link></a></li>
         </ul>
@@ -39,8 +48,15 @@ const handleLogoutClick = () => {
     </div>
     <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal text-base">
-            <li className='mx-1'><a className='p-3'><Link to="/">Home</Link></a></li>
-            <li className='mx-1'><a className='p-3'><Link to="/dashboard">My Events</Link></a></li>
+            {Cookies.get('user') ?
+            <>
+                <li className='mx-1'><a className='p-3'><Link to="/dashboard">My Events</Link></a></li>
+            </>
+            :
+            <>
+                <li className='mx-1'><a className='p-3'><Link to="/">Home</Link></a></li>
+            </>
+            }
             <li className='mx-1'><a className='p-3'><Link to="/events">Find Events</Link></a></li>
             <li className='mx-1'><a className='p-3'><Link to="/contact">Contact</Link></a></li>
         </ul>
@@ -48,24 +64,6 @@ const handleLogoutClick = () => {
     
         {Cookies.get('user') ?
         <>
-            {/* <a className="btn btn-primary" onClick={handleLogoutClick}>
-                Logout
-            </a> */}
-        {/* <div className="navbar-end">
-            <div class="dropdown dropdown-end">
-                <label tabindex="0" class="btn btn-ghost btn-circle avatar">
-                    <div class="w-10 rounded-full">
-                    <img alt="Tailwind CSS Navbar component" src="" />
-                    <span class="profile-text">Your Text</span>
-                    </div>
-                </label>
-                <ul tabindex="0" class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
-                    <li><a class="justify-between">Profile</a></li>
-                    <li><a>Settings</a></li>
-                    <li><a onClick={handleLogoutClick}>Logout</a></li>
-                </ul>
-            </div>
-        </div> */}
         <div className="navbar-end">
             <div class="flex-none">
                 <ul class="menu menu-horizontal px-1">
@@ -83,6 +81,24 @@ const handleLogoutClick = () => {
                     </details>
                 </li>
                 </ul>
+            </div>
+            <div class="dropdown dropdown-end">
+                <label tabindex="0" class="btn btn-ghost btn-circle">
+                    <div class="indicator">
+                    <LuBookMarked size={20}/>
+                    {/* <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg> */}
+                    <span class="badge badge-sm indicator-item">8</span>
+                    </div>
+                </label>
+                <div tabindex="0" class="mt-3 z-[1] card card-compact dropdown-content w-60 bg-base-100 shadow">
+                    <div class="card-body">
+                    <span class="font-bold text-lg">8 Events</span>
+                    {/* <span class="text-info">Subtotal: $999</span> */}
+                    <div class="card-actions">
+                        <button class="btn btn-primary btn-block">Add to My Events</button>
+                    </div>
+                    </div>
+                </div>
             </div>
         </div>
         </>

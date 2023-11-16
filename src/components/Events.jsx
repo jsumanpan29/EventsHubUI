@@ -2,6 +2,8 @@ import React from 'react'
 import { useEffect, useState } from 'react'
 import axios from '../../api/axios'
 import { useNavigate, Link } from 'react-router-dom'
+import { format } from 'date-fns'
+import { LuTag,LuUser2,LuNavigation } from "react-icons/lu";
 import Cookies from 'js-cookie'
 
 // const Events = ({events}) => {
@@ -19,11 +21,11 @@ const Events = () => {
                           // 'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
                       }
                   });
-                  // if(response.data){
-                  //     console.log(response.data.events.data)
-                  // }
+                //   if(response.data){
+                //       console.log(response.data.events)
+                //   }
                   // console.log(JSON.parse(Cookies.get('user')).token)
-                  setEvents(response.data.events.data)
+                  setEvents(response.data.events)
               } catch (e) {
                   console.log(e);
               }
@@ -31,21 +33,21 @@ const Events = () => {
           getEvents();
       }, []);
 
-      const onDetails = (eventId) => {
-        // if (cookies.user.user.role == '0') {
-        //     toast.error('You need to be admin to enable action!', {
-        //         position: "bottom-right",
-        //         autoClose: 5000,
-        //         hideProgressBar: false,
-        //         closeOnClick: true,
-        //         pauseOnHover: true,
-        //         draggable: true,
-        //         progress: undefined,
-        //     });
-        // } else {
-            navigate('/events/'+eventId, { state: { id: eventId } });
-        // }
-      }
+    //   const onDetails = (eventId) => {
+    //     // if (cookies.user.user.role == '0') {
+    //     //     toast.error('You need to be admin to enable action!', {
+    //     //         position: "bottom-right",
+    //     //         autoClose: 5000,
+    //     //         hideProgressBar: false,
+    //     //         closeOnClick: true,
+    //     //         pauseOnHover: true,
+    //     //         draggable: true,
+    //     //         progress: undefined,
+    //     //     });
+    //     // } else {
+    //         navigate('/events/'+eventId, { state: { id: eventId } });
+    //     // }
+    //   }
   return (
     <>
     <div className="flex flex-col w-full">
@@ -64,88 +66,82 @@ const Events = () => {
         </div>
        
     </div>
-    <div className="hero min-h-fit bg-base-200">
-        <div className="hero-content text-center">
-        <nav className="flex flex-col w-64">
-            <div className="flex items-center justify-center h-14 text-white font-bold">
-                Filters
+    <div className="min-h-screen bg-base-200">
+        <div className="container grid grid-cols-4 pt-0 m-auto gap-x-8 sm:pt-12">
+            <div className="lg:col-span-1">
+                <nav className="flex flex-col w-64">
+                    <div className="flex items-center justify-center h-14 text-white font-bold text-3xl">
+                        Filters
+                    </div>
+                    <div className="flex-grow">
+                        <ul className="py-4">
+                        <li className="px-4 py-2  hover:text-white">
+                            <Link to="/">Option 1</Link>
+                        </li>
+                        <li className="px-4 py-2  hover:text-white">
+                            <Link to="/about">Option 2</Link>
+                        </li>
+                        <li className="px-4 py-2  hover:text-white">
+                            <Link to="/contact">Option 3</Link>
+                        </li>
+                        </ul>
+                    </div>
+                </nav>
             </div>
-            <div className="flex-grow">
-                <ul className="py-4">
-                <li className="px-4 py-2  hover:text-white">
-                    <Link to="/">Option 1</Link>
-                </li>
-                <li className="px-4 py-2  hover:text-white">
-                    <Link to="/about">Option 2</Link>
-                </li>
-                <li className="px-4 py-2  hover:text-white">
-                    <Link to="/contact">Option 3</Link>
-                </li>
-                </ul>
-            </div>
-        </nav>
-            <div className="max-w-xl">
-                <div className="overflow-x-auto">
-                <table className="table">
-                    {/* head */}
-                    <thead>
-                    <tr>
-                        <th></th>
-                        <th>Event</th>
-                        <th>Location</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {
+            <div className="col-span-4 mt-1 lg:col-span-3 static">
+                
+                <div className='mb-10'>
+                {
                         Array.isArray(events) ? (
                         events.map((event,index) =>(
-                        <tr key={index}>
-                            <td>
-                            <div className="flex items-center space-x-3">
-                                <div className="avatar">
-                                <div className="mask w-44 h-28">
-                                    <img src="" alt="Event Image" />
+                            // <a href={'/events/'+event.id} className="relative flex flex-col sm:flex-row items-center">
+                            // <Link to={{
+                            //         pathname: '/events/' + event.id,
+                            //         state: {id: event.id},
+                            // }}>
+                            <Link to={'/events/' + event.id} state={{ id: event.id }}>
+                                <div className='relative flex flex-col sm:flex-row items-center bg-base-100'>
+                                    <div className="avatar">
+                                            <div className="mask w-64 h-28 mr-5">
+                                                <img src="" alt="Event Image" />
+                                            </div>
+                                    </div>
+                                    <div class="flex flex-col w-full">
+                                        <div className='text-2xl font-bold pb-1'><h1>{event.name}</h1></div>
+                                        {/* <div className='text-sm'>{event.location}</div> */}
+                                        <div className='text-sm pb-1 flex'><p className='pr-3'>{format(new Date(event.date_sched_start), 'MMM dd - ') + format(new Date(event.date_sched_end), 'MMM dd, yyyy') }</p>
+                                                                        <p>{' Reg. Deadline: '+ format(new Date(event.date_reg_deadline), 'MMM dd, yyyy') }</p>
+                                        </div>
+                                        <div className='grid grid-cols-3 lg:grid-cols-5 pb-1'>
+                                            <div className='text-sm flex '><LuTag size={18} className='mr-1.5' />{event.category_id.name}</div>
+                                            <div className='text-sm flex'><LuUser2 size={18} className='mr-1.5' />{event.est_attendants + '+'}</div>
+                                            <div className='text-sm flex lg:col-span-3'><LuNavigation size={18} className='mr-1.5' />{event.venue_id.name + ", " +event.location}</div>
+                                        </div>
+                                    </div>
                                 </div>
-                                </div>
-                            </div>
-                            </td>
-                            <td>
-                            {event.name}
-                            </td>
-                            <td>
-                            {event.location}
-                            </td>
-                            <th>
-                            {/* <Link to = {'/events/'+ event.id} >
-                            <button className="btn btn-ghost btn-xs">details</button>
-                            </Link> */}
-                            <button className="btn btn-ghost btn-xs" onClick={() => onDetails(event.id)}>details</button>
-                            </th>
-                        </tr>
+                               
+                            </Link>
+                            // </a>
                         ))
                         ) : (
-                            <tr>
-                            <td colSpan="4">No events available</td>
-                            </tr>
+                            <p>No events available</p>
 
                         )
                     }
                     
-                    </tbody>
-                    
-                </table>
                 </div>
-                <div className="join">
-                <button className="join-item btn">1</button>
-                <button className="join-item btn">2</button>
-                <button className="join-item btn btn-disabled">...</button>
-                <button className="join-item btn">99</button>
-                <button className="join-item btn">100</button>
+                <div className="join items-center justify-center w-full">
+                    <button className="join-item btn">1</button>
+                    <button className="join-item btn">2</button>
+                    <button className="join-item btn btn-disabled">...</button>
+                    <button className="join-item btn">99</button>
+                    <button className="join-item btn">100</button>
                 </div>
-            </div>
-            
+
+            </div> 
+
         </div>
+
     </div>
     </>
   )

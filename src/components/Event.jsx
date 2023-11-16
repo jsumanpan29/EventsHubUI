@@ -3,6 +3,7 @@ import { useLocation, Link } from 'react-router-dom'
 import axios from '../../api/axios'
 import Cookies from 'js-cookie';
 import { useCart } from './CartContext';
+import { format } from 'date-fns'
 
 const Event = () => {
   // const {id} = useParams();
@@ -112,15 +113,18 @@ const updateEvent = async (eventID) => {
     }
 }
   return (
-    <div className="hero min-h-screen bg-base-200">
-      <div className="hero-content flex-col lg:flex-row">
+    <div className="items-start min-h-screen bg-base-200">
+      <div className="container w-full lg:w-3/4 xl:w-2/3 mx-auto">
         {event && 
             <>
-            <img src="" className="max-w-sm h-96 w-96 rounded-lg shadow-2xl" />
+             <div>
+             <h1 className="text-5xl font-bold pt-10 pb-5">{name}</h1>
+             </div>
+            <img src="" className="w-full h-96 shadow-2xl" />
             <div>
-              <h1 className="text-5xl font-bold">{name}</h1>
+              
               <p className="py-6">{description}</p>
-              <button className="btn btn-primary" onClick={() => attendEvent(state.id,name)}>Attend</button>
+              <button className="btn btn-primary px-8" onClick={() => attendEvent(state.id,name)}>Add</button>
             </div>
             </>
         }
