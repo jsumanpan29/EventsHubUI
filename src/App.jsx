@@ -19,7 +19,7 @@ import NotAuth from './components/NotAuth';
 
 
 function App() {
-
+  const [loginClicked, setLoginClicked] = useState(false);
 //   const [email, setEmail] = useState("")
 //   const [password, setPassword] = useState("")
 // //   const [events, setEvents] = useState([]);
@@ -59,9 +59,9 @@ function App() {
   return (
     <CartProvider>
     <div className="App">
-      <Nav />
+      <Nav setLoginClicked={setLoginClicked} />
       <Routes>
-        <Route path="/" element={<Home  />} />
+        <Route path="/" element={<Home loginClicked={loginClicked}  />} />
         <Route path='/dashboard' element={<Dashboard /> } />
         <Route path="/events">
           <Route index element={<Events

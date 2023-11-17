@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import Cookies from 'js-cookie'
 import { LuBookMarked } from "react-icons/lu";
 
-const Nav = () => {
+const Nav = ({ setLoginClicked }) => {
     // const [user, setUser] = ([]);
 
 //   useEffect(() => {
@@ -13,15 +13,15 @@ const Nav = () => {
 //   }, []);
 const navigate = useNavigate();
     
-const handleLogoutClick = () => {
-    try {
-        Cookies.remove('user')
-        // console.log(Cookies.get('user'))
-        navigate('/')
-    } catch (err) {
-        console.log('Error: '+err.message);
-    }
-}
+// const handleLogoutClick = () => {
+//     try {
+//         Cookies.remove('user')
+//         // console.log(Cookies.get('user'))
+//         navigate('/')
+//     } catch (err) {
+//         console.log('Error: '+err.message);
+//     }
+// }
   return (
     <div className="navbar bg-base-100 max-w-screen-xl m-auto">
     <div className="navbar-start">
@@ -105,8 +105,9 @@ const handleLogoutClick = () => {
         :
         <>
         <div className="navbar-end">
-            <a className="btn btn-primary">
-                <Link to="/login">Login</Link>
+            <a onClick={() => setLoginClicked(true)} className="btn btn-primary">
+                {/* <Link to="/login">Login</Link> */}
+                Login
             </a>
             <a className="btn">
                 <Link to="/signup">Signup</Link>
