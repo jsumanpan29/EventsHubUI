@@ -25,10 +25,10 @@ const Login = () => {
                 },
             );
             const user = response?.data;
-            console.log(JSON.stringify(user))
+            // console.log(JSON.stringify(user))
             Cookies.remove('user')
             Cookies.set('user', JSON.stringify(user));
-            navigate("/", { replace: true, state: { loginSuccess: true } });
+            navigate("/dashboard", { replace: true, state: { loginSuccess: true } });
         } catch (err) {
             if (err?.response) {
                 console.log("Error: Response=")

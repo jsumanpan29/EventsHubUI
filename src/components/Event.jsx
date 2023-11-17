@@ -3,6 +3,7 @@ import { useLocation, Link } from 'react-router-dom'
 import axios from '../../api/axios'
 import Cookies from 'js-cookie';
 import { useCart } from './CartContext';
+import { LuTag,LuUser2,LuNavigation } from "react-icons/lu";
 import { format } from 'date-fns'
 
 const Event = () => {
@@ -11,6 +12,13 @@ const Event = () => {
   // const event = events.find(event => (event.id).toString() === id)
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [categoryName, setCategoryName] = useState('');
+  const [estAttendants, setEstAttendants] = useState('');
+  const [venueName, setVenueName] = useState('');
+  const [eventLocation, setEventLocation] = useState('');
+  const [eventSchedStart, setEventSchedStart] = useState(new Date());
+  const [eventSchedEnd, setEventSchedEnd] = useState(new Date());
+  const [eventRegDeadline, setEventRegDeadline] = useState(new Date());
   const [userCookie, setUserCookie] = useState(Cookies.get('user'));
   const { cart, addToCart } = useCart();
 
@@ -25,9 +33,16 @@ const Event = () => {
                     // 'Accept': 'application/json',
                 }
               });
-              console.log(response.data.event)
+              // console.log(response.data.event)
               setName(response.data.event.name);
               setDescription(response.data.event.description);
+              setCategoryName(response.data.event.category_id.name);
+              setEstAttendants(response.data.event.est_attendants);
+              setVenueName(response.data.event.venue_id.name);
+              setEventLocation(response.data.event.location);
+              setEventSchedStart(response.data.event.date_sched_start);
+              setEventSchedEnd(response.data.event.date_sched_end);
+              setEventRegDeadline(response.data.event.date_reg_deadline);
           } catch (e) {
               console.log(e);
           }
@@ -121,10 +136,25 @@ const updateEvent = async (eventID) => {
              <h1 className="text-5xl font-bold pt-10 pb-5">{name}</h1>
              </div>
             <img src="" className="w-full h-96 shadow-2xl" />
-            <div>
+            <div className='grid grid-cols-5 py-4 gap-12 place-items-center px-6'>
               
-              <p className="py-6">{description}</p>
-              <button className="btn btn-primary px-8" onClick={() => attendEvent(state.id,name)}>Add</button>
+              <div className='text-sm flex '><LuTag size={18} className='mr-1.5' />{categoryName}</div>
+              <div className='text-sm flex'><LuUser2 size={18} className='mr-1.5' />{estAttendants + '+'}</div>
+              <div className='text-sm flex'>{format(new Date(eventSchedStart), 'MMM dd - ') + format(new Date(eventSchedEnd), 'MMM dd, yyyy') }</div>
+              <div className='text-sm flex'><LuNavigation size={18} className='mr-1.5' />{venueName + ", " + eventLocation}</div>
+              <div className='text-sm flex'>
+                  {' Reg. Deadline: '+ format(new Date(eventRegDeadline), 'MMM dd, yyyy') }
+              </div>
+              
+            </div>
+            <div className='grid grid-cols-5'>
+              <div className='col-span-4 px-10'>
+                <h1 className="text-3xl font-bold pb-3">About this Event</h1>
+                <p>{description}</p>
+              </div>
+              <div className='flex items-center justify-center'>
+                  <button className="btn btn-primary px-8" onClick={() => attendEvent(state.id,name)}>Attend</button>
+              </div>
             </div>
             </>
         }

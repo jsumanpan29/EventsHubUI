@@ -13,15 +13,16 @@ const Nav = ({ setLoginClicked }) => {
 //   }, []);
 const navigate = useNavigate();
     
-// const handleLogoutClick = () => {
-//     try {
-//         Cookies.remove('user')
-//         // console.log(Cookies.get('user'))
-//         navigate('/')
-//     } catch (err) {
-//         console.log('Error: '+err.message);
-//     }
-// }
+const handleLogoutClick = () => {
+    try {
+        Cookies.remove('user')
+        // console.log(Cookies.get('user'))
+        navigate('/')
+    } catch (err) {
+        console.log('Error: '+err.message);
+    }
+}
+
   return (
     <div className="navbar bg-base-100 max-w-screen-xl m-auto">
     <div className="navbar-start">

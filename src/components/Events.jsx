@@ -108,7 +108,6 @@ const Events = () => {
                                     </div>
                                     <div class="flex flex-col w-full">
                                         <div className='text-2xl font-bold pb-1'><h1>{event.name}</h1></div>
-                                        {/* <div className='text-sm'>{event.location}</div> */}
                                         <div className='text-sm pb-1 flex'><p className='pr-3'>{format(new Date(event.date_sched_start), 'MMM dd - ') + format(new Date(event.date_sched_end), 'MMM dd, yyyy') }</p>
                                                                         <p>{' Reg. Deadline: '+ format(new Date(event.date_reg_deadline), 'MMM dd, yyyy') }</p>
                                         </div>
