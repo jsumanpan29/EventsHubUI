@@ -10,8 +10,7 @@ import Contact from './components/Contact';
 import Missing from './components/Missing';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
-
-import { CartProvider } from './components/CartContext';
+import { EventProvider } from './components/EventContext';
 import axios from '../api/axios'
 import Cookies from 'js-cookie'
 import NotAuth from './components/NotAuth';
@@ -57,7 +56,7 @@ function App() {
 //       }
 //     }
   return (
-    <CartProvider>
+    <EventProvider>
     <div className="App">
       <Nav setLoginClicked={setLoginClicked} />
       <Routes>
@@ -76,7 +75,7 @@ function App() {
       </Routes>
       <Footer />
     </div>
-    </CartProvider>
+    </EventProvider>
   );
 }
 

@@ -5,33 +5,50 @@ import { useNavigate, Link } from 'react-router-dom'
 import { format } from 'date-fns'
 import { LuTag,LuUser2,LuNavigation } from "react-icons/lu";
 import Cookies from 'js-cookie'
+import ReactPaginate from 'react-paginate';
 
 // const Events = ({events}) => {
 const Events = () => {
 
     const [events, setEvents] = useState([]);
     const navigate = useNavigate();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
+    const [perPage, setPerPage] = useState(1);
+
 
     useEffect(() => {
         const getEvents = async () => {
             try {
-                  const response = await axios.get('/events', {
+                //   const response = await axios.get('/events', {
+                const response = await axios.get('/events?page='+currentPage, {
                       headers: {
                           'Accept': 'application/json',
                           // 'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
                       }
                   });
+
+
                 //   if(response.data){
                 //       console.log(response.data.events)
                 //   }
                   // console.log(JSON.parse(Cookies.get('user')).token)
                   setEvents(response.data.events)
+                  setTotalPage(response.data.pagination.total)
+                  setPerPage(response.data.pagination.per_page)
               } catch (e) {
                   console.log(e);
               }
           }
           getEvents();
-      }, []);
+          
+      }, [currentPage]);
+    //   }, []);
+    
+    const handlePageClick = (selectedPage) => {
+        // console.log(selectedPage)
+        setCurrentPage(selectedPage.selected + 1);
+    };
 
     //   const onDetails = (eventId) => {
     //     // if (cookies.user.user.role == '0') {
@@ -99,8 +116,8 @@ const Events = () => {
                             //         pathname: '/events/' + event.id,
                             //         state: {id: event.id},
                             // }}>
-                            <Link to={'/events/' + event.id} state={{ id: event.id }}>
-                                <div className='relative flex flex-col sm:flex-row items-center bg-base-100'>
+                            <Link key={event.id} to={'/events/' + event.id} state={{ id: event.id }}>
+                                <div className='relative flex flex-col sm:flex-row items-center bg-base-100 mb-7 rounded-lg'>
                                     <div className="avatar">
                                             <div className="mask w-64 h-28 mr-5">
                                                 <img src="" alt="Event Image" />
@@ -129,13 +146,29 @@ const Events = () => {
                     }
                     
                 </div>
-                <div className="join items-center justify-center w-full">
+                <ReactPaginate
+                    previousLabel={'Previous'}
+                    nextLabel={'Next'}
+                    breakLabel={'...'}
+                    // pageCount={Math.ceil( totalPage / perPage )}
+                    pageCount={Math.ceil( totalPage / perPage )}
+                    marginPagesDisplayed={2}
+                    pageRangeDisplayed={2}
+                    onPageChange={handlePageClick}
+                    containerClassName={'join items-center justify-center w-full'}
+                    pageClassName={'join-item btn'}
+                    activeClassName={'active'}
+                    previousClassName = {'join-item btn'}
+                    nextClassName = {'join-item btn'}
+                    // forcePage={currentPage - 1}
+                />
+                {/* <div className="join items-center justify-center w-full">
                     <button className="join-item btn">1</button>
                     <button className="join-item btn">2</button>
                     <button className="join-item btn btn-disabled">...</button>
                     <button className="join-item btn">99</button>
                     <button className="join-item btn">100</button>
-                </div>
+                </div> */}
 
             </div> 
 

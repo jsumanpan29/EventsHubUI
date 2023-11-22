@@ -2,14 +2,15 @@ import React, { useState,useEffect } from 'react'
 import { useLocation, Link } from 'react-router-dom'
 import axios from '../../api/axios'
 import Cookies from 'js-cookie';
-import { useCart } from './CartContext';
 import { LuTag,LuUser2,LuNavigation } from "react-icons/lu";
 import { format } from 'date-fns'
+import { useEventContext } from './EventContext';
 
 const Event = () => {
-  // const {id} = useParams();
   const { state } = useLocation();
-  // const event = events.find(event => (event.id).toString() === id)
+  const { events, addEvent, removeEvent } = useEventContext();
+
+  const [eventID, setEventID] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [categoryName, setCategoryName] = useState('');
@@ -20,20 +21,21 @@ const Event = () => {
   const [eventSchedEnd, setEventSchedEnd] = useState(new Date());
   const [eventRegDeadline, setEventRegDeadline] = useState(new Date());
   const [userCookie, setUserCookie] = useState(Cookies.get('user'));
-  const { cart, addToCart } = useCart();
 
-  useEffect(() => {
-    console.log('Cart Data:', cart);
-}, [cart]);
+  const [eventAttended, setEventAttended] = useState([])
+  const [onEventAlreadyAttended, setOnEventAlreadyAttended] = useState(false)
+
+
 
   useEffect(() => {
     const getEvents = async () => {
               try { const response = await axios.get('/event/'+state.id, {
                 headers: {
-                    // 'Accept': 'application/json',
+                    'Accept': 'application/json',
                 }
               });
-              // console.log(response.data.event)
+              // console.log("Event.jsx"+response.data.event)
+              setEventID(response.data.event.id)
               setName(response.data.event.name);
               setDescription(response.data.event.description);
               setCategoryName(response.data.event.category_id.name);
@@ -49,22 +51,96 @@ const Event = () => {
       }
       getEvents();
   }, []);
-  const attendEvent = async (id,name) => {
+
+//   useEffect(() => {
+//     const getAttended = async () =>{
+//       try { 
+//           const user = JSON.parse(userCookie)
+//           const response = await axios.get('/users/events_attended/'+user?.user.id, {
+//             headers: {
+//                 'Accept': 'application/json',
+//                 'Authorization': `Bearer ` + user?.token 
+//             }
+//           });
+//           // if (response.data.) {
+          
+//           // }
+//         //   console.log(response.data)
+//         // addToCart(response.data);
+//         setEventAttended(response.data)
+//       } catch (e) {
+//           console.log(e);
+//       }
+     
+//     }
+//     getAttended();
+//   }, [onEventAlreadyAttended]);
+
+//   useEffect(() => {
+//     setCart(eventAttended.user_events);
+//     console.log(eventAttended)
+// }, [eventAttended]);
+
+
+
+  // useEffect(() => {
+  //   // console.log('Updated eventAttended:', eventAttended);
+  //   // const parsedEventAttended = JSON.parse(eventAttended);
+
+  //   // console.log(eventAttended)
+
+  //   const isEventIDExists = eventAttended.some(event => event.event_id === eventID);
+
+  //   if (isEventIDExists) {
+  //     // Event ID exists in the eventAttended array
+  //     console.log('Event ID exists');
+  //     setOnEventAlreadyAttended(true)
+  //   } else {
+  //     // Event ID doesn't exist in the eventAttended array
+  //     console.log('Event ID does not exist');
+  //   }
+
+  // }, [eventAttended]); // Watch for changes in eventAttended
+  
+//   const attendEvent = async (id,name) => {
+//     try {
+//         // console.log("attendEvent:"+JSON.parse(userCookie))
+//         // console.log("Name:"+name)
+//         // await addToCart({eventID:id})
+//         // setOnAttendEvent(true)
+//         // console.log(cart)
+        
+//     } catch (err) {
+//         console.log('Error: '+err.message);
+//     }
+// }
+// const attendEvent = async (eventID) => {
+//   const userID = JSON.parse(userCookie)?.user.id;
+//   // console.log('UserID:', userID);
+//   // console.log('EventID:', eventID);
+//   try {
+//     const response = await axios.post(
+//       '/event_attendees',
+//       { 'user_id': userID, 'event_id': eventID },
+//       {
+//         headers: {
+//           'Content-Type': 'application/json',
+//           'Authorization': `Bearer ` + JSON.parse(userCookie).token 
+//         }
+//       }
+//     );
+//     console.log(response.data.eventAttendee);
+//     // navigate("/", { replace: true });
+//     // addToCart(response.data.event);
+//     // console.log("Event.jsx:"+JSON.stringify(cart))
+//     addEvent(response.data.eventAttendee)
+//   } catch (e) {
+//     console.log(e);
+//   }
+// }
+  const onRemoveEvent = async (id) => {
     try {
-        // console.log("attendEvent:"+JSON.parse(userCookie))
-        // console.log("Name:"+name)
-        await addToCart(name)
-        console.log('Cart Data:', cart);
-        // setTimeout(() => {
-        //   console.log('Cart Data:', cart);
-        // }, 3500);
-    } catch (err) {
-        console.log('Error: '+err.message);
-    }
-}
-  const deleteEvent = async (id) => {
-    try {
-        console.log("deleteEvent:"+JSON.parse(userCookie))
+        console.log("removeEvent:"+JSON.parse(userCookie))
         // const response = await axios.delete(`/events/${id}`,
         //     {
         //         headers: {
@@ -153,7 +229,10 @@ const updateEvent = async (eventID) => {
                 <p>{description}</p>
               </div>
               <div className='flex items-center justify-center'>
-                  <button className="btn btn-primary px-8" onClick={() => attendEvent(state.id,name)}>Attend</button>
+                 
+              <button className="btn btn-primary px-8" onClick={() => addEvent(eventID)}>Attend</button>
+                
+                  
               </div>
             </div>
             </>

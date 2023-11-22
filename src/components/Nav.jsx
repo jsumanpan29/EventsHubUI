@@ -2,9 +2,18 @@ import React, { useState,useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Cookies from 'js-cookie'
 import { LuBookMarked } from "react-icons/lu";
+import axios from '../../api/axios'
+import { useEventContext } from './EventContext';
 
 const Nav = ({ setLoginClicked }) => {
-    // const [user, setUser] = ([]);
+
+const [eventAttended, setEventAttended] = useState([])
+const [onEventAlreadyAttended, setOnEventAlreadyAttended] = useState(false)
+const { events, removeEvent } = useEventContext();
+
+const [userCookie, setUserCookie] = useState(Cookies.get('user'));
+const [addedToCart, setAddedToCart] = useState(false);
+
 
 //   useEffect(() => {
 //     // Check for the 'user' cookie whenever the component mounts or updates
@@ -12,16 +21,56 @@ const Nav = ({ setLoginClicked }) => {
 //     // setUser(user);
 //   }, []);
 const navigate = useNavigate();
-    
+
+
+
 const handleLogoutClick = () => {
-    try {
-        Cookies.remove('user')
-        // console.log(Cookies.get('user'))
-        navigate('/')
-    } catch (err) {
-        console.log('Error: '+err.message);
-    }
+    // try {
+    //     Cookies.remove('user')
+    //     navigate('/')
+    // } catch (err) {
+    //     console.log('Error: '+err.message);
+    // }
+    console.log(events)
 }
+
+
+// useEffect(() => {
+//     setEventAttended(events)
+//     console.log("EventAttended"+eventAttended)
+// }, []);
+
+
+  useEffect(() => {
+        //     setCart(eventAttended.user_events);
+        // console.log("Nav: "+events)
+        // setEventAttended(events)
+        // console.log(eventAttended)
+  }, [events]);
+
+// useEffect(() => {
+//     const getAttended = async () =>{
+//       try { 
+//           const user = JSON.parse(userCookie)
+//           const response = await axios.get('/users/events_attended/'+user?.user.id, {
+//             headers: {
+//                 'Accept': 'application/json',
+//                 'Authorization': `Bearer ` + user?.token 
+//             }
+//           });
+//           // if (response.data.) {
+          
+//           // }
+//         //   console.log(response.data)
+//         // addToCart(response.data);
+//         setEventAttended(response.data)
+//       } catch (e) {
+//           console.log(e);
+//       }
+     
+//     }
+//     getAttended();
+//   }, []);
 
   return (
     <div className="navbar bg-base-100 max-w-screen-xl m-auto">
@@ -88,15 +137,34 @@ const handleLogoutClick = () => {
                     <div class="indicator">
                     <LuBookMarked size={20}/>
                     {/* <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg> */}
-                    <span class="badge badge-sm indicator-item">8</span>
+                    <span class="badge badge-sm indicator-item">{events.length}</span>
                     </div>
                 </label>
-                <div tabindex="0" class="mt-3 z-[1] card card-compact dropdown-content w-60 bg-base-100 shadow">
+                <div tabindex="0" class="mt-3 z-[1] card card-compact dropdown-content w-80 bg-base-100 shadow">
                     <div class="card-body">
-                    <span class="font-bold text-lg">8 Events</span>
-                    {/* <span class="text-info">Subtotal: $999</span> */}
+                    <span class="font-bold text-lg">{events.length + " Events this month"}</span>
+                    {
+                        events ? (
+                            events.map(item => (
+                                <div key={item?.id} className='grid grid-flow-col grid-cols-3 gap-3'>
+                                    {item?.event && (
+                                        <>
+                                            <img src="" alt="" className="w-24 h-16" />
+                                            {item?.event?.name && (
+                                                <span className="font-bold text-base col-span-2" key={item?.event?.id}>{item.event.name}</span>
+                                            )}
+                                        </>
+                                    )}
+                                </div>
+                            ))
+                        ): (
+                            <p>Your cart is empty</p>
+                        )
+                        
+                    }
+                   
                     <div class="card-actions">
-                        <button class="btn btn-primary btn-block">Add to My Events</button>
+                        <button class="btn btn-primary btn-block">Check My Events</button>
                     </div>
                     </div>
                 </div>
@@ -113,6 +181,25 @@ const handleLogoutClick = () => {
             <a className="btn">
                 <Link to="/signup">Signup</Link>
             </a>
+            <div class="dropdown dropdown-end">
+                <label tabindex="0" class="btn btn-ghost btn-circle">
+                    <div class="indicator">
+                    <LuBookMarked size={20}/>
+                    {/* <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg> */}
+                    <span class="badge badge-sm indicator-item">8</span>
+                    </div>
+                </label>
+                <div tabindex="0" class="mt-3 z-[1] card card-compact dropdown-content w-60 bg-base-100 shadow">
+                    <div class="card-body">
+                    <span class="font-bold text-lg">8 Events this month</span>
+                    
+                    {/* <span class="text-info">Subtotal: $999</span> */}
+                    <div class="card-actions">
+                        <button class="btn btn-primary btn-block">Check My Events</button>
+                    </div>
+                    </div>
+                </div>
+            </div>
         </div>
         </>
         }
