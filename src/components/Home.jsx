@@ -3,6 +3,7 @@ import Signup from './Signup'
 import { useNavigate } from 'react-router-dom'
 import axios from '../../api/axios'
 import Cookies from 'js-cookie'
+import { useEventContext } from './EventContext';
 
 
 const Home = ({ loginClicked }) => {
@@ -11,7 +12,7 @@ const Home = ({ loginClicked }) => {
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  //   const [events, setEvents] = useState([]);
+  // const { events, removeEvent } = useEventContext();
   const navigate = useNavigate()
 
 

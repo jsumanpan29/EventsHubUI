@@ -9,45 +9,47 @@ const Nav = ({ setLoginClicked }) => {
 
 const [eventAttended, setEventAttended] = useState([])
 const [onEventAlreadyAttended, setOnEventAlreadyAttended] = useState(false)
-const { events, removeEvent } = useEventContext();
+const { events, fetchEvents, removeEvent } = useEventContext();
 
 const [userCookie, setUserCookie] = useState(Cookies.get('user'));
 const [addedToCart, setAddedToCart] = useState(false);
 
-
-//   useEffect(() => {
-//     // Check for the 'user' cookie whenever the component mounts or updates
-//     // const user = Cookies.get('user');
-//     // setUser(user);
-//   }, []);
 const navigate = useNavigate();
 
 
 
 const handleLogoutClick = () => {
-    // try {
-    //     Cookies.remove('user')
-    //     navigate('/')
-    // } catch (err) {
-    //     console.log('Error: '+err.message);
-    // }
-    console.log(events)
+    try {
+        Cookies.remove('user')
+        navigate('/')
+    } catch (err) {
+        console.log('Error: '+err.message);
+    }
+    // console.log(events)
 }
 
-
-// useEffect(() => {
-//     setEventAttended(events)
-//     console.log("EventAttended"+eventAttended)
-// }, []);
+  // UseEffect to fetch events after logging in
+  useEffect(() => {
+    const user = JSON.parse(userCookie);
+    if (user) {
+      fetchEvents(); // Fetch events using the context provider function
+    }
+  }, []);
 
 
   useEffect(() => {
         //     setCart(eventAttended.user_events);
         // console.log("Nav: "+events)
-        // setEventAttended(events)
+        setEventAttended(events)
         // console.log(eventAttended)
   }, [events]);
 
+//   useEffect(() => {
+//     //     setCart(eventAttended.user_events);
+//     // fetchEvents
+//     console.log("Nav: "+events)
+//     // console.log(eventAttended)
+// }, []);
 // useEffect(() => {
 //     const getAttended = async () =>{
 //       try { 
@@ -124,7 +126,9 @@ const handleLogoutClick = () => {
                     </summary>
                     <ul class="p-2 bg-base-100 z-10">
                         <li><a>My Events</a></li>
-                        <li><a>Create Event</a></li>
+                        {JSON.parse(Cookies.get('user')).user.roles.id == '2'&& 
+                                <li><a>Create Event</a></li>
+                        }
                         <li><a>Account</a></li>
                         <li><a onClick={handleLogoutClick}>Logout</a></li>
                     </ul>
@@ -137,15 +141,15 @@ const handleLogoutClick = () => {
                     <div class="indicator">
                     <LuBookMarked size={20}/>
                     {/* <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg> */}
-                    <span class="badge badge-sm indicator-item">{events.length}</span>
+                    <span class="badge badge-sm indicator-item">{eventAttended.length}</span>
                     </div>
                 </label>
                 <div tabindex="0" class="mt-3 z-[1] card card-compact dropdown-content w-80 bg-base-100 shadow">
                     <div class="card-body">
-                    <span class="font-bold text-lg">{events.length + " Events this month"}</span>
+                    <span class="font-bold text-lg">{eventAttended.length + " Events this month"}</span>
                     {
-                        events ? (
-                            events.map(item => (
+                        eventAttended ? (
+                            eventAttended.map(item => (
                                 <div key={item?.id} className='grid grid-flow-col grid-cols-3 gap-3'>
                                     {item?.event && (
                                         <>
@@ -186,12 +190,12 @@ const handleLogoutClick = () => {
                     <div class="indicator">
                     <LuBookMarked size={20}/>
                     {/* <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg> */}
-                    <span class="badge badge-sm indicator-item">8</span>
+                    <span class="badge badge-sm indicator-item">0</span>
                     </div>
                 </label>
                 <div tabindex="0" class="mt-3 z-[1] card card-compact dropdown-content w-60 bg-base-100 shadow">
                     <div class="card-body">
-                    <span class="font-bold text-lg">8 Events this month</span>
+                    <span class="font-bold text-lg">0 Events this month</span>
                     
                     {/* <span class="text-info">Subtotal: $999</span> */}
                     <div class="card-actions">

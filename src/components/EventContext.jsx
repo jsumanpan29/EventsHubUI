@@ -2,7 +2,14 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import axios from '../../api/axios';
 
-const EventContext = createContext();
+// const EventContext = createContext();
+export const EventContext = createContext({
+  events: [],
+  addEvent: () => {},
+  removeEvent: () => {},
+  fetchEvents: () => {}, // Add the fetchEvents function to the context
+});
+
 
 export const useEventContext = () => useContext(EventContext);
 
@@ -11,13 +18,15 @@ export const EventProvider = ({ children }) => {
 
   useEffect(() => {
     // Fetch events when the component mounts
+    // const user = JSON.parse(Cookies.get('user')) 
+    // if(user){
     fetchEvents();
+    // }
+    
   }, []);
 
   const fetchEvents = async () => {
     try {
-    //   const response = await axios.get('/api/events'); // Your API endpoint for fetching events
-    //   setEvents(response.data);
     const user = JSON.parse(Cookies.get('user')) 
     console.log(user)
     
@@ -28,7 +37,7 @@ export const EventProvider = ({ children }) => {
         }
     });
     setEvents(response.data.eventAttendees);
-    console.log("Fetch: "+ events)
+    // console.log("Fetch: "+ events)
     } catch (error) {
       console.error('Error fetching events:', error);
     }
@@ -49,7 +58,7 @@ export const EventProvider = ({ children }) => {
         }  
       );
       setEvents([...events, response.data.eventAttendee]);
-      console.log("AddEvent: "+ events)
+      // console.log("AddEvent: "+ events)
     } catch (error) {
       console.error('Error adding event:', error);
     }
@@ -66,7 +75,7 @@ export const EventProvider = ({ children }) => {
   };
 
   return (
-    <EventContext.Provider value={{ events, addEvent, removeEvent }}>
+    <EventContext.Provider value={{ events, addEvent, removeEvent, fetchEvents }}>
       {children}
     </EventContext.Provider>
   );

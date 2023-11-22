@@ -10,6 +10,7 @@ import Contact from './components/Contact';
 import Missing from './components/Missing';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
+import Account from './components/Account';
 import { EventProvider } from './components/EventContext';
 import axios from '../api/axios'
 import Cookies from 'js-cookie'
@@ -61,7 +62,15 @@ function App() {
       <Nav setLoginClicked={setLoginClicked} />
       <Routes>
         <Route path="/" element={<Home loginClicked={loginClicked}  />} />
-        <Route path='/dashboard' element={<Dashboard /> } />
+        {/* <Route path='/dashboard'>
+            <Route index element={<Dashboard /> }/>
+            <Route path="/account" element={<Account />} />
+        </Route> */}
+        <Route path='/dashboard/*' element={<Dashboard />} />
+          {/* <Route index element={<Dashboard />} /> */}
+          {/* <Route path="account" element={<Account />} /> */}
+        {/* </Route> */}
+
         <Route path="/events">
           <Route index element={<Events
           />}/>
