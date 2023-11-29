@@ -1,6 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import Account from './Account'
 import MyEvents from './MyEvents'
+import Users from './Users';
+import Venue from './Venue';
+import Cookies from 'js-cookie';
 import { Link, useNavigate } from 'react-router-dom'
 
 const Dashboard = () => {
@@ -10,22 +13,28 @@ const Dashboard = () => {
   const [selectedOption, setSelectedOption] = useState(''); 
   const navigate = useNavigate();
 
+  const userRole = JSON.parse(Cookies.get('user'))?.user.roles.id
   // Function to handle click on sidebar options
   const handleOptionClick = (option) => {
     setSelectedOption(option);
   };
 
+  // useEffect(() => {
+  //   console.log(JSON.parse(Cookies.get('user'))?.user.roles.id)
+  // }, []);
+
   
   const renderContent = () => {
     switch (selectedOption) {
       case 'MyEvents':
-        // navigate(`/dashboard`);
         return <MyEvents />;
       case 'AccountSettings':
-        // navigate(`/dashboard/account-settings`);
         return <Account />;
+      case 'Users':
+        return <Users />;
+      case 'Venue':
+        return <Venue />;
       default:
-        // navigate(`/dashboard`);
         return <MyEvents />;
     }
   };
@@ -60,12 +69,12 @@ const Dashboard = () => {
     // </div>
     <div class="drawer lg:drawer-open">
     <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
-    <div class="drawer-content grid grid-cols-4 lg:grid-cols-5">
+    <div class="drawer-content grid grid-cols-4 lg:grid-cols-5 bg-base-300">
     <div class="col-span-4 items-center justify-center flex">
-    <div class="hero min-h-screen bg-base-100">
-      <div class="hero-content text-center">
+    <div class="container min-h-screen">
+      {/* <div class="hero-content text-center"> */}
         {renderContent()}
-      </div>
+      {/* </div> */}
     </div>
 
     </div>
@@ -77,9 +86,24 @@ const Dashboard = () => {
     <div class="drawer-side">
       <label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay"></label> 
       <ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
-        <li onClick={() => handleOptionClick('MyEvents')}><a>My Events</a></li>
-        {/* <Link to={'/account'}><li><a>Account Settings</a></li></Link> */}
-        <li onClick={() => handleOptionClick('AccountSettings')}><a>Account Settings</a></li>
+       
+        { 
+            userRole == 1? 
+            (
+              <>
+              <li onClick={() => handleOptionClick('Users')}><a>User</a></li>
+              <li onClick={() => handleOptionClick('Venue')}><a>Venue</a></li>
+              <li onClick={() => handleOptionClick('AccountSettings')}><a>Account Settings</a></li>
+              </>
+            ) 
+            : 
+            (
+              <>
+              <li onClick={() => handleOptionClick('MyEvents')}><a>My Events</a></li>
+              <li onClick={() => handleOptionClick('AccountSettings')}><a>Account Settings</a></li>
+              </>
+            )
+        }
       </ul>
     
     </div>

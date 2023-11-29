@@ -60,6 +60,7 @@ function App() {
     <EventProvider>
     <div className="App">
       <Nav setLoginClicked={setLoginClicked} />
+      {/* <Nav setLoginClicked={setLoginClicked} setAccountSettingsClicked = {setAccountSettingsClicked} /> */}
       <Routes>
         <Route path="/" element={<Home loginClicked={loginClicked}  />} />
         {/* <Route path='/dashboard'>
@@ -67,10 +68,7 @@ function App() {
             <Route path="/account" element={<Account />} />
         </Route> */}
         <Route path='/dashboard/*' element={<Dashboard />} />
-          {/* <Route index element={<Dashboard />} /> */}
-          {/* <Route path="account" element={<Account />} /> */}
-        {/* </Route> */}
-
+        {/* <Route path='/dashboard/*' element={<Dashboard accountSettingsClicked={accountSettingsClicked}/>} /> */}
         <Route path="/events">
           <Route index element={<Events
           />}/>

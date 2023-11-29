@@ -83,8 +83,8 @@ const Events = () => {
         </div>
        
     </div>
-    <div className="min-h-screen bg-base-200">
-        <div className="container grid grid-cols-4 pt-0 m-auto gap-x-8 sm:pt-12">
+    <div className="min-h-screen bg-base-300">
+        <div className="container grid grid-cols-4 pt-0 m-auto gap-x-8">
             <div className="lg:col-span-1">
                 <nav className="flex flex-col w-64">
                     <div className="flex items-center justify-center h-14 text-white font-bold text-3xl">
@@ -107,7 +107,7 @@ const Events = () => {
             </div>
             <div className="col-span-4 mt-1 lg:col-span-3 static">
                 
-                <div className='mb-10'>
+                <div className='mb-3'>
                 {
                         Array.isArray(events) ? (
                         events.map((event,index) =>(
@@ -147,17 +147,18 @@ const Events = () => {
                     
                 </div>
                 <ReactPaginate
-                    previousLabel={'Previous'}
-                    nextLabel={'Next'}
+                    previousLabel={'«'}
+                    nextLabel={'»'}
                     breakLabel={'...'}
                     // pageCount={Math.ceil( totalPage / perPage )}
                     pageCount={Math.ceil( totalPage / perPage )}
                     marginPagesDisplayed={2}
                     pageRangeDisplayed={2}
                     onPageChange={handlePageClick}
-                    containerClassName={'join items-center justify-center w-full'}
+                    containerClassName={'join items-center justify-center w-full mb-6'}
                     pageClassName={'join-item btn'}
-                    activeClassName={'active'}
+                    activeClassName={'btn-active'}
+                    disabledClassName={'btn-disabled'}
                     previousClassName = {'join-item btn'}
                     nextClassName = {'join-item btn'}
                     // forcePage={currentPage - 1}

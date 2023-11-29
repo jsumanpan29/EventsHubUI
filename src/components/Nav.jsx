@@ -7,6 +7,7 @@ import { useEventContext } from './EventContext';
 
 const Nav = ({ setLoginClicked }) => {
 
+const [onLoggedIn, setOnLoggedIn] = useState(false)
 const [eventAttended, setEventAttended] = useState([])
 const [onEventAlreadyAttended, setOnEventAlreadyAttended] = useState(false)
 const { events, fetchEvents, removeEvent } = useEventContext();
@@ -30,8 +31,9 @@ const handleLogoutClick = () => {
 
   // UseEffect to fetch events after logging in
   useEffect(() => {
-    const user = JSON.parse(userCookie);
-    if (user) {
+    
+    // const user = JSON.parse(userCookie);
+    if (userCookie) {
       fetchEvents(); // Fetch events using the context provider function
     }
   }, []);
@@ -124,13 +126,13 @@ const handleLogoutClick = () => {
                     <summary>
                     {JSON.parse(Cookies.get('user')).user.name}
                     </summary>
-                    <ul class="p-2 bg-base-100 z-10">
-                        <li><a>My Events</a></li>
+                    <ul class="p-2 bg-base-100 z-10 w-28">
+                        <li className='items-center'><a>My Events</a></li>
                         {JSON.parse(Cookies.get('user')).user.roles.id == '2'&& 
-                                <li><a>Create Event</a></li>
+                                <li className='items-center'><a>Create Event</a></li>
                         }
-                        <li><a>Account</a></li>
-                        <li><a onClick={handleLogoutClick}>Logout</a></li>
+                        <li className='items-center'><a>Account</a></li>
+                        <li className='items-center'><a onClick={handleLogoutClick}>Logout</a></li>
                     </ul>
                     </details>
                 </li>
@@ -162,7 +164,7 @@ const handleLogoutClick = () => {
                                 </div>
                             ))
                         ): (
-                            <p>Your cart is empty</p>
+                            <p>No Events</p>
                         )
                         
                     }
@@ -189,7 +191,6 @@ const handleLogoutClick = () => {
                 <label tabindex="0" class="btn btn-ghost btn-circle">
                     <div class="indicator">
                     <LuBookMarked size={20}/>
-                    {/* <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg> */}
                     <span class="badge badge-sm indicator-item">0</span>
                     </div>
                 </label>

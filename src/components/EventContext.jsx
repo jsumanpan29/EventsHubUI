@@ -27,13 +27,13 @@ export const EventProvider = ({ children }) => {
 
   const fetchEvents = async () => {
     try {
-    const user = JSON.parse(Cookies.get('user')) 
-    console.log(user)
+      const userID = JSON.parse(Cookies.get('user'))?.user.id
+  
     
-    const response = await axios.get('/event_attendee/user/'+user?.user.id, {
+    const response = await axios.get('/event_attendee/user/'+userID, {
         headers: {
             'Accept': 'application/json',
-            'Authorization': `Bearer ` + user?.token 
+            'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token 
         }
     });
     setEvents(response.data.eventAttendees);
