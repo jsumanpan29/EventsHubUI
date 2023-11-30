@@ -7,13 +7,14 @@ import { useEventContext } from './EventContext';
 
 const Nav = ({ setLoginClicked }) => {
 
-const [onLoggedIn, setOnLoggedIn] = useState(false)
+// const [onLoggedIn, setOnLoggedIn] = useState(false)
+const [eventsCount, setEventsCount] = useState(0)
 const [eventAttended, setEventAttended] = useState([])
-const [onEventAlreadyAttended, setOnEventAlreadyAttended] = useState(false)
+// const [onEventAlreadyAttended, setOnEventAlreadyAttended] = useState(false)
 const { events, fetchEvents, removeEvent } = useEventContext();
 
 const [userCookie, setUserCookie] = useState(Cookies.get('user'));
-const [addedToCart, setAddedToCart] = useState(false);
+// const [addedToCart, setAddedToCart] = useState(false);
 
 const navigate = useNavigate();
 
@@ -86,9 +87,9 @@ const handleLogoutClick = () => {
         <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
             {Cookies.get('user') ?
             <>
-                <li><a><Link to="/dashboard">My Events</Link></a></li>
+                <li><a><Link to="/dashboard"> My Events</Link></a></li>
             </>
-            :
+            : 
             <>
                 <li><a><Link to="/">Home</Link></a></li>
             </>
@@ -100,6 +101,13 @@ const handleLogoutClick = () => {
         </div>
         <a className="btn btn-ghost normal-case text-xl">EventHub</a>
     </div>
+
+    {Cookies.get('user') && JSON.parse(Cookies.get('user'))?.user.roles.id === 1 ?
+    (<>
+    
+    </>)
+    :
+    (
     <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal text-base">
             {Cookies.get('user') ?
@@ -115,6 +123,10 @@ const handleLogoutClick = () => {
             <li className='mx-1'><a className='p-3'><Link to="/contact">Contact</Link></a></li>
         </ul>
     </div>
+    )
+
+    }
+    
     
         {Cookies.get('user') ?
         <>
@@ -124,7 +136,7 @@ const handleLogoutClick = () => {
                 <li>
                     <details>
                     <summary>
-                    {JSON.parse(Cookies.get('user')).user.name}
+                    {JSON.parse(Cookies.get('user')).user.first_name}
                     </summary>
                     <ul class="p-2 bg-base-100 z-10 w-28">
                         <li className='items-center'><a>My Events</a></li>
@@ -138,43 +150,51 @@ const handleLogoutClick = () => {
                 </li>
                 </ul>
             </div>
-            <div class="dropdown dropdown-end">
-                <label tabindex="0" class="btn btn-ghost btn-circle">
-                    <div class="indicator">
-                    <LuBookMarked size={20}/>
-                    {/* <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg> */}
-                    <span class="badge badge-sm indicator-item">{eventAttended.length}</span>
-                    </div>
-                </label>
-                <div tabindex="0" class="mt-3 z-[1] card card-compact dropdown-content w-80 bg-base-100 shadow">
-                    <div class="card-body">
-                    <span class="font-bold text-lg">{eventAttended.length + " Events this month"}</span>
-                    {
-                        eventAttended ? (
-                            eventAttended.map(item => (
-                                <div key={item?.id} className='grid grid-flow-col grid-cols-3 gap-3'>
-                                    {item?.event && (
-                                        <>
-                                            <img src="" alt="" className="w-24 h-16" />
-                                            {item?.event?.name && (
-                                                <span className="font-bold text-base col-span-2" key={item?.event?.id}>{item.event.name}</span>
-                                            )}
-                                        </>
-                                    )}
-                                </div>
-                            ))
-                        ): (
-                            <p>No Events</p>
-                        )
-                        
-                    }
-                   
-                    <div class="card-actions">
-                        <button class="btn btn-primary btn-block">Check My Events</button>
-                    </div>
+            {
+                JSON.parse(Cookies.get('user')).user.roles.id !== '2' ?
+                (<></>) 
+                : 
+                (
+                <div class="dropdown dropdown-end">
+                    <label tabindex="0" class="btn btn-ghost btn-circle">
+                        <div class="indicator">
+                        <LuBookMarked size={20}/>
+                        {/* <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg> */}
+                        <span class="badge badge-sm indicator-item">{eventAttended.length}</span>
+                        </div>
+                    </label>
+                    <div tabindex="0" class="mt-3 z-[1] card card-compact dropdown-content w-80 bg-base-100 shadow">
+                        <div class="card-body">
+                        <span class="font-bold text-lg">{eventAttended.length + " Events this month"}</span>
+                        {
+                            eventAttended ? (
+                                eventAttended.map(item => (
+                                    <div key={item?.id} className='grid grid-flow-col grid-cols-3 gap-3'>
+                                        {item?.event && (
+                                            <>
+                                                <img src="" alt="" className="w-24 h-16" />
+                                                {item?.event?.name && (
+                                                    <span className="font-bold text-base col-span-2" key={item?.event?.id}>{item.event.name}</span>
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
+                                ))
+                            ): (
+                                <p>No Events</p>
+                            )
+                            
+                        }
+                    
+                        <div class="card-actions">
+                            <button class="btn btn-primary btn-block">Check My Events</button>
+                        </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )
+            }
+            
         </div>
         </>
         :
@@ -188,6 +208,8 @@ const handleLogoutClick = () => {
                 <Link to="/signup">Signup</Link>
             </a>
             <div class="dropdown dropdown-end">
+                { eventsCount > 0 ?
+                ( <>
                 <label tabindex="0" class="btn btn-ghost btn-circle">
                     <div class="indicator">
                     <LuBookMarked size={20}/>
@@ -198,12 +220,20 @@ const handleLogoutClick = () => {
                     <div class="card-body">
                     <span class="font-bold text-lg">0 Events this month</span>
                     
-                    {/* <span class="text-info">Subtotal: $999</span> */}
                     <div class="card-actions">
                         <button class="btn btn-primary btn-block">Check My Events</button>
                     </div>
                     </div>
                 </div>
+                </>
+            )
+                :
+                (<>
+                
+                </>)
+
+                }
+                
             </div>
         </div>
         </>

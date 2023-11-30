@@ -4,7 +4,9 @@ import axios from '../../api/axios'
 
 const Signup = () => {
     const [formData, setFormData] = useState({
-        name: '',
+        first_name: '',
+        last_name: '',
+        contact_no: '',
         email: '',
         password: '',
         passwordConfirm: '',
@@ -29,7 +31,9 @@ const Signup = () => {
             // console.warn(email,password)
             const response = await axios.post('/register',  
             JSON.stringify({ 
-                name: formData.name,
+                first_name: formData.first_name,
+                last_name: formData.last_name,
+                contact_no: formData.contact_no,
                 email: formData.email, 
                 password: formData.password,
                 password_confirmation: formData.passwordConfirm
@@ -62,9 +66,21 @@ const Signup = () => {
         <form className="card-body" onSubmit={signupSubmit}>
         <div className="form-control">
             <label className="label">
-            <span className="label-text">Name</span>
+            <span className="label-text">First Name</span>
             </label>
-            <input type="text" placeholder="Name" onChange={handleSignupChange} name="name" value={formData.name} className="input input-bordered" required />
+            <input type="text" placeholder="First Name" onChange={handleSignupChange} name="first_name" value={formData.first_name} className="input input-bordered" required />
+        </div>
+        <div className="form-control">
+            <label className="label">
+            <span className="label-text">Last Name</span>
+            </label>
+            <input type="text" placeholder="Last Name" onChange={handleSignupChange} name="last_name" value={formData.last_name} className="input input-bordered" required />
+        </div>
+        <div className="form-control">
+            <label className="label">
+            <span className="label-text">Contact Number</span>
+            </label>
+            <input type="text" placeholder="Contact Number" onChange={handleSignupChange} name="contact_no" value={formData.contact_no} className="input input-bordered" required />
         </div>
         <div className="form-control">
             <label className="label">

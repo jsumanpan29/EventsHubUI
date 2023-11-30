@@ -1,9 +1,28 @@
-import React from 'react'
+import React,  { useState,useEffect } from 'react'
 import axios from '../../api/axios'
 import Cookies from 'js-cookie'
+import { useEventContext } from './EventContext';
 
 const MyEvents = () => {
   const userRole = JSON.parse(Cookies.get('user'))?.user.roles.id
+  const [eventAttended, setEventAttended] = useState([])
+  const { events, fetchEvents, removeEvent } = useEventContext();
+
+  useEffect(() => {
+    
+    // const user = JSON.parse(userCookie);
+    if (Cookies.get('user') && userRole == 3) {
+      fetchEvents(); // Fetch events using the context provider function
+    }
+  }, []);
+
+
+  useEffect(() => {
+        //     setCart(eventAttended.user_events);
+        // console.log("Nav: "+events)
+        setEventAttended(events)
+        // console.log(eventAttended)
+  }, [events]);
 
   switch (userRole) {
     case 2:
@@ -275,8 +294,10 @@ const MyEvents = () => {
        return (
         <div className='grid-flow-col grid-cols-3 m-10'>
             <div className='col-span-1 navbar bg-base-100'>
-              <a href="" className="btn btn-ghost text-xl">My Events</a>
-              
+            <div className="navbar-start">
+              {/* <a href="" className="btn btn-ghost text-xl">My Events</a> */}
+              <h3 className='text-xl font-medium'>MY EVENTS</h3>
+            </div>
             </div>
             <div className='col-span-1 mx-6'>
               <div className="grid h-24 bg-base-300 place-items-center">

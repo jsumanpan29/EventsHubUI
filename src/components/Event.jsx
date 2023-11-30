@@ -230,7 +230,8 @@ const updateEvent = async (eventID) => {
               </div>
               <div className='flex items-center justify-center'>
                  
-              <button className="btn btn-primary px-8" onClick={() => addEvent(eventID)}>Attend</button>
+              {/* <button className="btn btn-primary px-8" onClick={() => addEvent(eventID)}>Attend</button> */}
+              <button className="btn btn-primary px-8" onClick={() => Cookies.get('user') ? addEvent(eventID) : console.log("Count")}>Attend</button>
                 
                   
               </div>

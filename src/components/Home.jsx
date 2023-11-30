@@ -104,6 +104,25 @@ const Home = ({ loginClicked }) => {
         </div>
       </div>
       <div className="hero min-h-fit bg-base-200">
+        {/* <div className="hero-content flex-col lg:flex-row-reverse"> */}
+        <div className="flex flex-col w-full">
+          <div className="grid h-32 bg-base-300 place-items-center">
+              <div className="join">
+                  <div>
+                      <div>
+                      <input className="input input-bordered w-full sm:w-64 md:w-80 lg:w-96 xl:w-120 join-item" placeholder="Search"/>
+                      </div>
+                  </div>
+                
+                  <div className="indicator">
+                      <button className="btn join-item">Search</button>
+                  </div>
+              </div>
+          </div>
+        </div>
+        {/* </div> */}
+      </div>
+      <div className="hero min-h-fit bg-base-200">
         <div className="hero-content flex-col lg:flex-row-reverse">
           <img src="" className="max-w-sm h-96 w-96 rounded-lg shadow-2xl" />
           <div>
