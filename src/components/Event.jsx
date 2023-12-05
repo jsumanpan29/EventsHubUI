@@ -5,10 +5,12 @@ import Cookies from 'js-cookie';
 import { LuTag,LuUser2,LuNavigation } from "react-icons/lu";
 import { format } from 'date-fns'
 import { useEventContext } from './EventContext';
+import { useCart } from './CartContext'
 
 const Event = () => {
   const { state } = useLocation();
-  const { events, addEvent, removeEvent } = useEventContext();
+  const { events, addEvent, removeEvent, isEventAlreadyAttended} = useEventContext();
+  const {cartItems, addToCart, removeFromCart, emptyCart, isItemInCart} = useCart();
 
   const [eventID, setEventID] = useState('');
   const [name, setName] = useState('');
@@ -16,14 +18,16 @@ const Event = () => {
   const [categoryName, setCategoryName] = useState('');
   const [estAttendants, setEstAttendants] = useState('');
   const [venueName, setVenueName] = useState('');
+  const [imageFileName, setImageFileName] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [eventLocation, setEventLocation] = useState('');
   const [eventSchedStart, setEventSchedStart] = useState(new Date());
   const [eventSchedEnd, setEventSchedEnd] = useState(new Date());
   const [eventRegDeadline, setEventRegDeadline] = useState(new Date());
   const [userCookie, setUserCookie] = useState(Cookies.get('user'));
 
-  const [eventAttended, setEventAttended] = useState([])
-  const [onEventAlreadyAttended, setOnEventAlreadyAttended] = useState(false)
+  // const [eventAttended, setEventAttended] = useState([])
+  // const [onEventAlreadyAttended, setOnEventAlreadyAttended] = useState(false)
 
 
 
@@ -35,22 +39,31 @@ const Event = () => {
                 }
               });
               // console.log("Event.jsx"+response.data.event)
-              setEventID(response.data.event.id)
-              setName(response.data.event.name);
-              setDescription(response.data.event.description);
-              setCategoryName(response.data.event.category_id.name);
-              setEstAttendants(response.data.event.est_attendants);
-              setVenueName(response.data.event.venue_id.name);
-              setEventLocation(response.data.event.location);
-              setEventSchedStart(response.data.event.date_sched_start);
-              setEventSchedEnd(response.data.event.date_sched_end);
-              setEventRegDeadline(response.data.event.date_reg_deadline);
+              if(state.id){
+                setEventID(response.data.event.id)
+                setName(response.data.event.name);
+                setDescription(response.data.event.description);
+                setCategoryName(response.data.event.category_id.name);
+                setEstAttendants(response.data.event.est_attendants);
+                setVenueName(response.data.event.venue_id.name);
+                setEventLocation(response.data.event.location);
+                setEventSchedStart(response.data.event.date_sched_start);
+                setEventSchedEnd(response.data.event.date_sched_end);
+                setEventRegDeadline(response.data.event.date_reg_deadline);
+                
+                console.log(JSON.stringify(response.data.media))
+                if (response.data.media.length > 0) {
+                  setImageFileName(response.data.media[0].file_name);
+                  setImageUrl(response.data.media[0].url);
+                }
+              }
           } catch (e) {
               console.log(e);
           }
       }
       getEvents();
   }, []);
+  
 
 //   useEffect(() => {
 //     const getAttended = async () =>{
@@ -76,11 +89,20 @@ const Event = () => {
 //     getAttended();
 //   }, [onEventAlreadyAttended]);
 
-//   useEffect(() => {
-//     setCart(eventAttended.user_events);
-//     console.log(eventAttended)
-// }, [eventAttended]);
+  useEffect(() => {
+    // setCart(eventAttended.user_events);
+    console.log("Cart Items:"+cartItems)
+}, [cartItems]);
 
+const addItemToCart = (eventID, eventName) => {
+  
+  const itemToAdd = {
+      event_id: eventID,
+      name: eventName
+  }
+  addToCart(itemToAdd)
+    // console.log(events)
+}
 
 
   // useEffect(() => {
@@ -114,26 +136,17 @@ const Event = () => {
 //         console.log('Error: '+err.message);
 //     }
 // }
-// const attendEvent = async (eventID) => {
-//   const userID = JSON.parse(userCookie)?.user.id;
+// const addCart = async (eventID) => {
 //   // console.log('UserID:', userID);
 //   // console.log('EventID:', eventID);
 //   try {
-//     const response = await axios.post(
-//       '/event_attendees',
-//       { 'user_id': userID, 'event_id': eventID },
-//       {
-//         headers: {
-//           'Content-Type': 'application/json',
-//           'Authorization': `Bearer ` + JSON.parse(userCookie).token 
-//         }
-//       }
-//     );
-//     console.log(response.data.eventAttendee);
-//     // navigate("/", { replace: true });
-//     // addToCart(response.data.event);
-//     // console.log("Event.jsx:"+JSON.stringify(cart))
-//     addEvent(response.data.eventAttendee)
+//     if (isItemInCart(eventID)) {
+//       console.log("Cant add to cart")
+//     }else{
+//       addToCart(eventID)
+//     }
+    
+//     // console.log(cartItems)
 //   } catch (e) {
 //     console.log(e);
 //   }
@@ -206,12 +219,12 @@ const updateEvent = async (eventID) => {
   return (
     <div className="items-start min-h-screen bg-base-200">
       <div className="container w-full lg:w-3/4 xl:w-2/3 mx-auto">
-        {event && 
+        {state && 
             <>
              <div>
              <h1 className="text-5xl font-bold pt-10 pb-5">{name}</h1>
              </div>
-            <img src="" className="w-full h-96 shadow-2xl" />
+            <img src={imageUrl} alt={imageFileName} className="w-full h-128 shadow-2xl" />
             <div className='grid grid-cols-5 py-4 gap-12 place-items-center px-6'>
               
               <div className='text-sm flex '><LuTag size={18} className='mr-1.5' />{categoryName}</div>
@@ -223,22 +236,41 @@ const updateEvent = async (eventID) => {
               </div>
               
             </div>
-            <div className='grid grid-cols-5'>
+            <div className='grid grid-cols-5 h-80'>
               <div className='col-span-4 px-10'>
                 <h1 className="text-3xl font-bold pb-3">About this Event</h1>
                 <p>{description}</p>
               </div>
-              <div className='flex items-center justify-center'>
+              <div className='flex justify-center'>
                  
               {/* <button className="btn btn-primary px-8" onClick={() => addEvent(eventID)}>Attend</button> */}
-              <button className="btn btn-primary px-8" onClick={() => Cookies.get('user') ? addEvent(eventID) : console.log("Count")}>Attend</button>
+              {/* {
+                Cookies.get('user') ?
+                isItemInCart()
+                :
+                (<></>)
+              } */}
+              {/* <button className="btn btn-primary px-8" onClick={() => Cookies.get('user') ? addEvent(eventID) : addCart(eventID)}>Attend</button> */}
+              {
+                Cookies.get('user') ?
+                (<>
+                 <button className="btn btn-primary px-0 sm:px-4 md:px-8" onClick={() => isEventAlreadyAttended(eventID) ? removeEvent(eventID) : addEvent(eventID)}>{isEventAlreadyAttended(eventID) ? "Remove" : "Attend"}</button>
+                </>)
+                :
+                (<>
+                   {/* <button className="btn btn-primary px-0 sm:px-4 md:px-8" onClick={() => isItemInCart(eventID) ? removeFromCart(eventID) : addToCart(eventID)}>{isItemInCart(eventID) ? "Remove" : "Attend"}</button> */}
+                   <button className="btn btn-primary px-0 sm:px-4 md:px-8" onClick={() => isItemInCart(eventID) ? removeFromCart(eventID) : addItemToCart(eventID, name)}>{isItemInCart(eventID) ? "Remove" : "Attend"}</button>
+                </>)
+              }
+              {/* <button className="btn btn-primary px-8" onClick={() => Cookies.get('user') ? addEvent(eventID) : checkIfIncludes(eventID)}>Attend</button> */}
                 
                   
               </div>
             </div>
+            
             </>
         }
-        {!event && 
+        {!state && 
             <>
             
             <div>

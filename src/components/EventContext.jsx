@@ -8,6 +8,7 @@ export const EventContext = createContext({
   addEvent: () => {},
   removeEvent: () => {},
   fetchEvents: () => {}, // Add the fetchEvents function to the context
+  isEventAlreadyAttended: () => {}
 });
 
 
@@ -19,11 +20,16 @@ export const EventProvider = ({ children }) => {
   useEffect(() => {
     // Fetch events when the component mounts
     // const user = JSON.parse(Cookies.get('user')) 
-    // if(user){
+    if(Cookies.get('user')){
     fetchEvents();
-    // }
+    }
     
   }, []);
+
+  const isEventAlreadyAttended = (eventID) => {
+    //  return events.includes({"event_id":eventID})
+     return events.some(event => event.event_id === eventID)
+    }
 
   const fetchEvents = async () => {
     try {
@@ -37,13 +43,13 @@ export const EventProvider = ({ children }) => {
         }
     });
     setEvents(response.data.eventAttendees);
-    // console.log("Fetch: "+ events)
+    // console.log("Events: "+ events)
     } catch (error) {
       console.error('Error fetching events:', error);
     }
   };
 
-  const addEvent = async (eventID) => {
+  const addEvent = async (eventID) => { 
     try {
         const userID = JSON.parse(Cookies.get('user'))?.user.id
     //   const response = await axios.post('/api/event_attendees', newEvent); // Your API endpoint for adding events
@@ -66,7 +72,17 @@ export const EventProvider = ({ children }) => {
 
   const removeEvent = async (eventId) => {
     try {
-      await axios.delete(`/api/events/${eventId}`); // Your API endpoint for deleting events
+      const userID = JSON.parse(Cookies.get('user'))?.user.id
+      // await axios.delete(`/event_attendee/${eventId}`); // Your API endpoint for deleting events
+      await axios.delete('/event_attendee/event/'+eventId+'/user/'+userID+'/delete',
+      {
+         headers:{
+            'Accept': 'application/json',
+            'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token 
+         }
+      }
+      ); // Your API endpoint for deleting events
+
       const updatedEvents = events.filter((event) => event.id !== eventId);
       setEvents(updatedEvents);
     } catch (error) {
@@ -75,7 +91,7 @@ export const EventProvider = ({ children }) => {
   };
 
   return (
-    <EventContext.Provider value={{ events, addEvent, removeEvent, fetchEvents }}>
+    <EventContext.Provider value={{ events, addEvent, removeEvent, fetchEvents, isEventAlreadyAttended }}>
       {children}
     </EventContext.Provider>
   );

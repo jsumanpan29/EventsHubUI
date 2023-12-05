@@ -15,6 +15,7 @@ import { EventProvider } from './components/EventContext';
 import axios from '../api/axios'
 import Cookies from 'js-cookie'
 import NotAuth from './components/NotAuth';
+import { CartProvider } from './components/CartContext';
 
 
 
@@ -57,6 +58,7 @@ function App() {
 //       }
 //     }
   return (
+    <CartProvider>
     <EventProvider>
     <div className="App">
       <Nav setLoginClicked={setLoginClicked} />
@@ -83,6 +85,7 @@ function App() {
       <Footer />
     </div>
     </EventProvider>
+    </CartProvider>
   );
 }
 

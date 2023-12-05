@@ -4,17 +4,20 @@ import Cookies from 'js-cookie'
 import { LuBookMarked } from "react-icons/lu";
 import axios from '../../api/axios'
 import { useEventContext } from './EventContext';
+import { useCart } from './CartContext'
 
 const Nav = ({ setLoginClicked }) => {
 
 // const [onLoggedIn, setOnLoggedIn] = useState(false)
-const [eventsCount, setEventsCount] = useState(0)
+// const [eventsCount, setEventsCount] = useState(0)
 const [eventAttended, setEventAttended] = useState([])
 // const [onEventAlreadyAttended, setOnEventAlreadyAttended] = useState(false)
 const { events, fetchEvents, removeEvent } = useEventContext();
 
 const [userCookie, setUserCookie] = useState(Cookies.get('user'));
 // const [addedToCart, setAddedToCart] = useState(false);
+
+const {cartItems, emptyCart, isItemInCart} = useCart();
 
 const navigate = useNavigate();
 
@@ -30,6 +33,8 @@ const handleLogoutClick = () => {
     // console.log(events)
 }
 
+
+
   // UseEffect to fetch events after logging in
   useEffect(() => {
     
@@ -42,7 +47,7 @@ const handleLogoutClick = () => {
 
   useEffect(() => {
         //     setCart(eventAttended.user_events);
-        // console.log("Nav: "+events)
+        // console.log("Nav: "+JSON.stringify(events))
         setEventAttended(events)
         // console.log(eventAttended)
   }, [events]);
@@ -128,9 +133,72 @@ const handleLogoutClick = () => {
     }
     
     
-        {Cookies.get('user') ?
-        <>
-        <div className="navbar-end">
+       {/* Navbar End */}
+
+       {!Cookies.get('user') ?
+       (
+       <div className="navbar-end">
+            {/* <a onClick={() => setLoginClicked(true)} className="btn btn-primary"> */}
+            <a onClick={() => setLoginClicked(true)} className="btn btn-primary">
+                <Link to="/">Login</Link>
+                {/* Login */}
+            </a>
+            {/* <a className="btn" onClick={() => emptyCart()}>
+                Remove Items */}
+            <a className="btn">
+                <Link to="/signup">Signup</Link>
+            </a>
+            <div class="dropdown dropdown-end">
+                { cartItems.length > 0 ?
+                ( <>
+                <label tabindex="0" class="btn btn-ghost btn-circle">
+                    <div class="indicator">
+                    <LuBookMarked size={20}/>
+                    <span class="badge badge-sm indicator-item">{cartItems.length}</span>
+                    </div>
+                </label>
+                <div tabindex="0" class="mt-3 z-[1] card card-compact dropdown-content w-80 bg-base-100 shadow">
+                    <div class="card-body">
+                    <span class="font-bold text-lg">{cartItems.length} Events added</span>
+                    {
+                            cartItems ? (
+                                cartItems.map(item => (
+                                    <div key={item?.event_id} className='grid grid-flow-col grid-cols-3 gap-3'>
+                                        {/* {item?.event && (
+                                            <> */}
+                                                <img src="" alt="" className="w-24 h-16" />
+                                                {item?.name && (
+                                                    <span className="font-bold text-base col-span-2" key={item?.event_id}>{item?.name}</span>
+                                                )}
+                                            {/* </>
+                                        )} */}
+                                    </div>
+                                ))
+                            ): (
+                                <p>No Events</p>
+                            )
+                            
+                        }
+                    <div class="card-actions">
+                        <button class="btn btn-primary btn-block">Checkout</button>
+                    </div>
+                    </div>
+                </div>
+                </>
+            )
+                :
+                (<>
+                
+                </>)
+
+                }
+                
+            </div>
+        </div>
+        )
+       :
+       (<>
+       <div className="navbar-end">
             <div class="flex-none">
                 <ul class="menu menu-horizontal px-1">
                 <li>
@@ -138,7 +206,7 @@ const handleLogoutClick = () => {
                     <summary>
                     {JSON.parse(Cookies.get('user')).user.first_name}
                     </summary>
-                    <ul class="p-2 bg-base-100 z-10 w-28">
+                    <ul class="p-2 bg-base-100 z-10 w-28 right-1 xl:w-36 xl:-right-4">
                         <li className='items-center'><a>My Events</a></li>
                         {JSON.parse(Cookies.get('user')).user.roles.id == '2'&& 
                                 <li className='items-center'><a>Create Event</a></li>
@@ -151,9 +219,7 @@ const handleLogoutClick = () => {
                 </ul>
             </div>
             {
-                JSON.parse(Cookies.get('user')).user.roles.id !== '2' ?
-                (<></>) 
-                : 
+                JSON.parse(Cookies.get('user')).user.roles.id == '3' ?
                 (
                 <div class="dropdown dropdown-end">
                     <label tabindex="0" class="btn btn-ghost btn-circle">
@@ -192,52 +258,18 @@ const handleLogoutClick = () => {
                         </div>
                     </div>
                 </div>
+                ) 
+                : 
+                (
+                <></>
             )
             }
             
         </div>
-        </>
-        :
-        <>
-        <div className="navbar-end">
-            <a onClick={() => setLoginClicked(true)} className="btn btn-primary">
-                {/* <Link to="/login">Login</Link> */}
-                Login
-            </a>
-            <a className="btn">
-                <Link to="/signup">Signup</Link>
-            </a>
-            <div class="dropdown dropdown-end">
-                { eventsCount > 0 ?
-                ( <>
-                <label tabindex="0" class="btn btn-ghost btn-circle">
-                    <div class="indicator">
-                    <LuBookMarked size={20}/>
-                    <span class="badge badge-sm indicator-item">0</span>
-                    </div>
-                </label>
-                <div tabindex="0" class="mt-3 z-[1] card card-compact dropdown-content w-60 bg-base-100 shadow">
-                    <div class="card-body">
-                    <span class="font-bold text-lg">0 Events this month</span>
-                    
-                    <div class="card-actions">
-                        <button class="btn btn-primary btn-block">Check My Events</button>
-                    </div>
-                    </div>
-                </div>
-                </>
-            )
-                :
-                (<>
-                
-                </>)
-
-                }
-                
-            </div>
-        </div>
-        </>
-        }
+       
+       </>)
+       
+       }
     
     </div>
   )

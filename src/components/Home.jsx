@@ -4,9 +4,11 @@ import { useNavigate } from 'react-router-dom'
 import axios from '../../api/axios'
 import Cookies from 'js-cookie'
 import { useEventContext } from './EventContext';
+import { useCart } from './CartContext'
 
 
 const Home = ({ loginClicked }) => {
+  const {cartItems, emptyCart, isItemInCart} = useCart();
   const [showSignUp, setShowSignUp] = useState(false)
   const onClickShowSignUp = () => setShowSignUp(true)
 
@@ -33,7 +35,9 @@ const Home = ({ loginClicked }) => {
       // console.log(JSON.stringify(user))
       Cookies.remove('user')
       Cookies.set('user', JSON.stringify(user));
+      emptyCart();
       navigate("/dashboard", { replace: true, state: { loginSuccess: true } });
+      
     } catch (err) {
       if (err?.response) {
         console.log("Error: Response=")

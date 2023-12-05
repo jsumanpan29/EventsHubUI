@@ -119,8 +119,8 @@ const Events = () => {
                             <Link key={event.id} to={'/events/' + event.id} state={{ id: event.id }}>
                                 <div className='relative flex flex-col sm:flex-row items-center bg-base-100 mb-7 rounded-lg'>
                                     <div className="avatar">
-                                            <div className="mask w-64 h-28 mr-5">
-                                                <img src="" alt="Event Image" />
+                                            <div className="mask w-52 h-28 mr-5">
+                                                <img src={event.media[0]?.url} alt="Event Image" />
                                             </div>
                                     </div>
                                     <div class="flex flex-col w-full">
