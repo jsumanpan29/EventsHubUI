@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from '../../api/axios'
 import Cookies from 'js-cookie'
+import { useUserContext } from './UserContext'
 
 const Login = () => {
 
@@ -10,7 +11,8 @@ const Login = () => {
     //   const [events, setEvents] = useState([]);
     const navigate = useNavigate()
 
-
+    const { userCookie, setCookie, firstName, removeCookie } = useUserContext(); 
+    
     const loginSubmit = async (e) => {
         e.preventDefault()
         try {
@@ -25,9 +27,11 @@ const Login = () => {
                 },
             );
             const user = response?.data;
-            // console.log(JSON.stringify(user))
-            Cookies.remove('user')
-            Cookies.set('user', JSON.stringify(user));
+            console.log(JSON.stringify(user))
+            // Cookies.remove('user')
+            // Cookies.set('user', JSON.stringify(user));
+            removeCookie('user')
+            setCookie('user', JSON.stringify(user))
             navigate("/dashboard", { replace: true, state: { loginSuccess: true } });
         } catch (err) {
             if (err?.response) {

@@ -46,7 +46,7 @@ const Signup = () => {
                 },
             );
         
-            console.log('Registration successful:', response.data);
+            // console.log('Registration successful:', response.data);
             navigate("/login", { replace: true});
         } catch (err) {
             if (err?.response) {

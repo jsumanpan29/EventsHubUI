@@ -14,8 +14,12 @@ import Account from './components/Account';
 import { EventProvider } from './components/EventContext';
 import axios from '../api/axios'
 import Cookies from 'js-cookie'
-import NotAuth from './components/NotAuth';
 import { CartProvider } from './components/CartContext';
+import Signup from './components/Signup';
+import SignupPage from './components/SignupPage';
+import { MerchantProvider } from './components/MerchantContext';
+import CreateEvent from './components/CreateEvent';
+import { UserProvider } from './components/UserContext';
 
 
 
@@ -58,6 +62,8 @@ function App() {
 //       }
 //     }
   return (
+    <UserProvider>
+    <MerchantProvider>
     <CartProvider>
     <EventProvider>
     <div className="App">
@@ -70,15 +76,18 @@ function App() {
             <Route path="/account" element={<Account />} />
         </Route> */}
         <Route path='/dashboard/*' element={<Dashboard />} />
+        <Route path='/merchant/create_event' element={<CreateEvent />} />
         {/* <Route path='/dashboard/*' element={<Dashboard accountSettingsClicked={accountSettingsClicked}/>} /> */}
         <Route path="/events">
           <Route index element={<Events
           />}/>
-          <Route path=":id" element={<Event 
+          <Route path=":eId" element={<Event 
                 />} />
         </Route>
         <Route path="/contact" element={<Contact />} /> 
         <Route path="/login" element={<Login
+          />} /> 
+        <Route path="/signup" element={<SignupPage
           />} /> 
         <Route path="*" element={<Missing />} /> 
       </Routes>
@@ -86,6 +95,8 @@ function App() {
     </div>
     </EventProvider>
     </CartProvider>
+    </MerchantProvider>
+    </UserProvider>
   );
 }
 

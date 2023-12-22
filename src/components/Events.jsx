@@ -116,7 +116,8 @@ const Events = () => {
                             //         pathname: '/events/' + event.id,
                             //         state: {id: event.id},
                             // }}>
-                            <Link key={event.id} to={'/events/' + event.id} state={{ id: event.id }}>
+                            // <Link key={event.id} to={'/events/' + event.id} state={{ id: event.id }}>
+                            <Link key={event.id} to={'/events/' + event.id}>
                                 <div className='relative flex flex-col sm:flex-row items-center bg-base-100 mb-7 rounded-lg'>
                                     <div className="avatar">
                                             <div className="mask w-52 h-28 mr-5">

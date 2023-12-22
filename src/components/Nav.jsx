@@ -5,6 +5,7 @@ import { LuBookMarked } from "react-icons/lu";
 import axios from '../../api/axios'
 import { useEventContext } from './EventContext';
 import { useCart } from './CartContext'
+import { useUserContext } from './UserContext'; 
 
 const Nav = ({ setLoginClicked }) => {
 
@@ -14,8 +15,10 @@ const [eventAttended, setEventAttended] = useState([])
 // const [onEventAlreadyAttended, setOnEventAlreadyAttended] = useState(false)
 const { events, fetchEvents, removeEvent } = useEventContext();
 
-const [userCookie, setUserCookie] = useState(Cookies.get('user'));
-// const [addedToCart, setAddedToCart] = useState(false);
+// const [userCookie, setUserCookie] = useState(Cookies.get('user'));
+// // const [addedToCart, setAddedToCart] = useState(false);
+// const [firstName, setFirstName] = useState('')
+const { userCookie, removeCookie } = useUserContext(); 
 
 const {cartItems, emptyCart, isItemInCart} = useCart();
 
@@ -25,7 +28,9 @@ const navigate = useNavigate();
 
 const handleLogoutClick = () => {
     try {
-        Cookies.remove('user')
+        // Cookies.remove('user')
+        // setFirstName('')
+        removeCookie('user')
         navigate('/')
     } catch (err) {
         console.log('Error: '+err.message);
@@ -39,7 +44,7 @@ const handleLogoutClick = () => {
   useEffect(() => {
     
     // const user = JSON.parse(userCookie);
-    if (userCookie) {
+    if (userCookie && JSON.parse(Cookies.get('user'))?.user.roles.id === 3) {
       fetchEvents(); // Fetch events using the context provider function
     }
   }, []);
@@ -52,6 +57,29 @@ const handleLogoutClick = () => {
         // console.log(eventAttended)
   }, [events]);
 
+//   useEffect(() =>{
+
+//     // setFirstName(JSON.parse(Cookies.get('user')).user.first_name)
+//     setFirstName(JSON.parse(Cookies.get('user'))?.user?.first_name || '');
+//   },[userCookie])
+
+// Update userCookie state if the cookie changes externally
+// useEffect(() => {
+//     const cookieValue = Cookies.get('user');
+//     if (cookieValue !== userCookie) {
+//       setUserCookie(cookieValue);
+//     }
+//   }, [userCookie]);
+
+//   // Update firstName when userCookie changes
+//   useEffect(() => {
+//     if (userCookie) {
+//       const parsedUserCookie = JSON.parse(userCookie);
+//       if (parsedUserCookie && parsedUserCookie.user && parsedUserCookie.user.first_name) {
+//         setFirstName(parsedUserCookie.user.first_name);
+//       }
+//     }
+//   }, [userCookie]);
 //   useEffect(() => {
 //     //     setCart(eventAttended.user_events);
 //     // fetchEvents
@@ -85,29 +113,43 @@ const handleLogoutClick = () => {
   return (
     <div className="navbar bg-base-100 max-w-screen-xl m-auto">
     <div className="navbar-start">
-        <div className="dropdown">
-        <label tabIndex={0} className="btn btn-ghost lg:hidden">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
-        </label>
-        <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-            {Cookies.get('user') ?
-            <>
-                <li><a><Link to="/dashboard"> My Events</Link></a></li>
-            </>
-            : 
-            <>
-                <li><a><Link to="/">Home</Link></a></li>
-            </>
-            }
+       
+        {Cookies.get('user') && (JSON.parse(Cookies.get('user'))?.user.roles.id === 1 || JSON.parse(Cookies.get('user'))?.user.roles.id === 2) ?
+            (<>
+    
+                </>)
+            :
+            (<>
+            <div className="dropdown">
+            <label tabIndex={0} className="btn btn-ghost lg:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+            </label>
             
-            <li><a><Link to="/events">Find Events</Link></a></li>
-            <li><a><Link to="/contact">Contact</Link></a></li>
-        </ul>
-        </div>
+            <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                {Cookies.get('user') ?
+                <>
+                    <li><a><Link to="/dashboard"> My Events</Link></a></li>
+                </>
+                : 
+                <>
+                    <li><a><Link to="/">Home</Link></a></li>
+                </>
+                }
+                {/* {Cookies.get('user') && JSON.parse(Cookies.get('user'))?.user.roles.id === 2 ?
+                (<></>)
+                :
+                (<><li><a><Link to="/events">Find Events</Link></a></li></>)
+                } */}
+                <li><a><Link to="/events">Find Events</Link></a></li>
+                <li><a><Link to="/contact">Contact</Link></a></li>
+            </ul>
+            </div>
+            </>)
+        }       
         <a className="btn btn-ghost normal-case text-xl">EventHub</a>
     </div>
 
-    {Cookies.get('user') && JSON.parse(Cookies.get('user'))?.user.roles.id === 1 ?
+    {Cookies.get('user') && (JSON.parse(Cookies.get('user'))?.user.roles.id === 1 || JSON.parse(Cookies.get('user'))?.user.roles.id === 2)  ?
     (<>
     
     </>)
@@ -124,6 +166,11 @@ const handleLogoutClick = () => {
                 <li className='mx-1'><a className='p-3'><Link to="/">Home</Link></a></li>
             </>
             }
+            {/* {Cookies.get('user') && JSON.parse(Cookies.get('user'))?.user.roles.id === 2 ?
+                (<></>)
+                :
+                (<> <li className='mx-1'><a className='p-3'><Link to="/events">Find Events</Link></a></li></>)
+            } */}
             <li className='mx-1'><a className='p-3'><Link to="/events">Find Events</Link></a></li>
             <li className='mx-1'><a className='p-3'><Link to="/contact">Contact</Link></a></li>
         </ul>
@@ -166,7 +213,7 @@ const handleLogoutClick = () => {
                                     <div key={item?.event_id} className='grid grid-flow-col grid-cols-3 gap-3'>
                                         {/* {item?.event && (
                                             <> */}
-                                                <img src="" alt="" className="w-24 h-16" />
+                                                <img src={item?.url} alt={item?.file_name} className="w-24 h-16" />
                                                 {item?.name && (
                                                     <span className="font-bold text-base col-span-2" key={item?.event_id}>{item?.name}</span>
                                                 )}
@@ -180,7 +227,8 @@ const handleLogoutClick = () => {
                             
                         }
                     <div class="card-actions">
-                        <button class="btn btn-primary btn-block">Checkout</button>
+                        {/* <button class="btn btn-primary btn-block"><Link to="/signup">Checkout</Link></button> */}
+                        <Link className = "btn btn-primary btn-block" to="/signup" state={{ item: cartItems }}>Checkout</Link>
                     </div>
                     </div>
                 </div>
@@ -205,11 +253,12 @@ const handleLogoutClick = () => {
                     <details>
                     <summary>
                     {JSON.parse(Cookies.get('user')).user.first_name}
+                    {/* {JSON.parse(userCookie).user.first_name} */}
                     </summary>
                     <ul class="p-2 bg-base-100 z-10 w-28 right-1 xl:w-36 xl:-right-4">
                         <li className='items-center'><a>My Events</a></li>
                         {JSON.parse(Cookies.get('user')).user.roles.id == '2'&& 
-                                <li className='items-center'><a>Create Event</a></li>
+                               <Link to={'/merchant/create_event'}> <li className='items-center'><a>Create Event</a></li></Link>
                         }
                         <li className='items-center'><a>Account</a></li>
                         <li className='items-center'><a onClick={handleLogoutClick}>Logout</a></li>
@@ -236,11 +285,12 @@ const handleLogoutClick = () => {
                             eventAttended ? (
                                 eventAttended.map(item => (
                                     <div key={item?.id} className='grid grid-flow-col grid-cols-3 gap-3'>
-                                        {item?.event && (
+                                        {item && (
                                             <>
-                                                <img src="" alt="" className="w-24 h-16" />
-                                                {item?.event?.name && (
-                                                    <span className="font-bold text-base col-span-2" key={item?.event?.id}>{item.event.name}</span>
+                                                {/* <img src="" alt="" className="w-24 h-16" /> */}
+                                                <img src={item.media[0]?.url} alt={`Event ${item.id}`} className="w-24 h-16" />
+                                                {item?.name && (
+                                                    <span className="font-bold text-base col-span-2" key={item?.id}>{item.name}</span>
                                                 )}
                                             </>
                                         )}

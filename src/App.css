@@ -1,3 +1,71 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.react-daterange-picker {
+    /* Your custom styles */
+  }
+  /* Target the input field */
+  .react-daterange-picker__wrapper {
+    /* Your custom styles */
+    flex-shrink: 1;
+    height: 3rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    font-size: 1rem;
+    line-height: 2;
+    line-height: 1.5rem;
+    border-width: 1px;
+    border-color: hsl(var(--bc) / var(--tw-border-opacity));
+    --tw-border-opacity: 0;
+    --tw-bg-opacity: 1;
+    background-color: hsl(var(--b1) / var(--tw-bg-opacity));
+    border-radius: var(--rounded-btn, 0.5rem);
+  }
+  /* Target the input field */
+  .react-daterange-picker__inputGroup {
+    /* margin: auto; */
+  }
+
+  .react-daterange-picker__inputGroup__input{
+    /* width: 20px; */
+
+  }
+  .react-daterange-picker__clear-button__icon {
+    stroke:white;
+    /* fill: hsl(var(--b2) / var(--tw-bg-opacity)); */
+  }
+
+  .react-daterange-picker__calendar-button__icon line,
+.react-daterange-picker__calendar-button__icon rect {
+  stroke: white; /* Set the stroke color to white */
+  fill: black; /* Set the fill color to black */
+}
+  
+.react-date-picker__wrapper {
+    flex-shrink: 1;
+    height: 3rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    font-size: 1rem;
+    line-height: 2;
+    line-height: 1.5rem;
+    border-width: 1px;
+    border-color: hsl(var(--bc) / var(--tw-border-opacity));
+    --tw-border-opacity: 0;
+    --tw-bg-opacity: 1;
+    background-color: hsl(var(--b1) / var(--tw-bg-opacity));
+    border-radius: var(--rounded-btn, 0.5rem);
+  }
+
+  .react-date-picker__clear-button__icon {
+    stroke:white;
+   
+  }
+
+  .react-date-picker__calendar-button__icon line,
+.react-date-picker__calendar-button__icon rect {
+  stroke: white; 
+  fill: black; 
+}
+  

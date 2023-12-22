@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react'
-import { useLocation, Link } from 'react-router-dom'
+import { useLocation, Link, useParams } from 'react-router-dom'
 import axios from '../../api/axios'
 import Cookies from 'js-cookie';
 import { LuTag,LuUser2,LuNavigation } from "react-icons/lu";
@@ -8,7 +8,8 @@ import { useEventContext } from './EventContext';
 import { useCart } from './CartContext'
 
 const Event = () => {
-  const { state } = useLocation();
+  // const { state } = useLocation();
+  const {eId} = useParams();
   const { events, addEvent, removeEvent, isEventAlreadyAttended} = useEventContext();
   const {cartItems, addToCart, removeFromCart, emptyCart, isItemInCart} = useCart();
 
@@ -33,13 +34,14 @@ const Event = () => {
 
   useEffect(() => {
     const getEvents = async () => {
-              try { const response = await axios.get('/event/'+state.id, {
+              // try { const response = await axios.get('/event/'+state.id, {  
+              try { const response = await axios.get('/event/'+eId, {  
                 headers: {
                     'Accept': 'application/json',
                 }
               });
               // console.log("Event.jsx"+response.data.event)
-              if(state.id){
+              if(response.data){
                 setEventID(response.data.event.id)
                 setName(response.data.event.name);
                 setDescription(response.data.event.description);
@@ -51,7 +53,7 @@ const Event = () => {
                 setEventSchedEnd(response.data.event.date_sched_end);
                 setEventRegDeadline(response.data.event.date_reg_deadline);
                 
-                console.log(JSON.stringify(response.data.media))
+                // console.log(JSON.stringify(response.data.media))
                 if (response.data.media.length > 0) {
                   setImageFileName(response.data.media[0].file_name);
                   setImageUrl(response.data.media[0].url);
@@ -89,16 +91,17 @@ const Event = () => {
 //     getAttended();
 //   }, [onEventAlreadyAttended]);
 
-  useEffect(() => {
-    // setCart(eventAttended.user_events);
-    console.log("Cart Items:"+cartItems)
-}, [cartItems]);
+//   useEffect(() => {
+//     console.log("Cart Items:"+cartItems)
+// }, [cartItems]);
 
-const addItemToCart = (eventID, eventName) => {
+const addItemToCart = (eventID, eventName, imageUrl, imageFileName) => {
   
   const itemToAdd = {
       event_id: eventID,
-      name: eventName
+      name: eventName,
+      url: imageUrl,
+      file_name: imageFileName
   }
   addToCart(itemToAdd)
     // console.log(events)
@@ -219,7 +222,7 @@ const updateEvent = async (eventID) => {
   return (
     <div className="items-start min-h-screen bg-base-200">
       <div className="container w-full lg:w-3/4 xl:w-2/3 mx-auto">
-        {state && 
+        {eId && 
             <>
              <div>
              <h1 className="text-5xl font-bold pt-10 pb-5">{name}</h1>
@@ -259,7 +262,7 @@ const updateEvent = async (eventID) => {
                 :
                 (<>
                    {/* <button className="btn btn-primary px-0 sm:px-4 md:px-8" onClick={() => isItemInCart(eventID) ? removeFromCart(eventID) : addToCart(eventID)}>{isItemInCart(eventID) ? "Remove" : "Attend"}</button> */}
-                   <button className="btn btn-primary px-0 sm:px-4 md:px-8" onClick={() => isItemInCart(eventID) ? removeFromCart(eventID) : addItemToCart(eventID, name)}>{isItemInCart(eventID) ? "Remove" : "Attend"}</button>
+                   <button className="btn btn-primary px-0 sm:px-4 md:px-8" onClick={() => isItemInCart(eventID) ? removeFromCart(eventID) : addItemToCart(eventID, name, imageUrl, imageFileName)}>{isItemInCart(eventID) ? "Remove" : "Attend"}</button>
                 </>)
               }
               {/* <button className="btn btn-primary px-8" onClick={() => Cookies.get('user') ? addEvent(eventID) : checkIfIncludes(eventID)}>Attend</button> */}
@@ -270,7 +273,7 @@ const updateEvent = async (eventID) => {
             
             </>
         }
-        {!state && 
+        {!eId && 
             <>
             
             <div>

@@ -94,6 +94,7 @@ const Dashboard = () => {
               <li onClick={() => handleOptionClick('MyEvents')}><a>Dashboard</a></li>
               <li onClick={() => handleOptionClick('Users')}><a>User</a></li>
               <li onClick={() => handleOptionClick('Venue')}><a>Venue</a></li>
+              <li><a>Events</a></li>
               <li onClick={() => handleOptionClick('AccountSettings')}><a>Account Settings</a></li>
               </>
             ) 

@@ -20,7 +20,8 @@ export const EventProvider = ({ children }) => {
   useEffect(() => {
     // Fetch events when the component mounts
     // const user = JSON.parse(Cookies.get('user')) 
-    if(Cookies.get('user')){
+    // if(Cookies.get('user')){
+      if(Cookies.get('user') && JSON.parse(Cookies.get('user'))?.user.roles.id == 3){
     fetchEvents();
     }
     
