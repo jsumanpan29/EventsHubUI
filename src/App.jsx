@@ -9,6 +9,7 @@ import Event from './components/Event'
 import Contact from './components/Contact';
 import Missing from './components/Missing';
 import Login from './components/Login';
+import DashboardLayout from './components/DashboardLayout';
 import Dashboard from './components/Dashboard';
 import Account from './components/Account';
 import { EventProvider } from './components/EventContext';
@@ -20,6 +21,15 @@ import SignupPage from './components/SignupPage';
 import { MerchantProvider } from './components/MerchantContext';
 import CreateEvent from './components/CreateEvent';
 import { UserProvider } from './components/UserContext';
+
+import NotAuth from './components/NotAuth';
+import RequireAuth from './components/RequireAuth';
+import PubAttendeeAuth from './components/PubAttendeeAuth';
+import MerchAttendeeAuth from './components/MerchAttendeeAuth';
+import Users from './components/Users';
+import Venue from './components/Venue';
+import AdminEvents from './components/AdminEvents';
+import AdminAuth from './components/AdminAuth';
 
 
 
@@ -70,25 +80,53 @@ function App() {
       <Nav setLoginClicked={setLoginClicked} />
       {/* <Nav setLoginClicked={setLoginClicked} setAccountSettingsClicked = {setAccountSettingsClicked} /> */}
       <Routes>
-        <Route path="/" element={<Home loginClicked={loginClicked}  />} />
-        {/* <Route path='/dashboard'>
-            <Route index element={<Dashboard /> }/>
-            <Route path="/account" element={<Account />} />
-        </Route> */}
-        <Route path='/dashboard/*' element={<Dashboard />} />
-        <Route path='/merchant/create_event' element={<CreateEvent />} />
-        {/* <Route path='/dashboard/*' element={<Dashboard accountSettingsClicked={accountSettingsClicked}/>} /> */}
-        <Route path="/events">
-          <Route index element={<Events
-          />}/>
-          <Route path=":eId" element={<Event 
-                />} />
+        {/* Public */}
+        
+        {/* Unauthorized User */}
+        <Route element={<NotAuth />}>
+            <Route path="/" element={<Home loginClicked={loginClicked}  />} />
+           
+            <Route path="/login" element={<Login
+              />} /> 
+            <Route path="/signup" element={<SignupPage
+              />} /> 
         </Route>
-        <Route path="/contact" element={<Contact />} /> 
-        <Route path="/login" element={<Login
-          />} /> 
-        <Route path="/signup" element={<SignupPage
-          />} /> 
+        {/* Routes for Unauthorized User and Attendee Only */}
+        <Route element={<PubAttendeeAuth />}>
+          <Route path="/contact" element={<Contact />} /> 
+          <Route path="/events">
+            <Route index element={<Events
+            />}/>
+            <Route path=":eId" element={<Event 
+                  />} />
+          </Route>
+        </Route>
+
+        {/* Routes for Auth */}
+        <Route element={<RequireAuth />}>
+        {/* <Route path="/dashboard/*" element={<UserDashboard />}> */}
+        {/* <Route path="/dashboard/*" element={<DashboardLayout />}> */}
+        <Route element={<DashboardLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          {/* Routes for Admin */}
+          <Route element={<AdminAuth />}>
+            
+            <Route path="/dashboard/user" element={<Users /> } />
+            <Route path="/dashboard/venue" element={<Venue /> } />
+            <Route path="/dashboard/admin_events" element={<AdminEvents /> } />
+          </Route>
+          {/* Routes for Merchant and Attendee Only */}
+          {/* <Route element={<MerchAttendeeAuth />}>
+            <Route path='my_events' element={<MyEvents />}/>
+          </Route> */}
+
+          <Route path="/dashboard/account" element={<Account />} />
+        </Route>
+          
+          <Route path='/merchant/create_event' element={<CreateEvent />} />
+        </Route>
+        
+        {/* Catch All */}
         <Route path="*" element={<Missing />} /> 
       </Routes>
       <Footer />

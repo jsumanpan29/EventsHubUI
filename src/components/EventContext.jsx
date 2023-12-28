@@ -29,7 +29,8 @@ export const EventProvider = ({ children }) => {
 
   const isEventAlreadyAttended = (eventID) => {
     //  return events.includes({"event_id":eventID})
-     return events.some(event => event.event_id === eventID)
+    //  return events.some(event => event.event_id === eventID)
+    return events.some(event => event && event.event_id === eventID);
     }
 
   const fetchEvents = async () => {

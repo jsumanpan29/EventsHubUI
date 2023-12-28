@@ -163,7 +163,8 @@ const userSubmit = async(e) => {
                     <label className="label">
                     <span className="label-text">Email</span>
                     </label>
-                    <input type="email" placeholder="Email"  name="email" value={email} onChange={(e) => setEmail(e.target.value)} className="input input-bordered" required disabled={editAccount === true ? false: true}/>
+                    {/* <input type="email" placeholder="Email"  name="email" value={email} onChange={(e) => setEmail(e.target.value)} className="input input-bordered" required disabled={editAccount === true ? false: true}/> */}
+                    <input type="email" placeholder="Email"  name="email" value={email} onChange={(e) => setEmail(e.target.value)} className="input input-bordered" required disabled/>
                 </div>
                 {
                   editAccount === true ?

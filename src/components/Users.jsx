@@ -24,6 +24,7 @@ const Users = () => {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingUserId, setEditingUserId] = useState(null);
+  const [deleteUserId, setDeleteUserId] = useState(null);
 
   const openAddUserDialog = () => {
     setFormData({
@@ -40,6 +41,12 @@ const Users = () => {
     add_user.showModal();
 };
 
+const openDeleteUserDialog = (user) => {
+  // setIsDialogOpen(true);
+  // setEditingUserId(null); // Resetting the editing user ID
+    setDeleteUserId(user.id)
+    delete_user.showModal();
+};
 const openEditUserDialog = (user) => {
     setFormData({
         first_name: user.first_name,
@@ -70,8 +77,8 @@ const openEditUserDialog = (user) => {
   useEffect(() => {
     const getUsers = async () => {
         try {
-              const response = await axios.get('/users', {
-            // const response = await axios.get('/events?page='+currentPage, {
+              // const response = await axios.get('/users', {
+            const response = await axios.get('/users?page='+currentPage, {
                   headers: {
                       'Accept': 'application/json',
                       'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
@@ -94,7 +101,7 @@ const openEditUserDialog = (user) => {
       }
       getUsers();
       
-  }, [currentPage,isDialogOpen]);
+  }, [currentPage,isDialogOpen,deleteUserId]);
 
   const handleRoleChange = (e) => {
     const { value } = e.target;
@@ -226,9 +233,37 @@ const openEditUserDialog = (user) => {
     
 
 }
-  // const handleEdit = (user) => {
-  //   console.log("Hello")
-  // };
+  const userDelete = async(e) => {
+    e.preventDefault()
+    // console.log("delete")
+    try {
+        // console.warn(email,password)
+        const response = await axios.delete('/users/'+deleteUserId+'/delete', 
+            {
+                headers:
+                {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token 
+                },
+            },
+        );
+    
+        console.log('User deleted successfully:', response.data);
+        // add_user.close()
+    } catch (err) {
+        if (err?.response) {
+            console.log("Error: Response=")
+        } else if (err.reponse?.status === 400) {
+            console.log("Error:400")
+        } else if (err.response?.status === 401) {
+            console.log("Error:401")
+        } else {
+            console.log("Error:"+err)
+        }
+    }
+    setDeleteUserId(null)
+    delete_user.close()
+  }
   return (
     
     <div className='m-auto grid-cols-2'>
@@ -304,7 +339,7 @@ const openEditUserDialog = (user) => {
                           <button class="btn btn-ghost btn-xs"  onClick={() => openEditUserDialog(user)}>edit</button>
                         </th>
                         <th>
-                          <button class="btn btn-ghost btn-xs">delete</button>
+                          <button class="btn btn-ghost btn-xs" onClick={() => openDeleteUserDialog(user)}>delete</button>
                         </th>
                     </tr>
                   ))
@@ -353,8 +388,8 @@ const openEditUserDialog = (user) => {
                     <form method="dialog">
                       <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                     </form>
-                    {/* <h3 class="font-bold text-lg">Hello!</h3>
-                    <p class="py-4">Press ESC key or click on ✕ button to close</p> */}
+                    <h3 class="font-bold text-lg text-center">{editingUserId !== null ? 'Edit User' :'Add User'}</h3>
+                    {/* <p class="py-4">Press ESC key or click on ✕ button to close</p> */}
                     <form className="card-body" onSubmit={userSubmit}>
                     {/* onSubmit={eventSubmit} */}
                     <div className="form-control">
@@ -430,6 +465,19 @@ const openEditUserDialog = (user) => {
                         <input className='btn btn-primary' type="submit" value={editingUserId !== null ? 'Save' :'Add User'}/>
                     </div>
                     </form>
+                  </div>
+                </dialog>
+
+                <dialog id="delete_user" class="modal modal-bottom sm:modal-middle">
+                  <div class="modal-box">
+                    <h3 class="font-bold text-lg">Delete</h3>
+                    <p class="py-4">Are you sure you want to delete user?</p>
+                    <div class="modal-action">
+                      <form method="dialog" onSubmit={userDelete}>
+                        <button class="btn mr-2" type="submit">Confirm</button>
+                        <button class="btn" type="button" onClick={()=>delete_user.close()}>Close</button>
+                      </form>
+                    </div>
                   </div>
                 </dialog>
       </div>

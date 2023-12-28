@@ -132,7 +132,7 @@ const Events = () => {
                                         <div className='grid grid-cols-3 lg:grid-cols-5 pb-1'>
                                             <div className='text-sm flex '><LuTag size={18} className='mr-1.5' />{event.category_id.name}</div>
                                             <div className='text-sm flex'><LuUser2 size={18} className='mr-1.5' />{event.est_attendants + '+'}</div>
-                                            <div className='text-sm flex lg:col-span-3'><LuNavigation size={18} className='mr-1.5' />{event.venue_id.name + ", " +event.location}</div>
+                                            <div className='text-sm flex lg:col-span-3'><LuNavigation size={18} className='mr-1.5' />{event.venue_id?.name + ", " +event.location}</div>
                                         </div>
                                     </div>
                                 </div>

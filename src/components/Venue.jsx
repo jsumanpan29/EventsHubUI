@@ -20,6 +20,7 @@ const Venue = () => {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingVenueId, setEditingVenueId] = useState(null);
+  const [deleteVenueId, setDeleteVenueId] = useState(null);
 
   const openAddVenueDialog = () => {
     setFormData({
@@ -30,6 +31,11 @@ const Venue = () => {
     setEditingVenueId(null); // Resetting the editing venue ID
     add_venue.showModal();
 };
+
+  const openDeleteVenueDialog = (venue) => {
+      setDeleteVenueId(venue.id)
+      delete_venue.showModal();
+  };
 
   const openEditVenueDialog = (venue) => {
     setFormData({
@@ -54,8 +60,8 @@ const Venue = () => {
   useEffect(() => {
     const getVenues = async () => {
         try {
-              const response = await axios.get('/venues', {
-            // const response = await axios.get('/events?page='+currentPage, {
+              // const response = await axios.get('/venues', {
+            const response = await axios.get('/venues?page='+currentPage, {
                   headers: {
                       'Accept': 'application/json',
                       'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
@@ -64,7 +70,7 @@ const Venue = () => {
 
 
             //   if(response.data){
-                  console.log(response.data.venues)
+                  // console.log(response.data.venues)
             //   }
               // console.log(JSON.parse(Cookies.get('user')).token)
               setVenues(response.data.venues)
@@ -78,11 +84,11 @@ const Venue = () => {
       }
       getVenues();
       
-  }, [currentPage,isDialogOpen]);
+  }, [currentPage,isDialogOpen,deleteVenueId]);
   
   const venueSubmit = async(e) => {
     e.preventDefault()
-    console.log(editingVenueId)
+    console.log(editingVenueId) 
 
     if (editingVenueId) {
       // Handle editing existing user logic using editingUserId
@@ -93,7 +99,7 @@ const Venue = () => {
       // }
       try {
         // console.warn(email,password)
-          const response = await axios.post('/venues/'+editingVenueId+'/update',  
+          const response = await axios.post('/venue/'+editingVenueId+'/update',  
           JSON.stringify({ 
               name: formData.name,
               address: formData.address,
@@ -107,7 +113,7 @@ const Venue = () => {
               },
           );
       
-          console.log('User Updated successfully:', response.data);
+          console.log('Venue Updated successfully:', response.data);
           // add_user.close()
       } catch (err) {
           if (err?.response) {
@@ -163,6 +169,38 @@ const Venue = () => {
     add_venue.close();
     
 
+}
+
+const venueDelete = async(e) => {
+  e.preventDefault()
+  // console.log("delete")
+  try {
+      // console.warn(email,password)
+      const response = await axios.delete('/venue/'+deleteVenueId+'/delete', 
+          {
+              headers:
+              {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token 
+              },
+          },
+      );
+  
+      console.log('Venue deleted successfully:', response.data);
+      // add_user.close()
+  } catch (err) {
+      if (err?.response) {
+          console.log("Error: Response=")
+      } else if (err.reponse?.status === 400) {
+          console.log("Error:400")
+      } else if (err.response?.status === 401) {
+          console.log("Error:401")
+      } else {
+          console.log("Error:"+err)
+      }
+  }
+  setDeleteVenueId(null)
+  delete_venue.close()
 }
   return (
     <div className='m-auto grid-cols-2'>
@@ -228,7 +266,7 @@ const Venue = () => {
                           <button class="btn btn-ghost btn-xs"  onClick={() => openEditVenueDialog(venue)}>edit</button>
                         </th>
                         <th>
-                          <button class="btn btn-ghost btn-xs">delete</button>
+                          <button class="btn btn-ghost btn-xs" onClick={() => openDeleteVenueDialog(venue)}>delete</button>
                         </th>
                     </tr>
                   ))
@@ -275,8 +313,8 @@ const Venue = () => {
                     <form method="dialog">
                       <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                     </form>
-                    {/* <h3 class="font-bold text-lg">Hello!</h3>
-                    <p class="py-4">Press ESC key or click on ✕ button to close</p> */}
+                    <h3 class="font-bold text-lg text-center">{editingVenueId !== null ? 'Edit Venue' :'Add Venue'}</h3>
+                    {/* <p class="py-4">Press ESC key or click on ✕ button to close</p> */}
                     <form className="card-body" onSubmit={venueSubmit}>
                     {/* onSubmit={eventSubmit} */}
                     <div className="form-control">
@@ -297,6 +335,19 @@ const Venue = () => {
                         <input className='btn btn-primary' type="submit" value={editingVenueId !== null ? 'Save' :'Add Venue'}/>
                     </div>
                     </form>
+                  </div>
+              </dialog>
+
+              <dialog id="delete_venue" class="modal modal-bottom sm:modal-middle">
+                  <div class="modal-box">
+                    <h3 class="font-bold text-lg">Delete</h3>
+                    <p class="py-4">Are you sure you want to delete venue?</p>
+                    <div class="modal-action">
+                      <form method="dialog" onSubmit={venueDelete}>
+                        <button class="btn mr-2" type="submit">Confirm</button>
+                        <button class="btn" type="button" onClick={()=>delete_venue.close()}>Close</button>
+                      </form>
+                    </div>
                   </div>
                 </dialog>
       </div>

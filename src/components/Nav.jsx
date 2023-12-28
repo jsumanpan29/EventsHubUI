@@ -128,20 +128,20 @@ const handleLogoutClick = () => {
             <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
                 {Cookies.get('user') ?
                 <>
-                    <li><a><Link to="/dashboard"> My Events</Link></a></li>
+                    <li><Link to="/dashboard"> My Events</Link></li>
                 </>
                 : 
                 <>
-                    <li><a><Link to="/">Home</Link></a></li>
+                    <li><Link to="/">Home</Link></li>
                 </>
                 }
                 {/* {Cookies.get('user') && JSON.parse(Cookies.get('user'))?.user.roles.id === 2 ?
                 (<></>)
                 :
-                (<><li><a><Link to="/events">Find Events</Link></a></li></>)
+                (<><li><Link to="/events">Find Events</Link></li></>)
                 } */}
-                <li><a><Link to="/events">Find Events</Link></a></li>
-                <li><a><Link to="/contact">Contact</Link></a></li>
+                <li><Link to="/events">Find Events</Link></li>
+                <li><Link to="/contact">Contact</Link></li>
             </ul>
             </div>
             </>)
@@ -159,6 +159,22 @@ const handleLogoutClick = () => {
         <ul className="menu menu-horizontal text-base">
             {Cookies.get('user') ?
             <>
+                <li className='mx-1'><Link to="/dashboard">My Events</Link></li>
+            </>
+            :
+            <>
+                <li className='mx-1'><Link to="/">Home</Link></li>
+            </>
+            }
+            {/* {Cookies.get('user') && JSON.parse(Cookies.get('user'))?.user.roles.id === 2 ?
+                (<></>)
+                :
+                (<> <li className='mx-1'><Link to="/events">Find Events</Link></li></>)
+            } */}
+            <li className='mx-1'><Link to="/events">Find Events</Link></li>
+            <li className='mx-1'><Link to="/contact">Contact</Link></li>
+            {/* {Cookies.get('user') ?
+            <>
                 <li className='mx-1'><a className='p-3'><Link to="/dashboard">My Events</Link></a></li>
             </>
             :
@@ -171,8 +187,8 @@ const handleLogoutClick = () => {
                 :
                 (<> <li className='mx-1'><a className='p-3'><Link to="/events">Find Events</Link></a></li></>)
             } */}
-            <li className='mx-1'><a className='p-3'><Link to="/events">Find Events</Link></a></li>
-            <li className='mx-1'><a className='p-3'><Link to="/contact">Contact</Link></a></li>
+            {/* <li className='mx-1'><a className='p-3'><Link to="/events">Find Events</Link></a></li>
+            <li className='mx-1'><a className='p-3'><Link to="/contact">Contact</Link></a></li>  */}
         </ul>
     </div>
     )
@@ -186,15 +202,14 @@ const handleLogoutClick = () => {
        (
        <div className="navbar-end">
             {/* <a onClick={() => setLoginClicked(true)} className="btn btn-primary"> */}
-            <a onClick={() => setLoginClicked(true)} className="btn btn-primary">
-                <Link to="/">Login</Link>
+                <Link to="/" onClick={() => setLoginClicked(true)} className="btn btn-primary">Login</Link>
                 {/* Login */}
-            </a>
+            {/* </a> */}
             {/* <a className="btn" onClick={() => emptyCart()}>
                 Remove Items */}
-            <a className="btn">
-                <Link to="/signup">Signup</Link>
-            </a>
+            {/* <a className="btn"> */}
+                <Link to="/signup" className="btn">Signup</Link>
+            {/* </a> */}
             <div class="dropdown dropdown-end">
                 { cartItems.length > 0 ?
                 ( <>
@@ -261,7 +276,7 @@ const handleLogoutClick = () => {
                                <Link to={'/merchant/create_event'}> <li className='items-center'><a>Create Event</a></li></Link>
                         }
                         <li className='items-center'><a>Account</a></li>
-                        <li className='items-center'><a onClick={handleLogoutClick}>Logout</a></li>
+                        <li className='items-center' onClick={handleLogoutClick}><a>Logout</a></li>
                     </ul>
                     </details>
                 </li>
@@ -282,13 +297,19 @@ const handleLogoutClick = () => {
                         <div class="card-body">
                         <span class="font-bold text-lg">{eventAttended.length + " Events this month"}</span>
                         {
-                            eventAttended ? (
+                            eventAttended && eventAttended.length > 0 ? (
                                 eventAttended.map(item => (
                                     <div key={item?.id} className='grid grid-flow-col grid-cols-3 gap-3'>
                                         {item && (
                                             <>
-                                                {/* <img src="" alt="" className="w-24 h-16" /> */}
-                                                <img src={item.media[0]?.url} alt={`Event ${item.id}`} className="w-24 h-16" />
+                                                {/* <img src={item.media[0] ? item.media[0].url : ""} alt={`Event ${item.id}`} className="w-24 h-16" /> */}
+                                                {item.media && item.media.length > 0 && (
+                                                    <img
+                                                        src={item.media[0]?.url || ''}
+                                                        alt={`Event ${item.id}`}
+                                                        className="w-24 h-16"
+                                                    />
+                                                )}
                                                 {item?.name && (
                                                     <span className="font-bold text-base col-span-2" key={item?.id}>{item.name}</span>
                                                 )}
@@ -299,6 +320,20 @@ const handleLogoutClick = () => {
                             ): (
                                 <p>No Events</p>
                             )
+
+                            // eventAttended && eventAttended.length > 0 && eventAttended.map(item => (
+                            //         <div key={item?.id} className='grid grid-flow-col grid-cols-3 gap-3'>
+                            //             {item && (
+                            //                 <>
+                            //                     {/* <img src={item.media[0] ? item.media[0].url : ""} alt={`Event ${item.id}`} className="w-24 h-16" /> */}
+                            //                     {item?.name && (
+                            //                         <span className="font-bold text-base col-span-2" key={item?.id}>{item.name}</span>
+                            //                     )}
+                            //                 </>
+                            //             )}
+                            //         </div>
+                            //     ))
+                            
                             
                         }
                     

@@ -36,7 +36,9 @@ const Home = ({ loginClicked }) => {
       Cookies.remove('user')
       Cookies.set('user', JSON.stringify(user));
       emptyCart();
-      navigate("/dashboard", { replace: true, state: { loginSuccess: true } });
+      navigate("/dashboard", { replace: true, state: { loginSuccess: true } })
+      // JSON.parse(Cookies.get('user')).user.roles.id == '1' ? navigate("/dashboard", { replace: true, state: { loginSuccess: true } }) : navigate("/dashboard/my_events", { replace: true, state: { loginSuccess: true } });
+      
       
     } catch (err) {
       if (err?.response) {

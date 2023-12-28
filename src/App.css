@@ -68,4 +68,12 @@
   stroke: white; 
   fill: black; 
 }
-  
+.react-daterange-picker__inputGroup__input:invalid{
+
+    background: none !important;
+}
+
+.react-date-picker__inputGroup__input:invalid{
+
+  background: none !important;
+}
