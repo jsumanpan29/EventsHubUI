@@ -8,14 +8,68 @@ const AdminEvents = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [perPage, setPerPage] = useState(1);
+  const [selectedEventId, setSelectedEventId] = useState('')
+  const [eventStatusVal, setEventStatusVal] = useState('')
 
   const [error, setError] = useState('');
 
+  const handlePageClick = (selectedPage) => {
+    // console.log(selectedPage)
+    setCurrentPage(selectedPage.selected + 1);
+};
+  const handleToggleOnChange = (eventId, eventStatus) => {
+    // console.log(eventId)
+    setSelectedEventId(eventId)
+    setEventStatusVal(eventStatus)
+    change_status.showModal()
+  };
+
+  const confirmStatusChange = async() => {
+      const formData = new FormData();
+      if(eventStatusVal == 1){
+        formData.append('event_status', 0);
+      }else{
+        formData.append('event_status', 1);
+      }
+      
+      try {
+        const response = await axios.post('/event/'+selectedEventId+'/update_status',  
+          formData,
+            {
+                headers:
+                {
+                    // 'Content-Type': 'application/json',
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
+                },
+            },
+        );
+        const updatedEvents = events.map(event => {
+          if (event.id === selectedEventId) {
+            return { ...event, event_status: eventStatusVal === 1 ? 0 : 1 };
+          }
+          return event;
+        });
+    
+        setEvents(updatedEvents);
+      } catch (err) {
+        console.log(err)
+      }
+    
+      setSelectedEventId(null)
+      setEventStatusVal(null)
+      change_status.close();
+  }
+  const closeStatusChange = async() => {
+    setSelectedEventId(null)
+    setEventStatusVal(null)
+    change_status.close();
+  }
   useEffect(() => {
     const getEvents = async () => {
         try {
-              const response = await axios.get('/events', {
-            // const response = await axios.get('/events?page='+currentPage, {
+              // const response = await axios.get('/events/admin', {
+            const response = await axios.get('/events/admin?page='+currentPage, {
                   headers: {
                       'Accept': 'application/json',
                       'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
@@ -24,10 +78,10 @@ const AdminEvents = () => {
 
 
             //   if(response.data){
-            //       console.log(response.data.events)
+                  // console.log(response.data.events)
             //   }
               // console.log(JSON.parse(Cookies.get('user')).token)
-              setUsers(response.data.users.data)
+              setEvents(response.data.events)
               setTotalPage(response.data.pagination.total)
               setPerPage(response.data.pagination.per_page)
           } catch (e) {
@@ -70,68 +124,53 @@ const AdminEvents = () => {
                         <input type="checkbox" class="checkbox" />
                       </label>
                     </th> */}
-                    <th>Full Name</th>
-                    <th>Email</th>
-                    <th>User Type</th>
-                    <th></th>
-                    <th></th>
+                    <th>Event Name</th>
+                    {/* <th></th> */}
                   </tr>
                 </thead>
             <tbody>
+            {/* <tr>
+              <td class="flex justify-between items-center">
+                <span>Cy Ganderton</span>
+                <label class="inline-flex items-center">
+                  <input type="checkbox" class="toggle" />
+                </label>
+              </td>
+            </tr> */}
               {
-                // Array.isArray(users) && users.length > 0 ? (
-                // users.map((user, index) => (
-                //   <tr key={user.id} className={index % 2 === 0 ? 'bg-base-200' : ''}>
-                //     {/* <td>
-                //       <div className='flex'>
-                //         <div className='flex-none'>
-                          
-                //         </div>
-                //         <div className='flex-auto mx-5'>
-                //           <p>{user.first_name + " " + user.last_name}</p>
-                //         </div>
-                //       </div>
-                //     </td> */}
-                //      <td>
-                //         <div class="flex items-center gap-3">
-                //           <div>
-                //             <div class="font-bold">{user.first_name + " " + user.last_name}</div>
-                //             {/* <div class="text-sm opacity-50">United States</div> */}
-                //           </div>
-                //         </div>
-                //       </td>
-                //       <td>
-                //       {user.email}
-                //         {/* Zemlak, Daniel and Leannon */}
-                //         {/* <br/>
-                //         <span class="badge badge-ghost badge-sm">Desktop Support Technician</span> */}
-                //       </td>
-                //       <td>{user.roles.length > 0 ? user.roles[0].name : 'No Role'}</td>
-                //       <th>
-                //         <button class="btn btn-ghost btn-xs"  onClick={() => openEditUserDialog(user)}>edit</button>
-                //       </th>
-                //       <th>
-                //         <button class="btn btn-ghost btn-xs" onClick={() => openDeleteUserDialog(user)}>delete</button>
-                //       </th>
-                //   </tr>
-                // ))
-                //   ) : (
-                //     <p>No users available</p>
+                Array.isArray(events) && events.length > 0 ? (
+                events.map((event, index) => (
+                  <tr key={event.id} className={index % 2 === 0 ? 'bg-base-200' : ''}>
+                    
+                    <td class="flex justify-between items-center">
+                      {/* <span>{event.name}</span> */}
+                      <div>
+                        <div class="font-bold">{event.name}</div>
+                        <div class="text-sm opacity-50">{event.user_id ? event.user_id?.first_name + " " + event.user_id?.last_name : "Unknown" }</div>
+                      </div>
+                      <label class="inline-flex items-center">
+                        <input type="checkbox" class="toggle" value={event.id} checked={event.event_status == 1 ? true : false} onClick={()=>handleToggleOnChange(event.id, event.event_status)}/>
+                      </label>
+                    </td>
+                  </tr>
+                ))
+                  ) : (
+                    <p>No events available</p>
 
-                // )
+                )
               }
                
             </tbody>
           </table>
         </div>
-        <div className="join items-center justify-center w-full">
+        {/* <div className="join items-center justify-center w-full">
                     <button className="join-item btn">1</button>
                     <button className="join-item btn">2</button>
                     <button className="join-item btn btn-disabled">...</button>
                     <button className="join-item btn">99</button>
                     <button className="join-item btn">100</button>
-        </div>
-         {/* <ReactPaginate
+        </div> */}
+         <ReactPaginate
                   previousLabel={'«'}
                   nextLabel={'»'}
                   breakLabel={'...'}
@@ -147,24 +186,17 @@ const AdminEvents = () => {
                   previousClassName = {'join-item btn'}
                   nextClassName = {'join-item btn'}
                   forcePage={currentPage - 1}
-              /> */}
-              {/* <Fab
-                icon={<LuUserPlus2 />}
-                event={false}
-                alwaysShowTitle={true}
-                onClick={openAddUserDialog}
-              >
-              </Fab> */}
+              />
              
 
-              <dialog id="delete_user" class="modal modal-bottom sm:modal-middle">
+              <dialog id="change_status" class="modal modal-bottom sm:modal-middle">
                 <div class="modal-box">
-                  <h3 class="font-bold text-lg">Delete</h3>
-                  <p class="py-4">Are you sure you want to delete user?</p>
+                  <h3 class="font-bold text-lg">Change status?</h3>
+                  <p class="py-4">Are you sure you want to change event status?</p>
                   <div class="modal-action">
                     <form method="dialog">
-                      <button class="btn mr-2">Confirm</button>
-                      <button class="btn">Close</button>
+                      <button class="btn mr-2" onClick={confirmStatusChange}>Confirm</button>
+                      <button class="btn" onClick={closeStatusChange}>Close</button>
                     </form>
                   </div>
                 </div>

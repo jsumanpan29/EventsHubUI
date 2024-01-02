@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import axios from '../../api/axios'
 import Cookies from 'js-cookie'
 import DateRangePicker from '@wojtekmaj/react-daterange-picker';
@@ -19,6 +19,7 @@ const CreateEvent = () => {
   const [images, setImages] = useState([])
 
   const navigate = useNavigate()
+  const loc = useLocation();
 
   const [venueList, setVenueList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
@@ -250,8 +251,11 @@ const CreateEvent = () => {
           </label>
           
           
-          <div className="form-control mt-6">
+          <div className="form-control mt-6 grid grid-flow-col gap-2">
               <input className='btn btn-primary' type="submit" value="Submit" />
+              {/* <Navigate to={-1} replace /> */}
+              {/* <input className="btn btn-neutral" type="button" value="Close" onClick={()=>{navigate("/dashboard", { state: { from: loc } })}}/> */}
+              <input className="btn btn-neutral" type="button" value="Close" onClick={()=>{navigate(-1)}}/>
           </div>
           </form>
        </div>

@@ -85,7 +85,7 @@ const Dashboard = () => {
         // console.log("Nav: "+events)
         if (Cookies.get('user') && userRole == 3) { 
         setEventAttended(events)
-        // console.log(eventAttended)
+        console.log(eventAttended)
         }
         
   }, [events]);
@@ -359,7 +359,7 @@ const Dashboard = () => {
                         <div className='flex'>
                           <div className='flex-none'>
                             {/* <img src={event.media[0]?.url} alt={`Event ${event.id}`} className="w-24 h-16" /> */}
-                            {event.media && event.media.length > 0 && (
+                            {event?.media && event?.media?.length > 0 && (
                                                     <img
                                                         src={event.media[0]?.url || ''}
                                                         alt={`Event ${event.id}`}

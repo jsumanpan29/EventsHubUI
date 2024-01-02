@@ -27,6 +27,8 @@ const Event = () => {
   const [eventRegDeadline, setEventRegDeadline] = useState(new Date());
   const [userCookie, setUserCookie] = useState(Cookies.get('user'));
 
+  const [attendedText, setAttendedText] = useState('')
+
   // const [eventAttended, setEventAttended] = useState([])
   // const [onEventAlreadyAttended, setOnEventAlreadyAttended] = useState(false)
 
@@ -40,7 +42,6 @@ const Event = () => {
                     'Accept': 'application/json',
                 }
               });
-              // console.log("Event.jsx"+response.data.event)
               if(response.data){
                 setEventID(response.data.event.id)
                 setName(response.data.event.name);
@@ -94,6 +95,17 @@ const Event = () => {
 //   useEffect(() => {
 //     console.log("Cart Items:"+cartItems)
 // }, [cartItems]);
+
+// useEffect(() => {
+//   if (isEventAlreadyAttended(eventID)){
+//     setAttendedText('Remove')
+//   }else
+//   {
+//     setAttendedText('Attend')
+//   }
+   
+
+// },[])
 
 const addItemToCart = (eventID, eventName, imageUrl, imageFileName) => {
   
@@ -246,18 +258,12 @@ const updateEvent = async (eventID) => {
               </div>
               <div className='flex justify-center'>
                  
-              {/* <button className="btn btn-primary px-8" onClick={() => addEvent(eventID)}>Attend</button> */}
-              {/* {
-                Cookies.get('user') ?
-                isItemInCart()
-                :
-                (<></>)
-              } */}
-              {/* <button className="btn btn-primary px-8" onClick={() => Cookies.get('user') ? addEvent(eventID) : addCart(eventID)}>Attend</button> */}
+              
               {
                 Cookies.get('user') ?
                 (<>
                  <button className="btn btn-primary px-0 sm:px-4 md:px-8" onClick={() => isEventAlreadyAttended(eventID) ? removeEvent(eventID) : addEvent(eventID)}>{isEventAlreadyAttended(eventID) ? "Remove" : "Attend"}</button>
+                 
                 </>)
                 :
                 (<>

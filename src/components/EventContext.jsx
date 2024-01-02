@@ -28,9 +28,13 @@ export const EventProvider = ({ children }) => {
   }, []);
 
   const isEventAlreadyAttended = (eventID) => {
-    //  return events.includes({"event_id":eventID})
-    //  return events.some(event => event.event_id === eventID)
-    return events.some(event => event && event.event_id === eventID);
+      if(events){
+        // return events.some(event => event && event?.event_id === eventID);
+        return events.some(event => event && event?.id === eventID);
+      } else{
+        return false
+      }
+    
     }
 
   const fetchEvents = async () => {
@@ -44,8 +48,9 @@ export const EventProvider = ({ children }) => {
             'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token 
         }
     });
-    setEvents(response.data.eventAttendees);
-    // console.log("Events: "+ events)
+    if(response.data.eventAttendees){
+      setEvents(response.data.eventAttendees);
+    }
     } catch (error) {
       console.error('Error fetching events:', error);
     }
@@ -65,8 +70,14 @@ export const EventProvider = ({ children }) => {
           }
         }  
       );
-      setEvents([...events, response.data.eventAttendee]);
-      // console.log("AddEvent: "+ events)
+      setEvents((prevEvents) => {
+        const updatedEvents = [...prevEvents, response.data];
+        return updatedEvents;
+      });
+    //   // Use the functional form of setEvents to update based on previous state
+    //  setEvents((prevEvents) => [...prevEvents, response.data.eventAttendee]);
+    // console.log("After Event: "+  JSON.stringify(events))
+    //   console.log("Added Event: "+  JSON.stringify(response))
     } catch (error) {
       console.error('Error adding event:', error);
     }

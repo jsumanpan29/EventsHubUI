@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import Cookies from 'js-cookie'
 import { LuBookMarked } from "react-icons/lu";
 import axios from '../../api/axios'
@@ -23,7 +23,7 @@ const { userCookie, removeCookie } = useUserContext();
 const {cartItems, emptyCart, isItemInCart} = useCart();
 
 const navigate = useNavigate();
-
+const loc = useLocation();
 
 
 const handleLogoutClick = () => {
@@ -271,12 +271,12 @@ const handleLogoutClick = () => {
                     {/* {JSON.parse(userCookie).user.first_name} */}
                     </summary>
                     <ul class="p-2 bg-base-100 z-10 w-28 right-1 xl:w-36 xl:-right-4">
-                        <li className='items-center'><a>My Events</a></li>
+                        <li className='items-center' onClick={()=>{navigate("/dashboard", { state: { from: loc } })}}><a>{JSON.parse(Cookies.get('user')).user.roles.id == '1'? "Dashboard" : "My Events" }</a></li>
                         {JSON.parse(Cookies.get('user')).user.roles.id == '2'&& 
-                               <Link to={'/merchant/create_event'}> <li className='items-center'><a>Create Event</a></li></Link>
+                               <Link to={'/merchant/create_event'}> <li className='items-center'><p>Create Event</p></li></Link>
                         }
-                        <li className='items-center'><a>Account</a></li>
-                        <li className='items-center' onClick={handleLogoutClick}><a>Logout</a></li>
+                        <li className='items-center' onClick={()=>{navigate("/dashboard/account", { state: { from: loc } })}}><p>Account</p></li>
+                        <li className='items-center' onClick={handleLogoutClick}><p>Logout</p></li>
                     </ul>
                     </details>
                 </li>
@@ -290,12 +290,12 @@ const handleLogoutClick = () => {
                         <div class="indicator">
                         <LuBookMarked size={20}/>
                         {/* <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg> */}
-                        <span class="badge badge-sm indicator-item">{eventAttended.length}</span>
+                        <span class="badge badge-sm indicator-item">{eventAttended?.length > 0 ? eventAttended.length : 0}</span>
                         </div>
                     </label>
                     <div tabindex="0" class="mt-3 z-[1] card card-compact dropdown-content w-80 bg-base-100 shadow">
                         <div class="card-body">
-                        <span class="font-bold text-lg">{eventAttended.length + " Events this month"}</span>
+                        <span class="font-bold text-lg">{eventAttended?.length > 0 ? eventAttended.length : 0 + " Events this month"}</span>
                         {
                             eventAttended && eventAttended.length > 0 ? (
                                 eventAttended.map(item => (
@@ -338,7 +338,7 @@ const handleLogoutClick = () => {
                         }
                     
                         <div class="card-actions">
-                            <button class="btn btn-primary btn-block">Check My Events</button>
+                            <button class="btn btn-primary btn-block"  onClick={()=>{navigate("/dashboard", { state: { from: loc } })}}>Check My Events</button>
                         </div>
                         </div>
                     </div>
