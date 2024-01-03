@@ -44,21 +44,21 @@ export const MerchantProvider = ({ children }) => {
   useEffect(() => {
     // Fetch events when the component mounts
     // const user = JSON.parse(Cookies.get('user')) 
-    if(Cookies.get('user')){
+    if(Cookies.get('user') && JSON.parse(Cookies.get('user'))?.user.roles.id == 2){
       fetchActiveEvents();
     } 
     
   }, [activeEventsCurrentPage]);
 
   useEffect(() => {
-    if(Cookies.get('user')){
+    if(Cookies.get('user') && JSON.parse(Cookies.get('user'))?.user.roles.id == 2){
       fetchInactiveEvents();
     } 
     
   }, [inactiveEventsCurrentPage]);
 
   useEffect(() => {
-    if(Cookies.get('user')){
+    if(Cookies.get('user') && JSON.parse(Cookies.get('user'))?.user.roles.id == 2){
       fetchExpiredEvents();
     } 
     
@@ -137,7 +137,7 @@ export const MerchantProvider = ({ children }) => {
     setExpiredEvents(response.data.events);
     setExpiredEventsTotalPage(response.data.pagination.total);
     setExpiredEventsPerPage(response.data.pagination.per_page);
-    // console.log("Fetch: "+ events)
+    // console.log("Fetch: "+ JSON.stringify(response))
     } catch (error) {
       console.error('Error fetching events:', error);
     }

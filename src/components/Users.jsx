@@ -214,7 +214,7 @@ const openEditUserDialog = (user) => {
                   },
               );
           
-              console.log('User added successfully:', response.data);
+              // console.log('User added successfully:', response.data);
               // add_user.close()
           } catch (err) {
               if (err?.response) {
@@ -248,7 +248,7 @@ const openEditUserDialog = (user) => {
             },
         );
     
-        console.log('User deleted successfully:', response.data);
+        // console.log('User deleted successfully:', response.data);
         // add_user.close()
     } catch (err) {
         if (err?.response) {

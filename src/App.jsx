@@ -30,6 +30,9 @@ import Users from './components/Users';
 import Venue from './components/Venue';
 import AdminEvents from './components/AdminEvents';
 import AdminAuth from './components/AdminAuth';
+import MerchantAuth from './components/MerchantAuth';
+import EventPreview from './components/EventPreview';
+import UpdateEvent from './components/UpdateEvent';
 
 
 
@@ -115,15 +118,28 @@ function App() {
             <Route path="/dashboard/venue" element={<Venue /> } />
             <Route path="/dashboard/admin_events" element={<AdminEvents /> } />
           </Route>
+          {/* Routes for Merchant */}
+          {/* <Route element={<MerchantAuth />}>
+            <Route path='/merchant/create_event' element={<CreateEvent />} />
+            <Route path='/merchant/preview/:eId' element={<EventPreview />} />
+          </Route> */}
           {/* Routes for Merchant and Attendee Only */}
           {/* <Route element={<MerchAttendeeAuth />}>
             <Route path='my_events' element={<MyEvents />}/>
           </Route> */}
 
           <Route path="/dashboard/account" element={<Account />} />
+
+
         </Route>
           
-          <Route path='/merchant/create_event' element={<CreateEvent />} />
+        {/* Routes for Merchant */}
+        <Route element={<MerchantAuth />}>
+            <Route path='/merchant/create_event' element={<CreateEvent />} />
+            <Route path='/merchant/edit_event/:eId' element={<UpdateEvent />} />
+            <Route path='/merchant/preview/:eId' element={<EventPreview />} />
+        </Route>
+          
         </Route>
         
         {/* Catch All */}

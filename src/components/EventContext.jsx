@@ -8,7 +8,10 @@ export const EventContext = createContext({
   addEvent: () => {},
   removeEvent: () => {},
   fetchEvents: () => {}, // Add the fetchEvents function to the context
-  isEventAlreadyAttended: () => {}
+  isEventAlreadyAttended: () => {},
+  currentPage: 1,
+  totalPage: 1,
+  perPage: 1,
 });
 
 
@@ -16,6 +19,9 @@ export const useEventContext = () => useContext(EventContext);
 
 export const EventProvider = ({ children }) => {
   const [events, setEvents] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+  const [perPage, setPerPage] = useState(1);
 
   useEffect(() => {
     // Fetch events when the component mounts
@@ -42,7 +48,7 @@ export const EventProvider = ({ children }) => {
       const userID = JSON.parse(Cookies.get('user'))?.user.id
   
     
-    const response = await axios.get('/event_attendee/user/'+userID, {
+    const response = await axios.get('/event_attendee/user/'+userID+'?page='+currentPage, {
         headers: {
             'Accept': 'application/json',
             'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token 
@@ -50,6 +56,8 @@ export const EventProvider = ({ children }) => {
     });
     if(response.data.eventAttendees){
       setEvents(response.data.eventAttendees);
+      setTotalPage(response.data.pagination.total);
+      setPerPage(response.data.pagination.per_page);
     }
     } catch (error) {
       console.error('Error fetching events:', error);
@@ -104,7 +112,7 @@ export const EventProvider = ({ children }) => {
   };
 
   return (
-    <EventContext.Provider value={{ events, addEvent, removeEvent, fetchEvents, isEventAlreadyAttended }}>
+    <EventContext.Provider value={{ events, addEvent, removeEvent, fetchEvents, isEventAlreadyAttended, currentPage, totalPage, perPage, setCurrentPage:(selectedPage) => setCurrentPage(selectedPage) }}>
       {children}
     </EventContext.Provider>
   );

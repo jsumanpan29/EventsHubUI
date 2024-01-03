@@ -1,4 +1,5 @@
 import React,  { useState,useEffect,useCallback } from 'react'
+import { Link } from 'react-router-dom'
 import axios from '../../api/axios'
 import Cookies from 'js-cookie'
 import { useEventContext } from './EventContext';
@@ -9,13 +10,14 @@ const Dashboard = () => {
   const userRole = JSON.parse(Cookies.get('user'))?.user.roles.id
   const [eventAttended, setEventAttended] = useState([])
   const [activeEventsAttended, setActiveEventsAttended] = useState([])
+  const [deleteEventId, setDeleteEventId] = useState(null);
   // const [activeEventsCurrentPage, setActiveEventsCurrentPage] = useState(1);
   // const [activeEventsTotalPage, setActiveEventsTotalPage] = useState(1);
   // const [activeEventsPerPage, setActiveEventsPerPage] = useState(1);
 
   const [inactiveEventsAttended, setInactiveEventsAttended] = useState([])
   const [expiredEventsAttended, setExpiredEventsAttended] = useState([])
-  const { events, fetchEvents, removeEvent } = useEventContext();
+  const { events, fetchEvents, removeEvent, currentPage, totalPage, perPage, setCurrentPage} = useEventContext();
   const { activeEvents, inactiveEvents, expiredEvents, activeEventsTotalPage, activeEventsPerPage, activeEventsCurrentPage, inactiveEventsTotalPage, inactiveEventsPerPage, inactiveEventsCurrentPage, expiredEventsTotalPage, expiredEventsPerPage, expiredEventsCurrentPage, fetchActiveEvents, fetchInactiveEvents, fetchExpiredEvents, setActiveEventsCurrentPage, setInactiveEventsCurrentPage, setExpiredEventsCurrentPage} = useMerchantContext();
 
   const memoizedFetchActiveEvents = useCallback(fetchActiveEvents, [activeEventsCurrentPage]);
@@ -58,7 +60,7 @@ const Dashboard = () => {
       memoizedFetchInactiveEvents();
     }
     // console.log(activeEvents)
-  }, [memoizedFetchInactiveEvents]);
+  }, [memoizedFetchInactiveEvents, deleteEventId]);
 
   useEffect(() => {
     // Fetch events when this component mounts or when currentPage changes
@@ -85,10 +87,53 @@ const Dashboard = () => {
         // console.log("Nav: "+events)
         if (Cookies.get('user') && userRole == 3) { 
         setEventAttended(events)
-        console.log(eventAttended)
         }
-        
   }, [events]);
+
+
+  const handleEventsPageClick = (selectedPage) => {
+    setCurrentPage(selectedPage.selected + 1);
+  };
+
+  const eventDelete = async(e) => {
+    e.preventDefault()
+    // console.log("delete")
+    try {
+        // console.warn(email,password)
+        const response = await axios.delete('/event/'+deleteEventId+'/delete', 
+            {
+                headers:
+                {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token 
+                },
+            },
+        );
+    
+        // console.log('Event deleted successfully:', response.data);
+        // add_user.close()
+    } catch (err) {
+        if (err?.response) {
+            console.log("Error: Response=")
+        } else if (err.reponse?.status === 400) {
+            console.log("Error:400")
+        } else if (err.response?.status === 401) {
+            console.log("Error:401")
+        } else {
+            console.log("Error:"+err)
+        }
+    }
+    setDeleteEventId(null)
+    delete_event.close()
+  }
+
+  const openDeleteEventDialog = (event) => {
+    // setIsDialogOpen(true);
+    // setEditingUserId(null); // Resetting the editing user ID
+    console.log('Deleting event:', event);
+      setDeleteEventId(event.id)
+      delete_event.showModal();
+  };
 
 //   useEffect(() => {
 //     if (Cookies.get('user') && userRole == 2) { 
@@ -271,9 +316,9 @@ const Dashboard = () => {
                             <img src={event.media[0]?.url} alt={`Event ${event.id}`} className="w-24 h-16" />
                           </div>
                           <div className='flex-auto mx-5 grid grid-flow-row'>
-                            <div className='row-span-1'><a className='row-span-1 text-gray-400 hover:underline'>{event.name}</a></div>
-                            <div className='row-span-1'><a className='row-span-1 text-blue-500 hover:underline'>Edit</a></div>
-                            <div className='row-span-1'><a className='row-span-1 text-red-500 hover:underline'>Delete</a></div>
+                           <div className='row-span-1'><a className='row-span-1 text-gray-400 hover:underline'><Link key={event.id} to={'/merchant/preview/' + event.id}>{event.name}</Link></a></div>
+                           <div className='row-span-1'><a className='row-span-1 text-blue-500 hover:underline'><Link key={event.id} to={'/merchant/edit_event/' + event.id}> Edit</Link></a></div>
+                            <div className='row-span-1'><a className='row-span-1 text-red-500 hover:underline cursor-pointer' onClick={() => openDeleteEventDialog(event)}>Delete</a></div>
                           </div>
                         </div>
                       </td>
@@ -306,7 +351,18 @@ const Dashboard = () => {
                     // forcePage={currentPage - 1}
                 />
         </div>
-  
+        <dialog id="delete_event" class="modal modal-bottom sm:modal-middle">
+                  <div class="modal-box">
+                    <h3 class="font-bold text-lg">Delete</h3>
+                    <p class="py-4">Are you sure you want to delete event?</p>
+                    <div class="modal-action">
+                      <form method="dialog" onSubmit={eventDelete}>
+                        <button class="btn mr-2" type="submit">Confirm</button>
+                        <button class="btn" type="button" onClick={()=>delete_event.close()}>Close</button>
+                      </form>
+                    </div>
+                  </div>
+        </dialog>
         </div>
       );
     case 3:
@@ -358,17 +414,28 @@ const Dashboard = () => {
                       <td>
                         <div className='flex'>
                           <div className='flex-none'>
-                            {/* <img src={event.media[0]?.url} alt={`Event ${event.id}`} className="w-24 h-16" /> */}
-                            {event?.media && event?.media?.length > 0 && (
+                            {/* {event?.media && event?.media?.length > 0 && (
                                                     <img
                                                         src={event.media[0]?.url || ''}
                                                         alt={`Event ${event.id}`}
                                                         className="w-24 h-16"
                                                     />
-                                                )}
+                                                )} */}
+                            {
+                                event.media && event.media.length > 0 ?
+                                <img
+                                src={event.media[0]?.url || ''}
+                                alt={`Event ${event.id}`}
+                                className="w-24 h-16"
+                                />
+                                :
+                                <img src='' alt='' className="w-24 h-16" />
+
+
+                            }
                           </div>
                           <div className='flex-auto mx-5'>
-                            <p>{event.name}</p>
+                            <Link key={event.id} to={'/events/' + event.id}><a className='row-span-1 text-gray-400 hover:underline'>{event.name}</a></Link>
                           </div>
                         </div>
                       </td>
@@ -383,14 +450,33 @@ const Dashboard = () => {
                   </tbody>
                 </table>
           </div>
-          <div className="join items-center justify-center w-full mt-5">
+          {/* <div className="join items-center justify-center w-full mt-5">
                       <button className="join-item btn">1</button>
                       <button className="join-item btn">2</button>
                       <button className="join-item btn btn-disabled">...</button>
                       <button className="join-item btn">99</button>
                       <button className="join-item btn">100</button>
+          </div> */}
+          <ReactPaginate
+                    previousLabel={'«'}
+                    nextLabel={'»'}
+                    breakLabel={'...'}
+                    pageCount={Math.ceil( totalPage / perPage )}
+                    // pageCount={Math.ceil( inactiveEventsTotalPage / inactiveEventsPerPage )}
+                    marginPagesDisplayed={2}
+                    pageRangeDisplayed={2}
+                    onPageChange={handleEventsPageClick}
+                    containerClassName={'join items-center justify-center w-full my-3'}
+                    pageClassName={'join-item btn'}
+                    activeClassName={'btn-active'}
+                    disabledClassName={'btn-disabled'}
+                    previousClassName = {'join-item btn'}
+                    nextClassName = {'join-item btn'}
+                    // forcePage={inactiveEventsCurrentPage - 1}
+                    forcePage={currentPage - 1}
+                />
           </div>
-            </div>
+          
         </div>
        );
     default:

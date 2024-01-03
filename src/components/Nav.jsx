@@ -295,21 +295,30 @@ const handleLogoutClick = () => {
                     </label>
                     <div tabindex="0" class="mt-3 z-[1] card card-compact dropdown-content w-80 bg-base-100 shadow">
                         <div class="card-body">
-                        <span class="font-bold text-lg">{eventAttended?.length > 0 ? eventAttended.length : 0 + " Events this month"}</span>
+                        <span class="font-bold text-lg">{(eventAttended?.length > 0 ? eventAttended.length : 0) + " Events added"}</span>
                         {
                             eventAttended && eventAttended.length > 0 ? (
                                 eventAttended.map(item => (
                                     <div key={item?.id} className='grid grid-flow-col grid-cols-3 gap-3'>
                                         {item && (
                                             <>
-                                                {/* <img src={item.media[0] ? item.media[0].url : ""} alt={`Event ${item.id}`} className="w-24 h-16" /> */}
-                                                {item.media && item.media.length > 0 && (
+                                                {item.media && item.media.length > 0 ?
+                                                        <img
+                                                        src={item.media[0]?.url || ''}
+                                                        alt={`Event ${item.id}`}
+                                                        className="w-24 h-16"
+                                                    />
+                                                :
+                                                <img src='' alt='' className="w-24 h-16" />
+
+                                                }
+                                                {/* {item.media && item.media.length > 0 && (
                                                     <img
                                                         src={item.media[0]?.url || ''}
                                                         alt={`Event ${item.id}`}
                                                         className="w-24 h-16"
                                                     />
-                                                )}
+                                                )} */}
                                                 {item?.name && (
                                                     <span className="font-bold text-base col-span-2" key={item?.id}>{item.name}</span>
                                                 )}
