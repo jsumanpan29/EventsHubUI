@@ -28,6 +28,8 @@ const UpdateEvent = () => {
   const [valueDateSched, onValueDateSched] = useState([new Date(), new Date()]);
   const [valueRegDeadline, onValueRegDeadline] = useState(new Date());
 
+  const [eventStatus, setEventStatus] = useState('')
+
   const handleDateRangeChange = (newValue) => {
     onValueDateSched(newValue);
   };
@@ -69,7 +71,7 @@ const UpdateEvent = () => {
       formData.append('est_attendants', estAttendants);
       formData.append('venue_id', venue);
       formData.append('category_id', category);
-      formData.append('event_status', 0);
+      formData.append('event_status', eventStatus);
       formData.append('user_id', JSON.parse(Cookies.get('user')).user.id);
       for (let i = 0; i < images.length; i++) {
         formData.append('images', images[i]);
@@ -170,7 +172,7 @@ const UpdateEvent = () => {
                 }
               });
               if(response.data){
-                console.log(response.data)
+                // console.log(response.data)
                 // setEventID(response.data.event.id)
                 setEventName(response.data.event.name);
                 setDescription(response.data.event.description);
@@ -211,6 +213,8 @@ const UpdateEvent = () => {
                   // setImageUrl(response.data.media[0].url);
                   setImages(response.data.media[0].url)
                 }
+
+                setEventStatus(response.data.event.event_status)
               }
           } catch (e) {
               console.log(e);

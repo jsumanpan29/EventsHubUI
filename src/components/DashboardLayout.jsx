@@ -28,6 +28,7 @@ const DashboardLayout = () => {
                 <li key="dashboard"><NavLink end to="/dashboard">Dashboard</NavLink></li>
                 <li key="user"><NavLink to="/dashboard/user">User</NavLink></li>
                 <li key="venue"><NavLink to="/dashboard/venue">Venue</NavLink></li>
+                <li key="venue"><NavLink to="/dashboard/category">Category</NavLink></li>
                 <li key="admin_events"><NavLink to="/dashboard/admin_events">Events</NavLink></li>
                 <li key="account"><NavLink to="/dashboard/account">Account Settings</NavLink></li>
               </>

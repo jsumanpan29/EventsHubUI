@@ -4,6 +4,9 @@ import axios from '../../api/axios';
 import ReactPaginate from 'react-paginate';
 
 const AdminEvents = () => {
+
+  const [searchInput, setSearchInput] = useState('');
+
   const [events, setEvents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
@@ -23,6 +26,11 @@ const AdminEvents = () => {
     setEventStatusVal(eventStatus)
     change_status.showModal()
   };
+
+  const handleSearchInput = (e) => {
+    setSearchInput(e.target.value);
+    setCurrentPage(1);
+};
 
   const confirmStatusChange = async() => {
       const formData = new FormData();
@@ -69,13 +77,24 @@ const AdminEvents = () => {
     const getEvents = async () => {
         try {
               // const response = await axios.get('/events/admin', {
-            const response = await axios.get('/events/admin?page='+currentPage, {
-                  headers: {
-                      'Accept': 'application/json',
-                      'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
-                  }
-              });
+            // const response = await axios.get('/events/admin?page='+currentPage, {
+            //       headers: {
+            //           'Accept': 'application/json',
+            //           'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
+            //       }
+            //   });
+            let response; // Declare the variable outside the condition
 
+            let url = '/events/admin?page=' + currentPage
+            if (searchInput) {
+                url+= '&keyword='+searchInput
+            } 
+            response = await axios.get(url, {
+              headers: {
+                'Accept': 'application/json',
+                'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
+              }
+            });
 
             //   if(response.data){
                   // console.log(response.data.events)
@@ -90,7 +109,7 @@ const AdminEvents = () => {
       }
       getEvents();
       
-  }, [currentPage]);
+  }, [currentPage,searchInput]);
   return (
     <div className='m-auto grid-cols-2'>
     <div className='col-span-1 mx-6'>
@@ -98,7 +117,7 @@ const AdminEvents = () => {
               <div className="join">
                   <div>
                       <div>
-                      <input className="input input-bordered w-full sm:w-64 md:w-80 lg:w-96 xl:w-120 join-item" placeholder="Search"/>
+                      <input className="input input-bordered w-full sm:w-64 md:w-80 lg:w-96 xl:w-120 join-item" placeholder="Search" value={searchInput} onChange={handleSearchInput}/>
                       </div>
                   </div>
                   

@@ -146,7 +146,7 @@ const handleLogoutClick = () => {
             </div>
             </>)
         }       
-        <a className="btn btn-ghost normal-case text-xl">EventHub</a>
+        <a className="btn btn-ghost normal-case text-xl">Eventurado</a>
     </div>
 
     {Cookies.get('user') && (JSON.parse(Cookies.get('user'))?.user.roles.id === 1 || JSON.parse(Cookies.get('user'))?.user.roles.id === 2)  ?

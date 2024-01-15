@@ -33,6 +33,7 @@ import AdminAuth from './components/AdminAuth';
 import MerchantAuth from './components/MerchantAuth';
 import EventPreview from './components/EventPreview';
 import UpdateEvent from './components/UpdateEvent';
+import Category from './components/Category';
 
 
 
@@ -116,6 +117,7 @@ function App() {
             
             <Route path="/dashboard/user" element={<Users /> } />
             <Route path="/dashboard/venue" element={<Venue /> } />
+            <Route path="/dashboard/category" element={<Category /> } />
             <Route path="/dashboard/admin_events" element={<AdminEvents /> } />
           </Route>
           {/* Routes for Merchant */}

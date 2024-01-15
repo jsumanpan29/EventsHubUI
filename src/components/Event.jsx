@@ -239,7 +239,15 @@ const updateEvent = async (eventID) => {
              <div>
              <h1 className="text-5xl font-bold pt-10 pb-5">{name}</h1>
              </div>
-            <img src={imageUrl} alt={imageFileName} className="w-full h-128 shadow-2xl" />
+            <div class="flex justify-center items-center h-[600px] w-128 bg-gray-800">
+               
+                {
+                  imageUrl ?
+                  <img src={imageUrl} alt={imageFileName} className="object-cover h-full w-full shadow-2xl" />
+                  :
+                  <img src='' alt='' className="object-cover h-full w-full shadow-2xl" />
+                }
+            </div>
             <div className='grid grid-cols-5 py-4 gap-12 place-items-center px-6'>
               
               <div className='text-sm flex '><LuTag size={18} className='mr-1.5' />{categoryName}</div>

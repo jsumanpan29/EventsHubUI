@@ -4,11 +4,24 @@ import axios from '../../api/axios'
 import { useNavigate, Link } from 'react-router-dom'
 import { format } from 'date-fns'
 import { LuTag,LuUser2,LuNavigation } from "react-icons/lu";
+import DateRangePicker from '@wojtekmaj/react-daterange-picker';
 import Cookies from 'js-cookie'
 import ReactPaginate from 'react-paginate';
 
 // const Events = ({events}) => {
 const Events = () => {
+
+
+    const [searchInput, setSearchInput] = useState('');
+    const [attendanceInput, setAttendanceInput] = useState('');
+    const [sortInput, setSortInput] = useState('regDeadlineAsc');
+    const [venuesInput, setVenuesInput] = useState('');
+    const [categoriesInput, setCategoriesInput] = useState('');
+    const [datesInput, setDatesInput] = useState('')
+
+    const formatDate = (date) => {
+        return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+      };
 
     const [events, setEvents] = useState([]);
     const navigate = useNavigate();
@@ -16,22 +29,194 @@ const Events = () => {
     const [totalPage, setTotalPage] = useState(1);
     const [perPage, setPerPage] = useState(1);
 
+    const [venues, setVenues] = useState([]);
+    const [categories, setCategories] = useState([]);
+
+    const [valueDateSched, onValueDateSched] = useState();
+
+    const [checkboxes, setCheckboxes] = useState({
+        under500: false,
+        between500And1000: false,
+        between1000And2000: false,
+        between2000And5000: false,
+        between5000And10000: false,
+        between10000And15000: false,
+        between15000And25000: false,
+        between25000And50000: false,
+        between50000And100000: false,
+        over100000: false,
+    });
+
+    const [venueCheckboxes, setVenueCheckboxes] = useState([])
+    const [categoryCheckboxes, setCategoryCheckboxes] = useState([])
+
+    const handleSortChange = (e) => {
+        setSortInput(e.target.value);
+    };
+
+    const handleAttendanceChange = (event) => {
+        const { name, checked } = event.target;
+        setCheckboxes({ ...checkboxes, [name]: checked });
+    };
+
+
+
+    const handleDateRangeChange = (newValue) => {
+        onValueDateSched(newValue);
+      };
+
+    const handleSearchInput = (e) => {
+        setSearchInput(e.target.value);
+        setCurrentPage(1);
+    };
+    const handleVenueChange = (event) => {
+        const { value, checked } = event.target;
+      
+        if (checked) {
+          setVenueCheckboxes((prevCheckboxes) => [...prevCheckboxes, value]);
+        } else {
+          setVenueCheckboxes((prevCheckboxes) =>
+            prevCheckboxes.filter((checkboxValue) => checkboxValue !== value)
+          );
+        }
+        // setVenuesInput(venueCheckboxes.join(", "))
+      };
+
+      const handleCategoryChange = (event) => {
+        const { value, checked } = event.target;
+      
+        if (checked) {
+            setCategoryCheckboxes((prevCheckboxes) => [...prevCheckboxes, value]);
+        } else {
+            setCategoryCheckboxes((prevCheckboxes) =>
+            prevCheckboxes.filter((checkboxValue) => checkboxValue !== value)
+          );
+        }
+        // setCategoriesInput(categoryCheckboxes.join(", "))
+      };
+
+      const getEvents = async () => {
+        try {
+            //   const response = await axios.get('/events', {
+            // console.log("TEST")
+            
+            let response; // Declare the variable outside the condition
+
+            let url = '/events?page=' + currentPage
+            
+            if (searchInput) {
+                url+= '&keyword='+searchInput
+            } 
+            if (sortInput) {
+                url+= '&sort='+sortInput
+            } 
+            if (attendanceInput) {
+                url+= '&attendance='+attendanceInput
+            }
+            if (venuesInput) {
+                url+= '&venues='+venuesInput
+            }  
+            if (categoriesInput) {
+                url+= '&categories='+categoriesInput
+            } 
+            if(datesInput){
+                url+=datesInput
+            }
+               response = await axios.get(url, {
+                headers: {
+                  'Accept': 'application/json',
+                }
+              });
+            //   console.log(response)
+           
+              // console.log(JSON.parse(Cookies.get('user')).token)
+              setEvents(response.data.events)
+              setTotalPage(response.data.pagination.total)
+              setPerPage(response.data.pagination.per_page)
+          } catch (e) {
+              console.log(e);
+          }
+      }
+
+      useEffect(() => {
+        const formattedFromDate = valueDateSched ? formatDate(valueDateSched[0]) : '';
+        const formattedToDate = valueDateSched ? formatDate(valueDateSched[1]) : '';
+        
+        // Constructing the string in the required format
+        let formattedDateRange
+        if(valueDateSched){
+            formattedDateRange = `&dateStart=${formattedFromDate}&dateEnd=${formattedToDate}`;
+        }
+        else{
+            formattedDateRange = ''
+        }
+      
+      
+        setDatesInput(formattedDateRange);
+      }, [valueDateSched]);
+
+    useEffect(() => {
+        const checkedCheckboxes = Object.entries(checkboxes)
+            .filter(([key, value]) => value === true)
+            .map(([key]) => key);
+    
+            setAttendanceInput(checkedCheckboxes.join(", "))
+    }, [checkboxes]);
+    useEffect(() => {
+        // Join all the checked venue values into a string
+        setVenuesInput(venueCheckboxes.join(", "));
+      }, [venueCheckboxes]);
+
+    useEffect(() => {
+        setCategoriesInput(categoryCheckboxes.join(", "));
+    }, [categoryCheckboxes]);
+
+    useEffect(() => {
+        console.log("Checked Checkboxes (String): ", attendanceInput);
+    }, [attendanceInput]);
+    
+    useEffect(() => {
+        console.log('Selected sort value:', sortInput);
+    }, [sortInput]);
+
+    useEffect(() => {
+        console.log('Date Sched:', datesInput);
+    }, [datesInput]);
 
     useEffect(() => {
         const getEvents = async () => {
             try {
                 //   const response = await axios.get('/events', {
-                const response = await axios.get('/events?page='+currentPage, {
-                      headers: {
-                          'Accept': 'application/json',
-                          // 'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
-                      }
+                
+                let response; // Declare the variable outside the condition
+
+                let url = '/events?page=' + currentPage
+                
+                if (searchInput) {
+                    url+= '&keyword='+searchInput
+                } 
+                if (sortInput) {
+                    url+= '&sort='+sortInput
+                } 
+                if (attendanceInput) {
+                    url+= '&attendance='+attendanceInput
+                }
+                if (venuesInput) {
+                    url+= '&venues='+venuesInput
+                }  
+                if (categoriesInput) {
+                    url+= '&categories='+categoriesInput
+                } 
+                if(datesInput){
+                    url+=datesInput
+                }
+                   response = await axios.get(url, {
+                    headers: {
+                      'Accept': 'application/json',
+                    }
                   });
-
-
-                //   if(response.data){
-                //       console.log(response.data.events)
-                //   }
+                  console.log(response)
+               
                   // console.log(JSON.parse(Cookies.get('user')).token)
                   setEvents(response.data.events)
                   setTotalPage(response.data.pagination.total)
@@ -42,8 +227,58 @@ const Events = () => {
           }
           getEvents();
           
-      }, [currentPage]);
-    //   }, []);
+      }, [currentPage,searchInput, attendanceInput, sortInput, venuesInput,categoriesInput,datesInput]);
+
+      
+  useEffect(() => {
+    const getVenues = async () => {
+        try {
+            const response = await axios.get('/venues', {
+                  headers: {
+                      'Accept': 'application/json',
+                    //   'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
+                  }
+              });
+
+              setVenues(response.data.venues)
+          } catch (e) {
+              console.log(e);
+          }
+      }
+      getVenues();
+      
+  }, []);
+  useEffect(() => {
+    const getCategories = async () => {
+        try {
+            const response = await axios.get('/categories', {
+                  headers: {
+                      'Accept': 'application/json',
+                    //   'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
+                  }
+              });
+              setCategories(response.data.categories)
+          } catch (e) {
+              console.log(e);
+          }
+      }
+      getCategories();
+      
+  }, []);
+//   useEffect(() => {
+//     console.log('Selected Venues:', venueCheckboxes);
+//   }, [venueCheckboxes]);
+
+//   useEffect(() => {
+//     console.log('Selected Categories:', categoryCheckboxes);
+//   }, [categoryCheckboxes]);
+  useEffect(() => {
+    console.log('Selected Venues:', venuesInput);
+  }, [venuesInput]);
+
+  useEffect(() => {
+    console.log('Selected Categories:', categoriesInput);
+  }, [categoriesInput]);
     
     const handlePageClick = (selectedPage) => {
         // console.log(selectedPage)
@@ -72,12 +307,12 @@ const Events = () => {
             <div className="join">
                 <div>
                     <div>
-                    <input className="input input-bordered w-full sm:w-64 md:w-80 lg:w-96 xl:w-120 join-item" placeholder="Search"/>
+                    <input className="input input-bordered w-full sm:w-64 md:w-80 lg:w-96 xl:w-120 join-item" placeholder="Search" value={searchInput} onChange={handleSearchInput}/>
                     </div>
                 </div>
                
                 <div className="indicator">
-                    <button className="btn join-item">Search</button>
+                    <button className="btn join-item" onClick={getEvents}>Search</button>
                 </div>
             </div>
         </div>
@@ -86,22 +321,156 @@ const Events = () => {
     <div className="min-h-screen bg-base-300">
         <div className="container grid grid-cols-4 pt-0 m-auto gap-x-8">
             <div className="lg:col-span-1">
-                <nav className="flex flex-col w-64">
+                <nav id="filters" className="flex flex-col w-full">
                     <div className="flex items-center justify-center h-14 text-white font-bold text-3xl">
                         Filters
                     </div>
-                    <div className="flex-grow">
-                        <ul className="py-4">
-                        <li className="px-4 py-2  hover:text-white">
-                            <Link to="/">Option 1</Link>
-                        </li>
-                        <li className="px-4 py-2  hover:text-white">
-                            <Link to="/about">Option 2</Link>
-                        </li>
-                        <li className="px-4 py-2  hover:text-white">
-                            <Link to="/contact">Option 3</Link>
-                        </li>
-                        </ul>
+                    {/* <div tabIndex={0} className="collapse collapse-arrow border border-base-300 bg-base-200">
+                        <div className="collapse-title text-xl font-medium">
+                            Venue
+                        </div>
+                        <div className="collapse-content"> 
+                            <p>tabIndex={0} attribute is necessary to make the div focusable</p>
+                        </div>
+                    </div> */}
+                    <div className="collapse collapse-arrow bg-base-100 mb-3">
+                        <input type="checkbox" /> 
+                        <div className="collapse-title text-xl font-medium">
+                            Sort By
+                        </div>
+                        <div className="collapse-content">
+                            <select className="select select-bordered w-full max-w-xs" onChange={handleSortChange} value={sortInput}>
+                                <option value={"regDeadlineAsc"}>Deadline: soonest first</option>
+                                <option value={"regDeadlineDesc"}>Deadline: latest first</option>
+                                <option value={"nameAsc"}>Event Name: A-Z</option>
+                                <option value={"nameDesc"}>Event Name: Z-A</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div className="collapse collapse-arrow bg-base-100 mb-3">
+                        <input type="checkbox" /> 
+                        <div className="collapse-title text-xl font-medium">
+                            Dates
+                        </div>
+                        <div className="collapse-content">
+                        <DateRangePicker onChange={handleDateRangeChange} value={valueDateSched} required />
+                        </div>
+                    </div>
+                    <div className="collapse collapse-arrow bg-base-100 mb-3">
+                        <input type="checkbox" /> 
+                        <div className="collapse-title text-xl font-medium">
+                            Attendance
+                        </div>
+                        <div className="collapse-content"> 
+                            <div className="form-control">
+                                <label className="flex items-center cursor-pointer p-1">
+                                    <input type="checkbox" className="checkbox" name="under500" checked={checkboxes.under500} onChange={handleAttendanceChange}/>
+                                    <span className="label-text ml-2">Under 500</span> 
+                                </label>
+                            </div>
+                            <div className="form-control">
+                                <label className="flex items-center cursor-pointer p-1">
+                                    <input type="checkbox" className="checkbox" name="between500And1000" checked={checkboxes.between500And1000} onChange={handleAttendanceChange}/>
+                                    <span className="label-text ml-2">500 - 1,000</span> 
+                                </label>
+                            </div>
+                            <div className="form-control">
+                                <label className="flex items-center cursor-pointer p-1">
+                                    <input type="checkbox" className="checkbox" name="between1000And2000" checked={checkboxes.between1000And2000} onChange={handleAttendanceChange}/>
+                                    <span className="label-text ml-2">1000 - 2,000</span> 
+                                </label>
+                            </div>
+                            <div className="form-control">
+                                <label className="flex items-center cursor-pointer p-1">
+                                    <input type="checkbox" className="checkbox" name="between2000And5000" checked={checkboxes.between2000And5000} onChange={handleAttendanceChange}/>
+                                    <span className="label-text ml-2">2,000 - 5,000</span> 
+                                </label>
+                            </div>
+                            <div className="form-control">
+                                <label className="flex items-center cursor-pointer p-1">
+                                    <input type="checkbox" className="checkbox" name="between5000And10000" checked={checkboxes.between5000And10000} onChange={handleAttendanceChange}/>
+                                    <span className="label-text ml-2">5,000 - 10,000</span> 
+                                </label>
+                            </div>
+                            <div className="form-control">
+                                <label className="flex items-center cursor-pointer p-1">
+                                    <input type="checkbox" className="checkbox" name="between10000And15000" checked={checkboxes.between10000And15000} onChange={handleAttendanceChange}/>
+                                    <span className="label-text ml-2">10,000 - 15,000</span> 
+                                </label>
+                            </div>
+                            <div className="form-control">
+                                <label className="flex items-center cursor-pointer p-1">
+                                    <input type="checkbox" className="checkbox" name="between15000And25000" checked={checkboxes.between15000And25000} onChange={handleAttendanceChange}/>
+                                    <span className="label-text ml-2">15,000 - 25,000</span> 
+                                </label>
+                            </div>
+                            <div className="form-control">
+                                <label className="flex items-center cursor-pointer p-1">
+                                    <input type="checkbox" className="checkbox" name="between25000And50000" checked={checkboxes.between25000And50000} onChange={handleAttendanceChange}/>
+                                    <span className="label-text ml-2">25,000 - 50,000</span> 
+                                </label>
+                            </div>
+                            <div className="form-control">
+                                <label className="flex items-center cursor-pointer p-1">
+                                    <input type="checkbox" className="checkbox" name="between50000And100000" checked={checkboxes.between50000And100000} onChange={handleAttendanceChange}/>
+                                    <span className="label-text ml-2">50,000 - 100,000</span> 
+                                </label>
+                            </div>
+                            <div className="form-control">
+                                <label className="flex items-center cursor-pointer p-1">
+                                    <input type="checkbox" className="checkbox" name="over100000" checked={checkboxes.over100000} onChange={handleAttendanceChange}/>
+                                    <span className="label-text ml-2">Over 100,000</span> 
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="collapse collapse-arrow bg-base-100 mb-3">
+                        <input type="checkbox" /> 
+                        <div className="collapse-title text-xl font-medium">
+                            Venue
+                        </div>
+                        <div className="collapse-content"> 
+                            {
+                                Array.isArray(venues) ? (
+                                    venues.map((venue,index) =>(
+                                        <div className="form-control">
+                                            <label className="flex items-center cursor-pointer p-1">
+                                                <input type="checkbox" className="checkbox" name={venue.name}  value={String(venue.id)} onChange={handleVenueChange} checked={venueCheckboxes.includes(String(venue.id))}/>
+                                                <span className="label-text ml-2">{venue.name}</span> 
+                                            </label>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>No venue available</p>
+
+                                )
+                            }
+                            
+                        </div>
+                    </div>
+                    
+                    <div className="collapse collapse-arrow bg-base-100 mb-3">
+                        <input type="checkbox" /> 
+                        <div className="collapse-title text-xl font-medium">
+                            Category
+                        </div>
+                        <div className="collapse-content"> 
+                            {
+                                    Array.isArray(categories) ? (
+                                        categories.map((category,index) =>(
+                                            <div className="form-control">
+                                                <label className="flex items-center cursor-pointer p-1">
+                                                    <input type="checkbox" className="checkbox" name={category.name} value={String(category.id)} onChange={handleCategoryChange} checked={categoryCheckboxes.includes(String(category.id))}/>
+                                                    <span className="label-text ml-2">{category.name}</span> 
+                                                </label>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p>No category available</p>
+
+                                    )
+                            }
+                        </div>
                     </div>
                 </nav>
             </div>

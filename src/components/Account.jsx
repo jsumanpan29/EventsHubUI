@@ -191,6 +191,7 @@ const userSubmit = async(e) => {
                 
                 <div className="form mt-6">
                     <input className={editAccount === true ? 'btn btn-primary btn-wide': 'btn btn-primary btn-wide btn-disabled' } type="submit" value="Save" />
+                    <input className={editAccount === true ? 'btn btn-primary btn-wide ml-4': 'btn btn-primary btn-wide btn-disabled ml-4 invisible' } type="button" value="Close" onClick={()=>onEditAccount(false)}/>
                 </div>
               </form>
               </div>

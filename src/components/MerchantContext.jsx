@@ -40,6 +40,11 @@ export const MerchantProvider = ({ children }) => {
   const [expiredEventsCurrentPage, setExpiredEventsCurrentPage] = useState(1);
   const [expiredEventsTotalPage, setExpiredEventsTotalPage] = useState(1);
   const [expiredEventsPerPage, setExpiredEventsPerPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (query) => {
+    setSearchQuery(query.target.value);
+  };
 
   useEffect(() => {
     // Fetch events when the component mounts
@@ -48,21 +53,21 @@ export const MerchantProvider = ({ children }) => {
       fetchActiveEvents();
     } 
     
-  }, [activeEventsCurrentPage]);
+  }, [activeEventsCurrentPage, searchQuery]);
 
   useEffect(() => {
     if(Cookies.get('user') && JSON.parse(Cookies.get('user'))?.user.roles.id == 2){
       fetchInactiveEvents();
     } 
     
-  }, [inactiveEventsCurrentPage]);
+  }, [inactiveEventsCurrentPage, searchQuery]);
 
   useEffect(() => {
     if(Cookies.get('user') && JSON.parse(Cookies.get('user'))?.user.roles.id == 2){
       fetchExpiredEvents();
     } 
     
-  }, [expiredEventsCurrentPage]);
+  }, [expiredEventsCurrentPage, searchQuery]);
 
   // const fetchActiveEvents = async () => {
   //   try {
@@ -87,7 +92,7 @@ export const MerchantProvider = ({ children }) => {
       const userID = JSON.parse(Cookies.get('user'))?.user.id
   
     
-    const response = await axios.get('/event/'+userID+'/merchant/'+ ENABLED + '?page=' + activeEventsCurrentPage, {
+    const response = await axios.get('/event/'+userID+'/merchant/'+ ENABLED + '?page=' + activeEventsCurrentPage + (searchQuery ? '&keyword=' + searchQuery :''), {
         headers: {
             'Accept': 'application/json',
             'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token 
@@ -108,7 +113,7 @@ export const MerchantProvider = ({ children }) => {
       const userID = JSON.parse(Cookies.get('user'))?.user.id
   
     
-    const response = await axios.get('/event/'+userID+'/merchant/'+ DISABLED + '?page=' + inactiveEventsCurrentPage , {
+    const response = await axios.get('/event/'+userID+'/merchant/'+ DISABLED + '?page=' + inactiveEventsCurrentPage + (searchQuery ? '&keyword=' + searchQuery :'') , {
         headers: {
             'Accept': 'application/json',
             'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token 
@@ -128,7 +133,7 @@ export const MerchantProvider = ({ children }) => {
       const userID = JSON.parse(Cookies.get('user'))?.user.id
   
     
-    const response = await axios.get('/event/'+userID+'/merchant/'+ EXPIRED + '?page=' + expiredEventsCurrentPage , {
+    const response = await axios.get('/event/'+userID+'/merchant/'+ EXPIRED + '?page=' + expiredEventsCurrentPage + (searchQuery ? '&keyword=' + searchQuery :''), {
         headers: {
             'Accept': 'application/json',
             'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token 
@@ -176,7 +181,7 @@ export const MerchantProvider = ({ children }) => {
   // };
 
   return (
-    <MerchantContext.Provider value={{ activeEvents, inactiveEvents, expiredEvents, activeEventsCurrentPage, inactiveEventsCurrentPage, expiredEventsCurrentPage, fetchInactiveEvents:() => fetchInactiveEvents(), fetchActiveEvents:() => fetchActiveEvents(), fetchExpiredEvents:() => fetchExpiredEvents(), activeEventsTotalPage, activeEventsPerPage, setActiveEventsCurrentPage: (selectedPage) => setActiveEventsCurrentPage(selectedPage), inactiveEventsTotalPage, inactiveEventsPerPage, setInactiveEventsCurrentPage: (selectedPage) => setInactiveEventsCurrentPage(selectedPage), expiredEventsTotalPage, expiredEventsPerPage, setExpiredEventsCurrentPage: (selectedPage) => setExpiredEventsCurrentPage(selectedPage) }}>
+    <MerchantContext.Provider value={{ activeEvents, inactiveEvents, expiredEvents, activeEventsCurrentPage, inactiveEventsCurrentPage, expiredEventsCurrentPage, fetchInactiveEvents:() => fetchInactiveEvents(), fetchActiveEvents:() => fetchActiveEvents(), fetchExpiredEvents:() => fetchExpiredEvents(), activeEventsTotalPage, activeEventsPerPage, setActiveEventsCurrentPage: (selectedPage) => setActiveEventsCurrentPage(selectedPage), inactiveEventsTotalPage, inactiveEventsPerPage, setInactiveEventsCurrentPage: (selectedPage) => setInactiveEventsCurrentPage(selectedPage), expiredEventsTotalPage, expiredEventsPerPage, setExpiredEventsCurrentPage: (selectedPage) => setExpiredEventsCurrentPage(selectedPage), handleSearch, searchQuery }}>
       {children}
     </MerchantContext.Provider>
   );

@@ -1,75 +1,72 @@
 import React, {useState, useEffect} from 'react'
 import { Fab, Action } from 'react-tiny-fab';
 import 'react-tiny-fab/dist/styles.css';
-import { LuWarehouse } from "react-icons/lu";
+import { LuListPlus } from "react-icons/lu";
 import Cookies from 'js-cookie';
 import axios from '../../api/axios';
 import ReactPaginate from 'react-paginate';
 
-const Venue = () => {
+const Category = () => {
 
   const [searchInput, setSearchInput] = useState('');
 
-  const [venues, setVenues] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [perPage, setPerPage] = useState(1);
 
   const [formData, setFormData] = useState({
-    name: '',
-    address: ''
+    name: ''
 });
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingVenueId, setEditingVenueId] = useState(null);
-  const [deleteVenueId, setDeleteVenueId] = useState(null);
+  const [editingCategoryId, setEditingCategoryId] = useState(null);
+  const [deleteCategoryId, setDeleteCategoryId] = useState(null);
 
-  const openAddVenueDialog = () => {
+  const openAddCategoryDialog = () => {
     setFormData({
-        name: '',
-        address: ''
+        name: ''
     });
     setIsDialogOpen(true);
-    setEditingVenueId(null); // Resetting the editing venue ID
-    add_venue.showModal();
+    setEditingCategoryId(null); // Resetting the editing venue ID
+    add_category.showModal();
 };
 
-  const openDeleteVenueDialog = (venue) => {
-      setDeleteVenueId(venue.id)
-      delete_venue.showModal();
+  const openDeleteCategoryDialog = (category) => {
+      setDeleteCategoryId(category.id)
+      delete_category.showModal();
   };
-
   const handleSearchInput = (e) => {
     setSearchInput(e.target.value);
     setCurrentPage(1);
-  };
-  const openEditVenueDialog = (venue) => {
+};
+
+  const openEditCategoryDialog = (category) => {
     setFormData({
-      name: venue.name,
-      address: venue.address
+      name: category.name,
+      address: category.address
     });
     setIsDialogOpen(true);
-    setEditingVenueId(venue.id); // Set the ID of the venue being edited
-    add_venue.showModal();
+    setEditingCategoryId(category.id); // Set the ID of the category being edited
+    add_category.showModal();
   };
 
   const [error, setError] = useState('');
 
-  const handleVenueChange = (e) => {
+  const handleCategoryChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
   const handlePageClick = (selectedPage) => {
     setCurrentPage(selectedPage.selected + 1);
   };
-
+  
   useEffect(() => {
-    const getVenues = async () => {
+    const getCategories = async () => {
         try {
-              // const response = await axios.get('/venues', {
             let response; // Declare the variable outside the condition
 
-            let url = '/venues?page=' + currentPage
+            let url = '/categories?page=' + currentPage
             if (searchInput) {
                 url+= '&keyword='+searchInput
             } 
@@ -79,8 +76,7 @@ const Venue = () => {
                 'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
               }
             });
-
-            // const response = await axios.get('/venues?page='+currentPage, {
+            // const response = await axios.get('/categories?page='+currentPage, {
             //       headers: {
             //           'Accept': 'application/json',
             //           'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
@@ -89,10 +85,10 @@ const Venue = () => {
 
 
             //   if(response.data){
-                  // console.log(response.data.venues)
+                  // console.log(response.data)
             //   }
               // console.log(JSON.parse(Cookies.get('user')).token)
-              setVenues(response.data.venues)
+              setCategories(response.data.categories)
               // console.log(response.data.users.data)
               setTotalPage(response.data.pagination.total)
               setPerPage(response.data.pagination.per_page)
@@ -101,27 +97,20 @@ const Venue = () => {
               console.log(e);
           }
       }
-      getVenues();
+      getCategories();
       
-  }, [currentPage,isDialogOpen,deleteVenueId,searchInput]);
+  }, [currentPage,isDialogOpen,deleteCategoryId,searchInput]);
   
-  const venueSubmit = async(e) => {
+  const categorySubmit = async(e) => {
     e.preventDefault()
-    console.log(editingVenueId) 
+    console.log(editingCategoryId) 
 
-    if (editingVenueId) {
-      // Handle editing existing user logic using editingUserId
-      // Example: Update the user's details
-      // if (formData.password !== formData.passwordConfirm) {
-      //   setError('Passwords do not match.');
-      //   return;
-      // }
+    if (editingCategoryId) {
       try {
         // console.warn(email,password)
-          const response = await axios.post('/venue/'+editingVenueId+'/update',  
+          const response = await axios.post('/category/'+editingCategoryId+'/update',  
           JSON.stringify({ 
-              name: formData.name,
-              address: formData.address,
+              name: formData.name
           }),
               {
                   headers:
@@ -132,7 +121,7 @@ const Venue = () => {
               },
           );
       
-          console.log('Venue Updated successfully:', response.data);
+          console.log('Category Updated successfully:', response.data);
           // add_user.close()
       } catch (err) {
           if (err?.response) {
@@ -148,18 +137,11 @@ const Venue = () => {
       
       
     } else {
-
-          // if (formData.password !== formData.passwordConfirm) {
-          //   setError('Passwords do not match.');
-          //   // console.log('Passwords do not match.')
-          //   return;
-          // }
           try {
               // console.warn(email,password)
-              const response = await axios.post('/venues',  
+              const response = await axios.post('/categories',  
               JSON.stringify({ 
-                name: formData.name,
-                address: formData.address,
+                name: formData.name
               }),
                   {
                       headers:
@@ -170,7 +152,7 @@ const Venue = () => {
                   },
               );
           
-              console.log('Venue added successfully:', response.data);
+              console.log('Category added successfully:', response.data);
               add_venue.close()
           } catch (err) {
               if (err?.response) {
@@ -185,42 +167,41 @@ const Venue = () => {
           }
     }
     setIsDialogOpen(false);
-    add_venue.close();
+    add_category.close();
+    }
+
+    const categoryDelete = async(e) => {
+    e.preventDefault()
+    // console.log("delete")
+    try {
+        // console.warn(email,password)
+        const response = await axios.delete('/category/'+deleteCategoryId+'/delete', 
+            {
+                headers:
+                {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token 
+                },
+            },
+        );
     
+        console.log('Category deleted successfully:', response.data);
+        // add_user.close()
+    } catch (err) {
+        if (err?.response) {
+            console.log("Error: Response=")
+        } else if (err.reponse?.status === 400) {
+            console.log("Error:400")
+        } else if (err.response?.status === 401) {
+            console.log("Error:401")
+        } else {
+            console.log("Error:"+err)
+        }
+    }
+    setDeleteCategoryId(null)
+    delete_category.close()
+    }
 
-}
-
-const venueDelete = async(e) => {
-  e.preventDefault()
-  // console.log("delete")
-  try {
-      // console.warn(email,password)
-      const response = await axios.delete('/venue/'+deleteVenueId+'/delete', 
-          {
-              headers:
-              {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token 
-              },
-          },
-      );
-  
-      console.log('Venue deleted successfully:', response.data);
-      // add_user.close()
-  } catch (err) {
-      if (err?.response) {
-          console.log("Error: Response=")
-      } else if (err.reponse?.status === 400) {
-          console.log("Error:400")
-      } else if (err.response?.status === 401) {
-          console.log("Error:401")
-      } else {
-          console.log("Error:"+err)
-      }
-  }
-  setDeleteVenueId(null)
-  delete_venue.close()
-}
   return (
     <div className='m-auto grid-cols-2'>
       <div className='col-span-1 mx-6'>
@@ -228,7 +209,6 @@ const venueDelete = async(e) => {
                 <div className="join">
                     <div>
                         <div>
-                        {/* <input className="input input-bordered w-full sm:w-64 md:w-80 lg:w-96 xl:w-120 join-item" placeholder="Search"/> */}
                         <input className="input input-bordered w-full sm:w-64 md:w-80 lg:w-96 xl:w-120 join-item" placeholder="Search" value={searchInput} onChange={handleSearchInput}/>
                         </div>
                     </div>
@@ -251,65 +231,44 @@ const venueDelete = async(e) => {
                   <thead>
                     <tr>
                       <th>Name</th>
-                      <th>Address</th>
                       <th></th>
                       <th></th>
                     </tr>
                   </thead>
               <tbody>
               {
-                  Array.isArray(venues) && venues.length > 0 ? (
-                    venues.map((venue, index) => (
-                    <tr key={venue.id} className={index % 2 === 0 ? 'bg-base-200' : ''}>
-                      {/* <td>
-                        <div className='flex'>
-                          <div className='flex-none'>
-                            
-                          </div>
-                          <div className='flex-auto mx-5'>
-                            <p>{user.first_name + " " + user.last_name}</p>
-                          </div>
-                        </div>
-                      </td> */}
+                  Array.isArray(categories) && categories.length > 0 ? (
+                    categories.map((category, index) => (
+                    <tr key={category.id} className={index % 2 === 0 ? 'bg-base-200' : ''}>
+                    
                        <td>
                           <div class="flex items-center gap-3">
                             <div>
-                              <div class="font-bold">{venue.name}</div>
+                              <div class="font-bold">{category.name}</div>
                               {/* <div class="text-sm opacity-50">United States</div> */}
                             </div>
                           </div>
                         </td>
-                        <td>
-                        {venue.address}
-                        </td>
                         <th>
-                          <button class="btn btn-ghost btn-xs"  onClick={() => openEditVenueDialog(venue)}>edit</button>
+                          <button class="btn btn-ghost btn-xs"  onClick={() => openEditCategoryDialog(category)}>edit</button>
                         </th>
                         <th>
-                          <button class="btn btn-ghost btn-xs" onClick={() => openDeleteVenueDialog(venue)}>delete</button>
+                          <button class="btn btn-ghost btn-xs" onClick={() => openDeleteCategoryDialog(category)}>delete</button>
                         </th>
                     </tr>
                   ))
                     ) : (
-                      <p>No venues available</p>
+                      <p>No categories available</p>
 
                   )
                 }
               </tbody>
             </table>
           </div>
-          {/* <div className="join items-center justify-center w-full">
-                      <button className="join-item btn">1</button>
-                      <button className="join-item btn">2</button>
-                      <button className="join-item btn btn-disabled">...</button>
-                      <button className="join-item btn">99</button>
-                      <button className="join-item btn">100</button>
-          </div> */}
           <ReactPaginate
             previousLabel={'«'}
             nextLabel={'»'}
             breakLabel={'...'}
-            // pageCount={Math.ceil( totalPage / perPage )}
             pageCount={Math.ceil( totalPage / perPage )}
             marginPagesDisplayed={2}
             pageRangeDisplayed={2}
@@ -323,49 +282,43 @@ const venueDelete = async(e) => {
             forcePage={currentPage - 1}
                 />
             <Fab
-              icon={<LuWarehouse />}
+              icon={<LuListPlus />}
               event={false}
               alwaysShowTitle={true}
-              onClick={openAddVenueDialog}
+              onClick={openAddCategoryDialog}
             ></Fab>
-            <dialog id="add_venue" class="modal">
+            <dialog id="add_category" class="modal">
                   <div class="modal-box">
                     <form method="dialog">
                       <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                     </form>
-                    <h3 class="font-bold text-lg text-center">{editingVenueId !== null ? 'Edit Venue' :'Add Venue'}</h3>
+                    <h3 class="font-bold text-lg text-center">{editingCategoryId !== null ? 'Edit Category' :'Add Category'}</h3>
                     {/* <p class="py-4">Press ESC key or click on ✕ button to close</p> */}
-                    <form className="card-body" onSubmit={venueSubmit}>
+                    <form className="card-body" onSubmit={categorySubmit}>
                     {/* onSubmit={eventSubmit} */}
                     <div className="form-control">
                         <label className="label">
                         <span className="label-text">Name</span>
                         </label>
-                        <input type="text" placeholder="Name"  className="input input-bordered" name="name" value={formData.name} onChange={handleVenueChange} required />
-                    </div>
-                    <div className="form-control">
-                        <label className="label">
-                        <span className="label-text">Address</span>
-                        </label>
-                        <input type="text" placeholder="Address"  className="input input-bordered" name="address" value={formData.address} onChange={handleVenueChange} required />
+                        <input type="text" placeholder="Name"  className="input input-bordered" name="name" value={formData.name} onChange={handleCategoryChange} required />
                     </div>
                     
                     
                     <div className="form-control mt-6">
-                        <input className='btn btn-primary' type="submit" value={editingVenueId !== null ? 'Save' :'Add Venue'}/>
+                        <input className='btn btn-primary' type="submit" value={editingCategoryId !== null ? 'Save' :'Add Category'}/>
                     </div>
                     </form>
                   </div>
               </dialog>
 
-              <dialog id="delete_venue" class="modal modal-bottom sm:modal-middle">
+              <dialog id="delete_category" class="modal modal-bottom sm:modal-middle">
                   <div class="modal-box">
                     <h3 class="font-bold text-lg">Delete</h3>
-                    <p class="py-4">Are you sure you want to delete venue?</p>
+                    <p class="py-4">Are you sure you want to delete category?</p>
                     <div class="modal-action">
-                      <form method="dialog" onSubmit={venueDelete}>
+                      <form method="dialog" onSubmit={categoryDelete}>
                         <button class="btn mr-2" type="submit">Confirm</button>
-                        <button class="btn" type="button" onClick={()=>delete_venue.close()}>Close</button>
+                        <button class="btn" type="button" onClick={()=>delete_category.close()}>Close</button>
                       </form>
                     </div>
                   </div>
@@ -375,4 +328,4 @@ const venueDelete = async(e) => {
   )
 }
 
-export default Venue
+export default Category

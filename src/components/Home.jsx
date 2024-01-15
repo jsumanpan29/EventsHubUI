@@ -5,6 +5,9 @@ import axios from '../../api/axios'
 import Cookies from 'js-cookie'
 import { useEventContext } from './EventContext';
 import { useCart } from './CartContext'
+import img_traffic from '../images/img_traffic.jpg';
+import img_kid from '../images/img_kid.jpg';
+import img_marathon from '../images/img_marathon.jpg';
 
 
 const Home = ({ loginClicked }) => {
@@ -55,8 +58,9 @@ const Home = ({ loginClicked }) => {
 
   return (
     <>
-      <div className="hero min-h-screen" style={{ backgroundImage: 'url(https://daisyui.com/images/stock/photo-1507358522600-9f71e620c44e.jpg)' }}>
-        <div className="hero-overlay bg-opacity-60"></div>
+      {/* <div className="hero min-h-screen" style={{ backgroundImage: 'url(https://daisyui.com/images/stock/photo-1507358522600-9f71e620c44e.jpg)' }}> */}
+      <div className="hero min-h-screen" style={{ backgroundImage: 'url(' + img_traffic + ')' }}>
+        <div className="hero-overlay bg-opacity-80"></div>
 
         <div className="hero-content text-center text-neutral-content">
           {
@@ -85,8 +89,9 @@ const Home = ({ loginClicked }) => {
               </div>
             ) : (
               <div className="max-w-md">
-                <h1 className="mb-5 text-5xl font-bold">Hello there</h1>
-                <p className="mb-5">Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem quasi. In deleniti eaque aut repudiandae et a id nisi.</p>
+               
+              <h1 className="mb-5 text-5xl">Welcome to Eventurado!</h1>
+              <p className="mb-5 text-xl">Uncover, Connect, Create, and Venture into events that defy your wildest expectations.</p>
                 <button className="btn btn-primary" onClick={onClickShowSignUp}>Get Started</button>
               </div>
             )
@@ -100,17 +105,16 @@ const Home = ({ loginClicked }) => {
         </div >
       </div >
       <div className="hero min-h-fit bg-base-200">
-        <div className="hero-content flex-col lg:flex-row">
-          <img src="" className="max-w-sm h-96 w-96 rounded-lg shadow-2xl" />
-          <div>
-            <h1 className="text-5xl font-bold">Box Office News!</h1>
-            <p className="py-6">Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem quasi. In deleniti eaque aut repudiandae et a id nisi.</p>
-            <button className="btn btn-primary">Get Started</button>
+        <div className="flex m-10 flex-col lg:flex-row">
+          <img src={img_kid} className="w-[420px] rounded-lg shadow-2xl" />
+          <div className='flex flex-col w-[780px] items-center justify-center'>
+            <h1 className="p-3 text-5xl">Explore Unforgettable Events!</h1>
+            <p className="p-6 text-center">Immerse yourself in the extraordinary as you ignite new memories and unleash your adventures. Explore a world where every moment is a chance to create unforgettable experiences, where discovery knows no bounds. From captivating events to exhilarating escapades, Eventurado invites you to embark on a journey where the extraordinary becomes the norm, and each step is a leap into the extraordinary.</p>
+            <button className="btn btn-primary">Browse</button>
           </div>
         </div>
       </div>
       <div className="hero min-h-fit bg-base-200">
-        {/* <div className="hero-content flex-col lg:flex-row-reverse"> */}
         <div className="flex flex-col w-full">
           <div className="grid h-32 bg-base-300 place-items-center">
               <div className="join">
@@ -126,16 +130,16 @@ const Home = ({ loginClicked }) => {
               </div>
           </div>
         </div>
-        {/* </div> */}
       </div>
       <div className="hero min-h-fit bg-base-200">
-        <div className="hero-content flex-col lg:flex-row-reverse">
-          <img src="" className="max-w-sm h-96 w-96 rounded-lg shadow-2xl" />
-          <div>
-            <h1 className="text-5xl font-bold">Box Office News!</h1>
-            <p className="py-6">Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem quasi. In deleniti eaque aut repudiandae et a id nisi.</p>
-            <button className="btn btn-primary">Get Started</button>
+        <div className="flex m-10 flex-col lg:flex-row">
+          <div className='flex flex-col w-[780px] items-center justify-center'>
+              <h1 className="p-3 text-5xl">Contact Us!</h1>
+              <p className="p-6 text-center"> Whether you have questions, ideas, or just want to say hello, we'd love to hear from you! Feel free to reach out to us for anything you need assistance with.</p>
+              <button className="btn btn-primary">Contact us</button>
           </div>
+          <img src={img_marathon} className="w-[420px] rounded-lg shadow-2xl" />
+          
         </div>
       </div>
     </>

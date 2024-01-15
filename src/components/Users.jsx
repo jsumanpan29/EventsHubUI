@@ -7,6 +7,8 @@ import axios from '../../api/axios';
 import ReactPaginate from 'react-paginate';
 
 const Users = () => {
+  const [searchInput, setSearchInput] = useState('');
+
   const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
@@ -47,6 +49,10 @@ const openDeleteUserDialog = (user) => {
     setDeleteUserId(user.id)
     delete_user.showModal();
 };
+const handleSearchInput = (e) => {
+  setSearchInput(e.target.value);
+  setCurrentPage(1);
+};
 const openEditUserDialog = (user) => {
     setFormData({
         first_name: user.first_name,
@@ -77,14 +83,25 @@ const openEditUserDialog = (user) => {
   useEffect(() => {
     const getUsers = async () => {
         try {
-              // const response = await axios.get('/users', {
-            const response = await axios.get('/users?page='+currentPage, {
-                  headers: {
-                      'Accept': 'application/json',
-                      'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
-                  }
-              });
 
+            // const response = await axios.get('/users?page='+currentPage, {
+            //       headers: {
+            //           'Accept': 'application/json',
+            //           'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
+            //       }
+            //   });
+            let response; // Declare the variable outside the condition
+
+            let url = '/users?page=' + currentPage
+            if (searchInput) {
+                url+= '&keyword='+searchInput
+            } 
+            response = await axios.get(url, {
+              headers: {
+                'Accept': 'application/json',
+                'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
+              }
+            });
 
             //   if(response.data){
             //       console.log(response.data.events)
@@ -101,7 +118,7 @@ const openEditUserDialog = (user) => {
       }
       getUsers();
       
-  }, [currentPage,isDialogOpen,deleteUserId]);
+  }, [currentPage,isDialogOpen,deleteUserId, searchInput]);
 
   const handleRoleChange = (e) => {
     const { value } = e.target;
@@ -272,7 +289,7 @@ const openEditUserDialog = (user) => {
                 <div className="join">
                     <div>
                         <div>
-                        <input className="input input-bordered w-full sm:w-64 md:w-80 lg:w-96 xl:w-120 join-item" placeholder="Search"/>
+                        <input className="input input-bordered w-full sm:w-64 md:w-80 lg:w-96 xl:w-120 join-item" placeholder="Search" value={searchInput} onChange={handleSearchInput}/>
                         </div>
                     </div>
                     

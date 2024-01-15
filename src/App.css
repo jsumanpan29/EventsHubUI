@@ -2,7 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-.react-daterange-picker {
+  #filters .react-calendar{
+    /* Your custom styles */
+    position: fixed;
+  }
+  .react-daterange-picker {
     /* Your custom styles */
   }
   /* Target the input field */
@@ -78,6 +82,27 @@
   background: none !important;
 }
 
+text.apexcharts-title-text{
+  fill: white !important;
+}
+
+span.apexcharts-legend-text{
+  color: hsl(var(--s) / var(--tw-text-opacity)) !important;
+}
+
+/* .apexcharts-text .apexcharts-xaxis-label tspan{
+  color: hsl(var(--s) / var(--tw-text-opacity)) !important;
+} */
+
+text[id^="SvgjsText"].apexcharts-text.apexcharts-xaxis-label{
+  fill: white !important;
+
+}
+
+text[id^="SvgjsText"].apexcharts-text.apexcharts-yaxis-label{
+  fill: white !important;
+
+}
 /* .menu :where(li:not(.menu-title) > *:not(ul):not(details):not(.menu-title)), .menu :where(li:not(.menu-title) > details > summary:not(.menu-title)) {
   padding-left: 1rem;
   padding-right: 1rem;

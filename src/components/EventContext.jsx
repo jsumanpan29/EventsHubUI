@@ -18,10 +18,16 @@ export const EventContext = createContext({
 export const useEventContext = () => useContext(EventContext);
 
 export const EventProvider = ({ children }) => {
+  const [searchEventsQuery, setSearchEventsQuery] = useState('');
   const [events, setEvents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [perPage, setPerPage] = useState(1);
+
+  const handleEventsSearch = (query) => {
+    setSearchEventsQuery(query.target.value);
+    setCurrentPage(1);
+  };
 
   useEffect(() => {
     // Fetch events when the component mounts
@@ -48,7 +54,7 @@ export const EventProvider = ({ children }) => {
       const userID = JSON.parse(Cookies.get('user'))?.user.id
   
     
-    const response = await axios.get('/event_attendee/user/'+userID+'?page='+currentPage, {
+    const response = await axios.get('/event_attendee/user/'+userID+'?page='+currentPage+(searchEventsQuery ? '&keyword=' + searchEventsQuery : ''), {
         headers: {
             'Accept': 'application/json',
             'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token 
@@ -112,7 +118,7 @@ export const EventProvider = ({ children }) => {
   };
 
   return (
-    <EventContext.Provider value={{ events, addEvent, removeEvent, fetchEvents, isEventAlreadyAttended, currentPage, totalPage, perPage, setCurrentPage:(selectedPage) => setCurrentPage(selectedPage) }}>
+    <EventContext.Provider value={{ events, addEvent, removeEvent, fetchEvents, isEventAlreadyAttended, currentPage, totalPage, perPage, setCurrentPage:(selectedPage) => setCurrentPage(selectedPage),handleEventsSearch, searchEventsQuery }}>
       {children}
     </EventContext.Provider>
   );
