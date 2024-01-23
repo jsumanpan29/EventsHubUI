@@ -2,13 +2,12 @@ import React, { useState,useEffect } from 'react'
 import { useLocation, Link, useParams } from 'react-router-dom'
 import axios from '../../api/axios'
 import Cookies from 'js-cookie';
-import { LuTag,LuUser2,LuNavigation } from "react-icons/lu";
+import { LuTag,LuUser2,LuNavigation,LuCalendar,LuCalendarClock } from "react-icons/lu";
 import { format } from 'date-fns'
 import { useEventContext } from './EventContext';
 import { useCart } from './CartContext'
 
 const Event = () => {
-  // const { state } = useLocation();
   const {eId} = useParams();
   const { events, addEvent, removeEvent, isEventAlreadyAttended} = useEventContext();
   const {cartItems, addToCart, removeFromCart, emptyCart, isItemInCart} = useCart();
@@ -29,14 +28,10 @@ const Event = () => {
 
   const [attendedText, setAttendedText] = useState('')
 
-  // const [eventAttended, setEventAttended] = useState([])
-  // const [onEventAlreadyAttended, setOnEventAlreadyAttended] = useState(false)
-
 
 
   useEffect(() => {
     const getEvents = async () => {
-              // try { const response = await axios.get('/event/'+state.id, {  
               try { const response = await axios.get('/event/'+eId, {  
                 headers: {
                     'Accept': 'application/json',
@@ -53,8 +48,6 @@ const Event = () => {
                 setEventSchedStart(response.data.event.date_sched_start);
                 setEventSchedEnd(response.data.event.date_sched_end);
                 setEventRegDeadline(response.data.event.date_reg_deadline);
-                
-                // console.log(JSON.stringify(response.data.media))
                 if (response.data.media.length > 0) {
                   setImageFileName(response.data.media[0].file_name);
                   setImageUrl(response.data.media[0].url);
@@ -66,46 +59,6 @@ const Event = () => {
       }
       getEvents();
   }, []);
-  
-
-//   useEffect(() => {
-//     const getAttended = async () =>{
-//       try { 
-//           const user = JSON.parse(userCookie)
-//           const response = await axios.get('/users/events_attended/'+user?.user.id, {
-//             headers: {
-//                 'Accept': 'application/json',
-//                 'Authorization': `Bearer ` + user?.token 
-//             }
-//           });
-//           // if (response.data.) {
-          
-//           // }
-//         //   console.log(response.data)
-//         // addToCart(response.data);
-//         setEventAttended(response.data)
-//       } catch (e) {
-//           console.log(e);
-//       }
-     
-//     }
-//     getAttended();
-//   }, [onEventAlreadyAttended]);
-
-//   useEffect(() => {
-//     console.log("Cart Items:"+cartItems)
-// }, [cartItems]);
-
-// useEffect(() => {
-//   if (isEventAlreadyAttended(eventID)){
-//     setAttendedText('Remove')
-//   }else
-//   {
-//     setAttendedText('Attend')
-//   }
-   
-
-// },[])
 
 const addItemToCart = (eventID, eventName, imageUrl, imageFileName) => {
   
@@ -116,130 +69,17 @@ const addItemToCart = (eventID, eventName, imageUrl, imageFileName) => {
       file_name: imageFileName
   }
   addToCart(itemToAdd)
-    // console.log(events)
 }
 
-
-  // useEffect(() => {
-  //   // console.log('Updated eventAttended:', eventAttended);
-  //   // const parsedEventAttended = JSON.parse(eventAttended);
-
-  //   // console.log(eventAttended)
-
-  //   const isEventIDExists = eventAttended.some(event => event.event_id === eventID);
-
-  //   if (isEventIDExists) {
-  //     // Event ID exists in the eventAttended array
-  //     console.log('Event ID exists');
-  //     setOnEventAlreadyAttended(true)
-  //   } else {
-  //     // Event ID doesn't exist in the eventAttended array
-  //     console.log('Event ID does not exist');
-  //   }
-
-  // }, [eventAttended]); // Watch for changes in eventAttended
-  
-//   const attendEvent = async (id,name) => {
-//     try {
-//         // console.log("attendEvent:"+JSON.parse(userCookie))
-//         // console.log("Name:"+name)
-//         // await addToCart({eventID:id})
-//         // setOnAttendEvent(true)
-//         // console.log(cart)
-        
-//     } catch (err) {
-//         console.log('Error: '+err.message);
-//     }
-// }
-// const addCart = async (eventID) => {
-//   // console.log('UserID:', userID);
-//   // console.log('EventID:', eventID);
-//   try {
-//     if (isItemInCart(eventID)) {
-//       console.log("Cant add to cart")
-//     }else{
-//       addToCart(eventID)
-//     }
-    
-//     // console.log(cartItems)
-//   } catch (e) {
-//     console.log(e);
-//   }
-// }
-  const onRemoveEvent = async (id) => {
-    try {
-        console.log("removeEvent:"+JSON.parse(userCookie))
-        // const response = await axios.delete(`/events/${id}`,
-        //     {
-        //         headers: {
-        //             'Accept': 'application/json',
-        //             'Authorization': `Bearer `+ userCookie.token
-        //         }
-        //     });
-        // if (response.data.message == 'You need to be admin to enable action.') {
-        //     // toast.error('You need to be admin to enable action!', {
-        //     //     position: "bottom-right",
-        //     //     autoClose: 5000,
-        //     //     hideProgressBar: false,
-        //     //     closeOnClick: true,
-        //     //     pauseOnHover: true,
-        //     //     draggable: true,
-        //     //     progress: undefined,
-        //     // });
-        // } else {
-        //     // toast.error('Product Deleted!', {
-        //     //     position: "bottom-right",
-        //     //     autoClose: 5000,
-        //     //     hideProgressBar: false,
-        //     //     closeOnClick: true,
-        //     //     pauseOnHover: true,
-        //     //     draggable: true,
-        //     //     progress: undefined,
-        //     // });
-        //     const newProducts = products.filter((product) => product.id != id)
-        //     setProducts(newProducts);
-        // }
-    } catch (err) {
-        console.log('Error: '+err.message);
-    }
-}
-
-const updateEvent = async (eventID) => {
-    // if (cookies.user.user.role == '0') {
-    //     // toast.error('You need to be admin to enable action!', {
-    //     //     position: "bottom-right",
-    //     //     autoClose: 5000,
-    //     //     hideProgressBar: false,
-    //     //     closeOnClick: true,
-    //     //     pauseOnHover: true,
-    //     //     draggable: true,
-    //     //     progress: undefined,
-    //     // });
-    // } else {
-    //     navigate('/edit', { state: { id: productId } });
-    // }
-    // const datetime = format(new Date(), 'MMMM dd, yyyy pp')
-    // const updatedPost = { id, title: editTitle, datetime, body: editBody}
-    try{
-      // const response = await api.put('/posts/'+id, updatedPost)
-      // setPosts(posts.map(post => post.id === id ? { ...response.data } : post ))
-      // setEditTitle('')
-      // setEditBody('')
-      // navigate('/')
-      console.log("updateEvent:"+JSON.parse(userCookie))
-    }catch(err){
-      console.log('Error: '+err.message)
-    }
-}
   return (
     <div className="items-start min-h-screen bg-base-200">
       <div className="container w-full lg:w-3/4 xl:w-2/3 mx-auto">
         {eId && 
             <>
              <div>
-             <h1 className="text-5xl font-bold pt-10 pb-5">{name}</h1>
+             <h1 className="text-lg md:text-2xl lg:text-5xl font-bold pt-10 pb-5">{name}</h1>
              </div>
-            <div class="flex justify-center items-center h-[600px] w-128 bg-gray-800">
+            <div class="flex justify-center items-center h-[180px] md:h-[280px] lg:h-[320px] xl:h-[400px] 2xl:h-[500px] w-128 bg-gray-800">
                
                 {
                   imageUrl ?
@@ -250,19 +90,19 @@ const updateEvent = async (eventID) => {
             </div>
             <div className='grid grid-cols-5 py-4 gap-12 place-items-center px-6'>
               
-              <div className='text-sm flex '><LuTag size={18} className='mr-1.5' />{categoryName}</div>
-              <div className='text-sm flex'><LuUser2 size={18} className='mr-1.5' />{estAttendants + '+'}</div>
-              <div className='text-sm flex'>{format(new Date(eventSchedStart), 'MMM dd - ') + format(new Date(eventSchedEnd), 'MMM dd, yyyy') }</div>
-              <div className='text-sm flex'><LuNavigation size={18} className='mr-1.5' />{venueName + ", " + eventLocation}</div>
-              <div className='text-sm flex'>
-                  {' Reg. Deadline: '+ format(new Date(eventRegDeadline), 'MMM dd, yyyy') }
+              <div className='text-xs md:text-sm flex'><LuTag size={18} className='mr-1.5' />{categoryName}</div>
+              <div className='text-xs md:text-sm flex'><LuUser2 size={18} className='mr-1.5' />{estAttendants + '+'}</div>
+              <div className='text-xs md:text-sm flex'><LuCalendar size={18} className='mr-1.5' />{format(new Date(eventSchedStart), 'MMM dd - ') + format(new Date(eventSchedEnd), 'MMM dd, yyyy') }</div>
+              <div className='text-xs md:text-sm flex'><LuNavigation size={18} className='mr-1.5' />{venueName + ", " + eventLocation}</div>
+              <div className='text-xs md:text-sm flex'>
+              <LuCalendarClock size={18} className='mr-1.5' />{' Reg. Deadline: '+ format(new Date(eventRegDeadline), 'MMM dd, yyyy') }
               </div>
               
             </div>
             <div className='grid grid-cols-5 h-80'>
-              <div className='col-span-4 px-10'>
-                <h1 className="text-3xl font-bold pb-3">About this Event</h1>
-                <p>{description}</p>
+              <div className='col-span-4 px-3 lg:px-10'>
+                <h1 className="text-base md:text-xl lg:text-3xl font-bold pb-3">About this Event</h1>
+                <p className='text-xs md:text-sm lg:text-base'>{description}</p>
               </div>
               <div className='flex justify-center'>
                  
@@ -270,18 +110,14 @@ const updateEvent = async (eventID) => {
               {
                 Cookies.get('user') ?
                 (<>
-                 <button className="btn btn-primary px-0 sm:px-4 md:px-8" onClick={() => isEventAlreadyAttended(eventID) ? removeEvent(eventID) : addEvent(eventID)}>{isEventAlreadyAttended(eventID) ? "Remove" : "Attend"}</button>
+                 <button className="btn btn-primary text-xs md:text-sm lg:text-base px-2 md:px-8" onClick={() => isEventAlreadyAttended(eventID) ? removeEvent(eventID) : addEvent(eventID)}>{isEventAlreadyAttended(eventID) ? "Remove" : "Attend"}</button>
                  
                 </>)
                 :
                 (<>
-                   {/* <button className="btn btn-primary px-0 sm:px-4 md:px-8" onClick={() => isItemInCart(eventID) ? removeFromCart(eventID) : addToCart(eventID)}>{isItemInCart(eventID) ? "Remove" : "Attend"}</button> */}
-                   <button className="btn btn-primary px-0 sm:px-4 md:px-8" onClick={() => isItemInCart(eventID) ? removeFromCart(eventID) : addItemToCart(eventID, name, imageUrl, imageFileName)}>{isItemInCart(eventID) ? "Remove" : "Attend"}</button>
+                   <button className="btn btn-primary text-xs md:text-sm lg:text-base px-2 md:px-8" onClick={() => isItemInCart(eventID) ? removeFromCart(eventID) : addItemToCart(eventID, name, imageUrl, imageFileName)}>{isItemInCart(eventID) ? "Remove" : "Attend"}</button>
                 </>)
               }
-              {/* <button className="btn btn-primary px-8" onClick={() => Cookies.get('user') ? addEvent(eventID) : checkIfIncludes(eventID)}>Attend</button> */}
-                
-                  
               </div>
             </div>
             

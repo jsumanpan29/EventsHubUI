@@ -28,6 +28,28 @@ const Users = () => {
   const [editingUserId, setEditingUserId] = useState(null);
   const [deleteUserId, setDeleteUserId] = useState(null);
 
+  const getUsers = async () => {
+    try {
+        let response; // Declare the variable outside the condition
+
+        let url = '/users?page=' + currentPage
+        if (searchInput) {
+            url+= '&keyword='+searchInput
+        } 
+        response = await axios.get(url, {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
+          }
+        });
+          setUsers(response.data.users.data)
+          setTotalPage(response.data.pagination.total)
+          setPerPage(response.data.pagination.per_page)
+      } catch (e) {
+          console.log(e);
+      }
+  }
+
   const openAddUserDialog = () => {
     setFormData({
         first_name: '',
@@ -44,8 +66,6 @@ const Users = () => {
 };
 
 const openDeleteUserDialog = (user) => {
-  // setIsDialogOpen(true);
-  // setEditingUserId(null); // Resetting the editing user ID
     setDeleteUserId(user.id)
     delete_user.showModal();
 };
@@ -76,49 +96,14 @@ const openEditUserDialog = (user) => {
   };
 
   const handlePageClick = (selectedPage) => {
-    // console.log(selectedPage)
     setCurrentPage(selectedPage.selected + 1);
 };
 
   useEffect(() => {
-    const getUsers = async () => {
-        try {
-
-            // const response = await axios.get('/users?page='+currentPage, {
-            //       headers: {
-            //           'Accept': 'application/json',
-            //           'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
-            //       }
-            //   });
-            let response; // Declare the variable outside the condition
-
-            let url = '/users?page=' + currentPage
-            if (searchInput) {
-                url+= '&keyword='+searchInput
-            } 
-            response = await axios.get(url, {
-              headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
-              }
-            });
-
-            //   if(response.data){
-            //       console.log(response.data.events)
-            //   }
-              // console.log(JSON.parse(Cookies.get('user')).token)
-              setUsers(response.data.users.data)
-              // console.log(response.data.users.data)
-              setTotalPage(response.data.pagination.total)
-              setPerPage(response.data.pagination.per_page)
-              // console.log(response.data.pagination)
-          } catch (e) {
-              console.log(e);
-          }
-      }
+    
       getUsers();
       
-  }, [currentPage,isDialogOpen,deleteUserId, searchInput]);
+  }, [currentPage,isDialogOpen,deleteUserId]);
 
   const handleRoleChange = (e) => {
     const { value } = e.target;
@@ -129,7 +114,6 @@ const openEditUserDialog = (user) => {
   
   useEffect(() => {
     if (roleList && roleList.length > 0) {
-      // setVenue(roleList[0].id); 
       setFormData({ ...formData, role_id: roleList[0].id });
     }
   }, [roleList]);
@@ -144,7 +128,6 @@ const openEditUserDialog = (user) => {
               }
           })
           setRoleList(response.data.roles)
-          // console.log(response.data)
         } catch (err) {
           console.log(err)
         }
@@ -157,27 +140,21 @@ const openEditUserDialog = (user) => {
 
   const userSubmit = async(e) => {
     e.preventDefault()
-    // console.log(editingUserId)
-
     if (editingUserId) {
       // Handle editing existing user logic using editingUserId
       // Example: Update the user's details
       if (formData.password !== formData.passwordConfirm) {
         setError('Passwords do not match.');
-        // console.log('Passwords do not match.')
         return;
       }
       try {
-        // console.warn(email,password)
           const response = await axios.post('/users/'+editingUserId+'/update',  
           JSON.stringify({ 
               first_name: formData.first_name,
               last_name: formData.last_name,
               contact_no: formData.contact_no,
-              // email: formData.email, 
               password: formData.password,
               password_confirmation: formData.passwordConfirm,
-              // role_id: formData.role_id
           }),
               {
                   headers:
@@ -187,9 +164,6 @@ const openEditUserDialog = (user) => {
                   },
               },
           );
-      
-          // console.log('User Updated successfully:', response.data);
-          // add_user.close()
       } catch (err) {
           if (err?.response) {
               console.log("Error: Response=")
@@ -207,11 +181,9 @@ const openEditUserDialog = (user) => {
 
           if (formData.password !== formData.passwordConfirm) {
             setError('Passwords do not match.');
-            // console.log('Passwords do not match.')
             return;
           }
           try {
-              // console.warn(email,password)
               const response = await axios.post('/users',  
               JSON.stringify({ 
                   first_name: formData.first_name,
@@ -230,9 +202,6 @@ const openEditUserDialog = (user) => {
                       },
                   },
               );
-          
-              // console.log('User added successfully:', response.data);
-              // add_user.close()
           } catch (err) {
               if (err?.response) {
                   console.log("Error: Response=")
@@ -252,9 +221,7 @@ const openEditUserDialog = (user) => {
 }
   const userDelete = async(e) => {
     e.preventDefault()
-    // console.log("delete")
     try {
-        // console.warn(email,password)
         const response = await axios.delete('/users/'+deleteUserId+'/delete', 
             {
                 headers:
@@ -264,9 +231,6 @@ const openEditUserDialog = (user) => {
                 },
             },
         );
-    
-        // console.log('User deleted successfully:', response.data);
-        // add_user.close()
     } catch (err) {
         if (err?.response) {
             console.log("Error: Response=")
@@ -294,27 +258,16 @@ const openEditUserDialog = (user) => {
                     </div>
                     
                     <div className="indicator">
-                        <button className="btn join-item">Search</button>
+                        <button className="btn join-item" onClick={getUsers}>Search</button>
                     </div>
                 </div>
           </div>
       </div>
       <div className='col-span-1 mb-10 mx-6 bg-base-100'>   
           <div class="overflow-x-auto">
-            {/* 5 events per page */}
             <table className='table'>
-              {/* <thead>
-                <tr>
-                  <th className='text-center'>Users</th>
-                </tr>
-              </thead> */}
                   <thead>
                     <tr>
-                      {/* <th>
-                        <label>
-                          <input type="checkbox" class="checkbox" />
-                        </label>
-                      </th> */}
                       <th>Full Name</th>
                       <th>Email</th>
                       <th>User Type</th>
@@ -327,29 +280,15 @@ const openEditUserDialog = (user) => {
                   Array.isArray(users) && users.length > 0 ? (
                   users.map((user, index) => (
                     <tr key={user.id} className={index % 2 === 0 ? 'bg-base-200' : ''}>
-                      {/* <td>
-                        <div className='flex'>
-                          <div className='flex-none'>
-                            
-                          </div>
-                          <div className='flex-auto mx-5'>
-                            <p>{user.first_name + " " + user.last_name}</p>
-                          </div>
-                        </div>
-                      </td> */}
-                       <td>
+                        <td>
                           <div class="flex items-center gap-3">
                             <div>
                               <div class="font-bold">{user.first_name + " " + user.last_name}</div>
-                              {/* <div class="text-sm opacity-50">United States</div> */}
                             </div>
                           </div>
                         </td>
                         <td>
                         {user.email}
-                          {/* Zemlak, Daniel and Leannon */}
-                          {/* <br/>
-                          <span class="badge badge-ghost badge-sm">Desktop Support Technician</span> */}
                         </td>
                         <td>{user.roles.length > 0 ? user.roles[0].name : 'No Role'}</td>
                         <th>
@@ -369,18 +308,10 @@ const openEditUserDialog = (user) => {
               </tbody>
             </table>
           </div>
-          {/* <div className="join items-center justify-center w-full">
-                      <button className="join-item btn">1</button>
-                      <button className="join-item btn">2</button>
-                      <button className="join-item btn btn-disabled">...</button>
-                      <button className="join-item btn">99</button>
-                      <button className="join-item btn">100</button>
-          </div> */}
            <ReactPaginate
                     previousLabel={'«'}
                     nextLabel={'»'}
                     breakLabel={'...'}
-                    // pageCount={Math.ceil( totalPage / perPage )}
                     pageCount={Math.ceil( totalPage / perPage )}
                     marginPagesDisplayed={2}
                     pageRangeDisplayed={2}
@@ -406,9 +337,7 @@ const openEditUserDialog = (user) => {
                       <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                     </form>
                     <h3 class="font-bold text-lg text-center">{editingUserId !== null ? 'Edit User' :'Add User'}</h3>
-                    {/* <p class="py-4">Press ESC key or click on ✕ button to close</p> */}
                     <form className="card-body" onSubmit={userSubmit}>
-                    {/* onSubmit={eventSubmit} */}
                     <div className="form-control">
                         <label className="label">
                         <span className="label-text">First Name</span>

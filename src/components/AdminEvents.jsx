@@ -16,12 +16,33 @@ const AdminEvents = () => {
 
   const [error, setError] = useState('');
 
+  const getEvents = async () => {
+    try {
+        let response; // Declare the variable outside the condition
+
+        let url = '/events/admin?page=' + currentPage
+        if (searchInput) {
+            url+= '&keyword='+searchInput
+        } 
+        response = await axios.get(url, {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
+          }
+        });
+
+          setEvents(response.data.events)
+          setTotalPage(response.data.pagination.total)
+          setPerPage(response.data.pagination.per_page)
+      } catch (e) {
+          console.log(e);
+      }
+  }
+
   const handlePageClick = (selectedPage) => {
-    // console.log(selectedPage)
     setCurrentPage(selectedPage.selected + 1);
 };
   const handleToggleOnChange = (eventId, eventStatus) => {
-    // console.log(eventId)
     setSelectedEventId(eventId)
     setEventStatusVal(eventStatus)
     change_status.showModal()
@@ -46,7 +67,6 @@ const AdminEvents = () => {
             {
                 headers:
                 {
-                    // 'Content-Type': 'application/json',
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
                 },
@@ -74,42 +94,10 @@ const AdminEvents = () => {
     change_status.close();
   }
   useEffect(() => {
-    const getEvents = async () => {
-        try {
-              // const response = await axios.get('/events/admin', {
-            // const response = await axios.get('/events/admin?page='+currentPage, {
-            //       headers: {
-            //           'Accept': 'application/json',
-            //           'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
-            //       }
-            //   });
-            let response; // Declare the variable outside the condition
-
-            let url = '/events/admin?page=' + currentPage
-            if (searchInput) {
-                url+= '&keyword='+searchInput
-            } 
-            response = await axios.get(url, {
-              headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
-              }
-            });
-
-            //   if(response.data){
-                  // console.log(response.data.events)
-            //   }
-              // console.log(JSON.parse(Cookies.get('user')).token)
-              setEvents(response.data.events)
-              setTotalPage(response.data.pagination.total)
-              setPerPage(response.data.pagination.per_page)
-          } catch (e) {
-              console.log(e);
-          }
-      }
+   
       getEvents();
       
-  }, [currentPage,searchInput]);
+  }, [currentPage]);
   return (
     <div className='m-auto grid-cols-2'>
     <div className='col-span-1 mx-6'>
@@ -122,47 +110,26 @@ const AdminEvents = () => {
                   </div>
                   
                   <div className="indicator">
-                      <button className="btn join-item">Search</button>
+                      <button className="btn join-item" onClick={getEvents}>Search</button>
                   </div>
               </div>
         </div>
     </div>
     <div className='col-span-1 mb-10 mx-6 bg-base-100'>   
         <div class="overflow-x-auto">
-          {/* 5 events per page */}
           <table className='table'>
-            {/* <thead>
-              <tr>
-                <th className='text-center'>Users</th>
-              </tr>
-            </thead> */}
                 <thead>
                   <tr>
-                    {/* <th>
-                      <label>
-                        <input type="checkbox" class="checkbox" />
-                      </label>
-                    </th> */}
                     <th>Event Name</th>
-                    {/* <th></th> */}
                   </tr>
                 </thead>
             <tbody>
-            {/* <tr>
-              <td class="flex justify-between items-center">
-                <span>Cy Ganderton</span>
-                <label class="inline-flex items-center">
-                  <input type="checkbox" class="toggle" />
-                </label>
-              </td>
-            </tr> */}
               {
                 Array.isArray(events) && events.length > 0 ? (
                 events.map((event, index) => (
                   <tr key={event.id} className={index % 2 === 0 ? 'bg-base-200' : ''}>
                     
                     <td class="flex justify-between items-center">
-                      {/* <span>{event.name}</span> */}
                       <div>
                         <div class="font-bold">{event.name}</div>
                         <div class="text-sm opacity-50">{event.user_id ? event.user_id?.first_name + " " + event.user_id?.last_name : "Unknown" }</div>
@@ -182,18 +149,10 @@ const AdminEvents = () => {
             </tbody>
           </table>
         </div>
-        {/* <div className="join items-center justify-center w-full">
-                    <button className="join-item btn">1</button>
-                    <button className="join-item btn">2</button>
-                    <button className="join-item btn btn-disabled">...</button>
-                    <button className="join-item btn">99</button>
-                    <button className="join-item btn">100</button>
-        </div> */}
          <ReactPaginate
                   previousLabel={'«'}
                   nextLabel={'»'}
                   breakLabel={'...'}
-                  // pageCount={Math.ceil( totalPage / perPage )}
                   pageCount={Math.ceil( totalPage / perPage )}
                   marginPagesDisplayed={2}
                   pageRangeDisplayed={2}

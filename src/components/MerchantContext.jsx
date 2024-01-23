@@ -18,8 +18,6 @@ export const MerchantContext = createContext({
   expiredEventsCurrentPage: 1,
   expiredEventsTotalPage: 1,
   expiredEventsPerPage: 1,
-  // addEvent: () => {},
-  // removeEvent: () => {},
   fetchInactiveEvents: () => {},
   fetchActiveEvents: () => {},
   fetchExpiredEvents: () => {}
@@ -46,47 +44,6 @@ export const MerchantProvider = ({ children }) => {
     setSearchQuery(query.target.value);
   };
 
-  useEffect(() => {
-    // Fetch events when the component mounts
-    // const user = JSON.parse(Cookies.get('user')) 
-    if(Cookies.get('user') && JSON.parse(Cookies.get('user'))?.user.roles.id == 2){
-      fetchActiveEvents();
-    } 
-    
-  }, [activeEventsCurrentPage, searchQuery]);
-
-  useEffect(() => {
-    if(Cookies.get('user') && JSON.parse(Cookies.get('user'))?.user.roles.id == 2){
-      fetchInactiveEvents();
-    } 
-    
-  }, [inactiveEventsCurrentPage, searchQuery]);
-
-  useEffect(() => {
-    if(Cookies.get('user') && JSON.parse(Cookies.get('user'))?.user.roles.id == 2){
-      fetchExpiredEvents();
-    } 
-    
-  }, [expiredEventsCurrentPage, searchQuery]);
-
-  // const fetchActiveEvents = async () => {
-  //   try {
-  //     const userID = JSON.parse(Cookies.get('user'))?.user.id
-  
-    
-  //   const response = await axios.get('/event/'+userID+'/merchant/'+ ENABLED , {
-  //       headers: {
-  //           'Accept': 'application/json',
-  //           'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token 
-  //       }
-  //   });
-  //   setActiveEvents(response.data);
-  //   // console.log("Fetch: "+ events)
-  //   } catch (error) {
-  //     console.error('Error fetching events:', error);
-  //   }
-  // };
-
   const fetchActiveEvents = async () => {
     try {
       const userID = JSON.parse(Cookies.get('user'))?.user.id
@@ -98,11 +55,9 @@ export const MerchantProvider = ({ children }) => {
             'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token 
         }
     });
-    // console.log("Fetch: "+ JSON.stringify(response))
     setActiveEvents(response.data.events);
     setActiveEventsTotalPage(response.data.pagination.total);
     setActiveEventsPerPage(response.data.pagination.per_page);
-    // console.log("Fetch: "+ events)
     } catch (error) {
       console.error('Error fetching events:', error);
     }
@@ -122,7 +77,6 @@ export const MerchantProvider = ({ children }) => {
     setInactiveEvents(response.data.events);
     setInactiveEventsTotalPage(response.data.pagination.total);
     setInactiveEventsPerPage(response.data.pagination.per_page);
-    // console.log("Fetch: "+ events)
     } catch (error) {
       console.error('Error fetching events:', error);
     }
@@ -142,43 +96,11 @@ export const MerchantProvider = ({ children }) => {
     setExpiredEvents(response.data.events);
     setExpiredEventsTotalPage(response.data.pagination.total);
     setExpiredEventsPerPage(response.data.pagination.per_page);
-    // console.log("Fetch: "+ JSON.stringify(response))
     } catch (error) {
       console.error('Error fetching events:', error);
     }
   };
 
-
-  // const addEvent = async (eventID) => {
-  //   try {
-  //       const userID = JSON.parse(Cookies.get('user'))?.user.id
-  //   //   const response = await axios.post('/api/event_attendees', newEvent); // Your API endpoint for adding events
-  //   const response = await axios.post(
-  //       '/event_attendees',
-  //       { 'user_id': userID, 'event_id': eventID },
-  //       {
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token 
-  //         }
-  //       }  
-  //     );
-  //     setEvents([...events, response.data.eventAttendee]);
-  //     // console.log("AddEvent: "+ events)
-  //   } catch (error) {
-  //     console.error('Error adding event:', error);
-  //   }
-  // };
-
-  // const removeEvent = async (eventId) => {
-  //   try {
-  //     await axios.delete(`/api/events/${eventId}`); // Your API endpoint for deleting events
-  //     const updatedEvents = events.filter((event) => event.id !== eventId);
-  //     setEvents(updatedEvents);
-  //   } catch (error) {
-  //     console.error('Error removing event:', error);
-  //   }
-  // };
 
   return (
     <MerchantContext.Provider value={{ activeEvents, inactiveEvents, expiredEvents, activeEventsCurrentPage, inactiveEventsCurrentPage, expiredEventsCurrentPage, fetchInactiveEvents:() => fetchInactiveEvents(), fetchActiveEvents:() => fetchActiveEvents(), fetchExpiredEvents:() => fetchExpiredEvents(), activeEventsTotalPage, activeEventsPerPage, setActiveEventsCurrentPage: (selectedPage) => setActiveEventsCurrentPage(selectedPage), inactiveEventsTotalPage, inactiveEventsPerPage, setInactiveEventsCurrentPage: (selectedPage) => setInactiveEventsCurrentPage(selectedPage), expiredEventsTotalPage, expiredEventsPerPage, setExpiredEventsCurrentPage: (selectedPage) => setExpiredEventsCurrentPage(selectedPage), handleSearch, searchQuery }}>

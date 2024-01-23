@@ -24,11 +24,9 @@ const Signup = () => {
 
         if (formData.password !== formData.passwordConfirm) {
             setError('Passwords do not match.');
-            // console.log('Passwords do not match.')
             return;
         }
         try {
-            // console.warn(email,password)
             const response = await axios.post('/register',  
             JSON.stringify({ 
                 first_name: formData.first_name,
@@ -45,8 +43,6 @@ const Signup = () => {
                     },
                 },
             );
-        
-            // console.log('Registration successful:', response.data);
             navigate("/login", { replace: true});
         } catch (err) {
             if (err?.response) {

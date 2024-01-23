@@ -4,15 +4,6 @@ import axios from '../../api/axios'
 import { useUserContext } from './UserContext';
 
 const Account = () => {
-//   const [formData, setFormData] = useState({
-//     first_name: '',
-//     last_name: '',
-//     contact_no: '',
-//     email: '',
-//     password: '',
-//     passwordConfirm: ''
-//     // role_id: ''
-// });
   const { setCookie } = useUserContext(); 
   const [editAccount, onEditAccount] = useState(false)
   const [firstName, setFirstName] = useState('');
@@ -24,29 +15,9 @@ const Account = () => {
 
   const [error, setError] = useState('')
   
-//   useEffect(() => {
-//   try {
-//     const userData = JSON.parse(Cookies.get('user'));
-//     console.log(userData)
-//     if (userData) {
-//       setFormData({
-//         first_name: userData.first_name,
-//         last_name: userData.last_name,
-//         contact_no: userData.contact_no,
-//         email: userData.email,
-//         password: '',
-//         passwordConfirm: ''
-//       });
-//     }
-//   } catch (error) {
-//     console.error('Error fetching user data from cookies:', error);
-//   }
-// }, [])
 useEffect(() => {
   try {
     const userData = JSON.parse(Cookies.get('user'));
-    // console.log(JSON.stringify(userData))
-    // console.log(userData.token)
     if (userData) {
       setFirstName(userData.user.first_name)
       setLastName(userData.user.last_name)
@@ -57,10 +28,6 @@ useEffect(() => {
     console.error('Error fetching user data from cookies:', error);
   }
 }, [editAccount])
-  // const handleSignupChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormData({ ...formData, [name]: value });
-  // };
 
   const handleEditAccount = (e) => {
     e.preventDefault()
@@ -74,7 +41,6 @@ const userSubmit = async(e) => {
     // Example: Update the user's details
     if (password !== passwordConfirm) {
       setError('Passwords do not match.');
-      // console.log('Passwords do not match.')
       return;
     }
     try {
@@ -86,7 +52,6 @@ const userSubmit = async(e) => {
             contact_no: contactNo,
             password: password,
             password_confirmation: passwordConfirm,
-            // role_id: formData.role_id
         }),
             {
                 headers:
@@ -98,10 +63,7 @@ const userSubmit = async(e) => {
         );
     
         console.log('User Updated successfully:', response.data);
-        // add_user.close()
         onEditAccount(false)
-        // console.log('{"user":'+JSON.stringify(response.data.user)+',"token":'+'"'+JSON.parse(Cookies.get('user')).token+'"}')
-        // Cookies.set('user', '{"user":'+JSON.stringify(response.data.user)+',"token":'+'"'+JSON.parse(Cookies.get('user')).token+'"}');
         setCookie('user', '{"user":'+JSON.stringify(response.data.user)+',"token":'+'"'+JSON.parse(Cookies.get('user')).token+'"}')
 
     } catch (err) {
@@ -120,14 +82,8 @@ const userSubmit = async(e) => {
 
 }
   return (
-    // <div class="max-w-md">
-    //   <h1 class="text-5xl font-bold">Account</h1>
-    //   <p class="py-6">Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem quasi. In deleniti eaque aut repudiandae et a id nisi.</p>
-    //   <button class="btn btn-primary">Get Started</button>
-    // </div> 
     <div className='grid-flow-col grid-cols-2 m-10'>
             <div className='col-span-1 navbar bg-base-100'>
-              {/* <a href="" className="btn btn-ghost text-xl">Account Settings</a> */}
               <div className="navbar-start">
               <h3 className='text-xl font-medium'>ACCOUNT SETTINGS</h3>
               </div>
@@ -140,7 +96,6 @@ const userSubmit = async(e) => {
             <div className='col-span-1'>
               <div class="overflow-x-auto">
               <form className="card-body" onSubmit={userSubmit}>
-              {/* onSubmit={userSubmit}> */}
                 <div className="form-control">
                     <label className="label">
                     <span className="label-text">First Name</span>
@@ -163,7 +118,6 @@ const userSubmit = async(e) => {
                     <label className="label">
                     <span className="label-text">Email</span>
                     </label>
-                    {/* <input type="email" placeholder="Email"  name="email" value={email} onChange={(e) => setEmail(e.target.value)} className="input input-bordered" required disabled={editAccount === true ? false: true}/> */}
                     <input type="email" placeholder="Email"  name="email" value={email} onChange={(e) => setEmail(e.target.value)} className="input input-bordered" required disabled/>
                 </div>
                 {
@@ -189,9 +143,9 @@ const userSubmit = async(e) => {
 
                 }
                 
-                <div className="form mt-6">
-                    <input className={editAccount === true ? 'btn btn-primary btn-wide': 'btn btn-primary btn-wide btn-disabled' } type="submit" value="Save" />
-                    <input className={editAccount === true ? 'btn btn-primary btn-wide ml-4': 'btn btn-primary btn-wide btn-disabled ml-4 invisible' } type="button" value="Close" onClick={()=>onEditAccount(false)}/>
+                <div className="flex flex-col form mt-6">
+                    <input className={editAccount === true ? 'btn btn-primary sm:btn-sm lg:btn-wide': 'btn btn-primary sm:btn-sm lg:btn-wide btn-disabled' } type="submit" value="Save" />
+                    <input className={editAccount === true ? 'btn btn-primary sm:btn-sm lg:btn-wide lg:ml-4': 'btn btn-primary sm:btn-sm lg:btn-wide btn-disabled lg:ml-4 invisible' } type="button" value="Close" onClick={()=>onEditAccount(false)}/>
                 </div>
               </form>
               </div>

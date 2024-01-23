@@ -4,7 +4,6 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 const CartContext = createContext();
 
 function getInitialState(){
-    // const cartItems = localStorage.getItem('cartItems')
     const cartItems = sessionStorage.getItem('cartItems')
     return cartItems ? JSON.parse(cartItems) : []
 }
@@ -15,11 +14,9 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
         const storedCartItems = JSON.parse(localStorage.getItem('cartItems'))
-        // console.log(storedCartItems)
         if(storedCartItems){
             setCartItems(storedCartItems)
         }
-        // console.log(storedCartItems)
   }, [])
 
   useEffect(() => {

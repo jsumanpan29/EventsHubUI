@@ -2,7 +2,6 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import axios from '../../api/axios';
 
-// const EventContext = createContext();
 export const EventContext = createContext({
   events: [],
   addEvent: () => {},
@@ -31,8 +30,6 @@ export const EventProvider = ({ children }) => {
 
   useEffect(() => {
     // Fetch events when the component mounts
-    // const user = JSON.parse(Cookies.get('user')) 
-    // if(Cookies.get('user')){
       if(Cookies.get('user') && JSON.parse(Cookies.get('user'))?.user.roles.id == 3){
     fetchEvents();
     }
@@ -41,7 +38,6 @@ export const EventProvider = ({ children }) => {
 
   const isEventAlreadyAttended = (eventID) => {
       if(events){
-        // return events.some(event => event && event?.event_id === eventID);
         return events.some(event => event && event?.id === eventID);
       } else{
         return false
@@ -73,7 +69,6 @@ export const EventProvider = ({ children }) => {
   const addEvent = async (eventID) => { 
     try {
         const userID = JSON.parse(Cookies.get('user'))?.user.id
-    //   const response = await axios.post('/api/event_attendees', newEvent); // Your API endpoint for adding events
     const response = await axios.post(
         '/event_attendees',
         { 'user_id': userID, 'event_id': eventID },
@@ -88,10 +83,6 @@ export const EventProvider = ({ children }) => {
         const updatedEvents = [...prevEvents, response.data];
         return updatedEvents;
       });
-    //   // Use the functional form of setEvents to update based on previous state
-    //  setEvents((prevEvents) => [...prevEvents, response.data.eventAttendee]);
-    // console.log("After Event: "+  JSON.stringify(events))
-    //   console.log("Added Event: "+  JSON.stringify(response))
     } catch (error) {
       console.error('Error adding event:', error);
     }
@@ -100,7 +91,6 @@ export const EventProvider = ({ children }) => {
   const removeEvent = async (eventId) => {
     try {
       const userID = JSON.parse(Cookies.get('user'))?.user.id
-      // await axios.delete(`/event_attendee/${eventId}`); // Your API endpoint for deleting events
       await axios.delete('/event_attendee/event/'+eventId+'/user/'+userID+'/delete',
       {
          headers:{

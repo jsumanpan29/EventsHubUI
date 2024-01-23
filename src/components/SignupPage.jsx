@@ -28,11 +28,9 @@ const SignupPage = () => {
 
         if (formData.password !== formData.passwordConfirm) {
             setError('Passwords do not match.');
-            // console.log('Passwords do not match.')
             return;
         }
         try {
-            // console.warn(email,password)
             const registerResponse = await axios.post('/register',  
             JSON.stringify({ 
                 first_name: formData.first_name,
@@ -49,9 +47,6 @@ const SignupPage = () => {
                     },
                 },
             );
-
-            // console.log('Registration successful:', registerResponse.data);
-
             if(cartItems.length > 0){
                 // Map through cart items to create an array of promises for bulk insertion
                 const bulkInsertRequests = cartItems.map(cartItem => {
@@ -70,16 +65,10 @@ const SignupPage = () => {
                 // Execute all bulk insert requests concurrently using Promise.all
                 const bulkInsertResponses = await Promise.all(bulkInsertRequests);
 
-                // // Handle responses for bulk insert requests
-                // bulkInsertResponses.forEach((response, index) => {
-                //     console.log(`Response for item ${index + 1}:`, response.data);
-                // });
-
             }
 
             
             emptyCart();
-            // console.log('Registration successful:', response.data);
             navigate("/login", { replace: true});
 
         } catch (err) {

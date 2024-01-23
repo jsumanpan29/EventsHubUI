@@ -2,22 +2,14 @@ import React, { useState,useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import Cookies from 'js-cookie'
 import { LuBookMarked } from "react-icons/lu";
-import axios from '../../api/axios'
 import { useEventContext } from './EventContext';
 import { useCart } from './CartContext'
 import { useUserContext } from './UserContext'; 
 
 const Nav = ({ setLoginClicked }) => {
 
-// const [onLoggedIn, setOnLoggedIn] = useState(false)
-// const [eventsCount, setEventsCount] = useState(0)
 const [eventAttended, setEventAttended] = useState([])
-// const [onEventAlreadyAttended, setOnEventAlreadyAttended] = useState(false)
 const { events, fetchEvents, removeEvent } = useEventContext();
-
-// const [userCookie, setUserCookie] = useState(Cookies.get('user'));
-// // const [addedToCart, setAddedToCart] = useState(false);
-// const [firstName, setFirstName] = useState('')
 const { userCookie, removeCookie } = useUserContext(); 
 
 const {cartItems, emptyCart, isItemInCart} = useCart();
@@ -28,22 +20,17 @@ const loc = useLocation();
 
 const handleLogoutClick = () => {
     try {
-        // Cookies.remove('user')
-        // setFirstName('')
         removeCookie('user')
         navigate('/')
     } catch (err) {
         console.log('Error: '+err.message);
     }
-    // console.log(events)
 }
 
 
 
   // UseEffect to fetch events after logging in
   useEffect(() => {
-    
-    // const user = JSON.parse(userCookie);
     if (userCookie && JSON.parse(Cookies.get('user'))?.user.roles.id === 3) {
       fetchEvents(); // Fetch events using the context provider function
     }
@@ -51,64 +38,8 @@ const handleLogoutClick = () => {
 
 
   useEffect(() => {
-        //     setCart(eventAttended.user_events);
-        // console.log("Nav: "+JSON.stringify(events))
         setEventAttended(events)
-        // console.log(eventAttended)
   }, [events]);
-
-//   useEffect(() =>{
-
-//     // setFirstName(JSON.parse(Cookies.get('user')).user.first_name)
-//     setFirstName(JSON.parse(Cookies.get('user'))?.user?.first_name || '');
-//   },[userCookie])
-
-// Update userCookie state if the cookie changes externally
-// useEffect(() => {
-//     const cookieValue = Cookies.get('user');
-//     if (cookieValue !== userCookie) {
-//       setUserCookie(cookieValue);
-//     }
-//   }, [userCookie]);
-
-//   // Update firstName when userCookie changes
-//   useEffect(() => {
-//     if (userCookie) {
-//       const parsedUserCookie = JSON.parse(userCookie);
-//       if (parsedUserCookie && parsedUserCookie.user && parsedUserCookie.user.first_name) {
-//         setFirstName(parsedUserCookie.user.first_name);
-//       }
-//     }
-//   }, [userCookie]);
-//   useEffect(() => {
-//     //     setCart(eventAttended.user_events);
-//     // fetchEvents
-//     console.log("Nav: "+events)
-//     // console.log(eventAttended)
-// }, []);
-// useEffect(() => {
-//     const getAttended = async () =>{
-//       try { 
-//           const user = JSON.parse(userCookie)
-//           const response = await axios.get('/users/events_attended/'+user?.user.id, {
-//             headers: {
-//                 'Accept': 'application/json',
-//                 'Authorization': `Bearer ` + user?.token 
-//             }
-//           });
-//           // if (response.data.) {
-          
-//           // }
-//         //   console.log(response.data)
-//         // addToCart(response.data);
-//         setEventAttended(response.data)
-//       } catch (e) {
-//           console.log(e);
-//       }
-     
-//     }
-//     getAttended();
-//   }, []);
 
   return (
     <div className="navbar bg-base-100 max-w-screen-xl m-auto">
@@ -135,15 +66,34 @@ const handleLogoutClick = () => {
                     <li><Link to="/">Home</Link></li>
                 </>
                 }
-                {/* {Cookies.get('user') && JSON.parse(Cookies.get('user'))?.user.roles.id === 2 ?
-                (<></>)
-                :
-                (<><li><Link to="/events">Find Events</Link></li></>)
-                } */}
                 <li><Link to="/events">Find Events</Link></li>
                 <li><Link to="/contact">Contact</Link></li>
             </ul>
             </div>
+
+            {/* <div className="drawer">
+            <input id="my-drawer" type="checkbox" className="drawer-toggle" />
+            <label htmlFor="my-drawer" className="btn btn-ghost drawer-button lg:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+            </label>
+            <div className="drawer-side z-[1]">
+                <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
+                <ul className="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
+                 {Cookies.get('user') ?
+                <>
+                    <li><Link to="/dashboard"> My Events</Link></li>
+                </>
+                : 
+                <>
+                    <li><Link to="/">Home</Link></li>
+                </>
+                }
+                <li><Link to="/events">Find Events</Link></li>
+                <li><Link to="/contact">Contact</Link></li>
+                
+                </ul>
+            </div>
+            </div> */}
             </>)
         }       
         <a className="btn btn-ghost normal-case text-xl">Eventurado</a>
@@ -166,29 +116,8 @@ const handleLogoutClick = () => {
                 <li className='mx-1'><Link to="/">Home</Link></li>
             </>
             }
-            {/* {Cookies.get('user') && JSON.parse(Cookies.get('user'))?.user.roles.id === 2 ?
-                (<></>)
-                :
-                (<> <li className='mx-1'><Link to="/events">Find Events</Link></li></>)
-            } */}
             <li className='mx-1'><Link to="/events">Find Events</Link></li>
             <li className='mx-1'><Link to="/contact">Contact</Link></li>
-            {/* {Cookies.get('user') ?
-            <>
-                <li className='mx-1'><a className='p-3'><Link to="/dashboard">My Events</Link></a></li>
-            </>
-            :
-            <>
-                <li className='mx-1'><a className='p-3'><Link to="/">Home</Link></a></li>
-            </>
-            }
-            {/* {Cookies.get('user') && JSON.parse(Cookies.get('user'))?.user.roles.id === 2 ?
-                (<></>)
-                :
-                (<> <li className='mx-1'><a className='p-3'><Link to="/events">Find Events</Link></a></li></>)
-            } */}
-            {/* <li className='mx-1'><a className='p-3'><Link to="/events">Find Events</Link></a></li>
-            <li className='mx-1'><a className='p-3'><Link to="/contact">Contact</Link></a></li>  */}
         </ul>
     </div>
     )
@@ -201,15 +130,8 @@ const handleLogoutClick = () => {
        {!Cookies.get('user') ?
        (
        <div className="navbar-end">
-            {/* <a onClick={() => setLoginClicked(true)} className="btn btn-primary"> */}
-                <Link to="/" onClick={() => setLoginClicked(true)} className="btn btn-primary">Login</Link>
-                {/* Login */}
-            {/* </a> */}
-            {/* <a className="btn" onClick={() => emptyCart()}>
-                Remove Items */}
-            {/* <a className="btn"> */}
-                <Link to="/signup" className="btn">Signup</Link>
-            {/* </a> */}
+            <Link to="/" onClick={() => setLoginClicked(true)} className="btn btn-primary">Login</Link>
+            <Link to="/signup" className="btn">Signup</Link>
             <div class="dropdown dropdown-end">
                 { cartItems.length > 0 ?
                 ( <>
@@ -242,7 +164,6 @@ const handleLogoutClick = () => {
                             
                         }
                     <div class="card-actions">
-                        {/* <button class="btn btn-primary btn-block"><Link to="/signup">Checkout</Link></button> */}
                         <Link className = "btn btn-primary btn-block" to="/signup" state={{ item: cartItems }}>Checkout</Link>
                     </div>
                     </div>
@@ -268,7 +189,6 @@ const handleLogoutClick = () => {
                     <details>
                     <summary>
                     {JSON.parse(Cookies.get('user')).user.first_name}
-                    {/* {JSON.parse(userCookie).user.first_name} */}
                     </summary>
                     <ul class="p-2 bg-base-100 z-10 w-28 right-1 xl:w-36 xl:-right-4">
                         <li className='items-center' onClick={()=>{navigate("/dashboard", { state: { from: loc } })}}><a>{JSON.parse(Cookies.get('user')).user.roles.id == '1'? "Dashboard" : "My Events" }</a></li>
@@ -289,7 +209,6 @@ const handleLogoutClick = () => {
                     <label tabindex="0" class="btn btn-ghost btn-circle">
                         <div class="indicator">
                         <LuBookMarked size={20}/>
-                        {/* <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg> */}
                         <span class="badge badge-sm indicator-item">{eventAttended?.length > 0 ? eventAttended.length : 0}</span>
                         </div>
                     </label>
@@ -312,13 +231,6 @@ const handleLogoutClick = () => {
                                                 <img src='' alt='' className="w-24 h-16" />
 
                                                 }
-                                                {/* {item.media && item.media.length > 0 && (
-                                                    <img
-                                                        src={item.media[0]?.url || ''}
-                                                        alt={`Event ${item.id}`}
-                                                        className="w-24 h-16"
-                                                    />
-                                                )} */}
                                                 {item?.name && (
                                                     <span className="font-bold text-base col-span-2" key={item?.id}>{item.name}</span>
                                                 )}
@@ -329,21 +241,6 @@ const handleLogoutClick = () => {
                             ): (
                                 <p>No Events</p>
                             )
-
-                            // eventAttended && eventAttended.length > 0 && eventAttended.map(item => (
-                            //         <div key={item?.id} className='grid grid-flow-col grid-cols-3 gap-3'>
-                            //             {item && (
-                            //                 <>
-                            //                     {/* <img src={item.media[0] ? item.media[0].url : ""} alt={`Event ${item.id}`} className="w-24 h-16" /> */}
-                            //                     {item?.name && (
-                            //                         <span className="font-bold text-base col-span-2" key={item?.id}>{item.name}</span>
-                            //                     )}
-                            //                 </>
-                            //             )}
-                            //         </div>
-                            //     ))
-                            
-                            
                         }
                     
                         <div class="card-actions">

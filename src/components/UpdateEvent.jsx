@@ -51,22 +51,12 @@ const UpdateEvent = () => {
 
   const eventSubmit = async(e) => {
       e.preventDefault()
-      // Date [0]Start [1] End
-      // console.log(valueDateSched)
-
-      // console.log(valueRegDeadline)
-
-      // console.log(venue)
-      // console.log(category)
       const formData = new FormData();
       formData.append('name', eventName);
       formData.append('description', description);
       formData.append('location', location);
-      // formData.append('date_sched_start', valueDateSched[0]);
       formData.append('date_sched_start', format(new Date(valueDateSched[0]), "yyyy-MM-dd HH:mm:ss"));
-      // formData.append('date_sched_end', valueDateSched[1]);
       formData.append('date_sched_end', format(new Date(valueDateSched[1]), "yyyy-MM-dd HH:mm:ss"));
-      // formData.append('date_reg_deadline', valueDateSched[1]);
       formData.append('date_reg_deadline', format(new Date(valueRegDeadline), "yyyy-MM-dd HH:mm:ss"));
       formData.append('est_attendants', estAttendants);
       formData.append('venue_id', venue);
@@ -77,26 +67,11 @@ const UpdateEvent = () => {
         formData.append('images', images[i]);
       }
       try {
-        const response = await axios.post('/event/'+ eId + '/update',  
-        // JSON.stringify({ 
-        //     name: eventName,
-        //     description: description,
-        //     location: location,
-        //     date_sched_start: valueDateSched[0],
-        //     date_sched_end: valueDateSched[1],
-        //     date_reg_deadline: valueDateSched[1],
-        //     est_attendants: estAttendants,
-        //     venue_id: venue,
-        //     category_id: category,
-        //     images:images,
-        //     event_status:0,
-        //     user_id: JSON.parse(Cookies.get('user')).user.id
-        // }),
+        const response = await axios.post('/event/'+ eId + '/update', 
           formData,
             {
                 headers:
                 {
-                    // 'Content-Type': 'application/json',
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
                 },
@@ -109,17 +84,6 @@ const UpdateEvent = () => {
       }
 
   }
-  // useEffect(() => {
-  //   if (venueList && venueList.length > 0) {
-  //     setVenue(venueList[0].id); 
-  //   }
-  // }, [venueList]);
-
-  // useEffect(() => {
-  //   if (categoryList && categoryList.length > 0) {
-  //     setCategory(categoryList[0].id); 
-  //   }
-  // }, [categoryList]); 
 
   useEffect(() => {
 
@@ -131,7 +95,6 @@ const UpdateEvent = () => {
                 }
             })
             setVenueList(response.data.venues)
-            // console.log(response.data)
           } catch (err) {
             console.log(err)
           }
@@ -164,7 +127,6 @@ const UpdateEvent = () => {
 
   useEffect(() => {
     const getEvents = async () => {
-              // try { const response = await axios.get('/event/'+state.id, {  
               try { const response = await axios.get('/event/'+eId+'/auth', {  
                 headers: {
                     'Accept': 'application/json',
@@ -172,12 +134,8 @@ const UpdateEvent = () => {
                 }
               });
               if(response.data){
-                // console.log(response.data)
-                // setEventID(response.data.event.id)
                 setEventName(response.data.event.name);
                 setDescription(response.data.event.description);
-                // setCategory(response.data.event.category_id.name);
-
                 setEstAttendants(response.data.event.est_attendants);
                 const foundVenue = venueList.find(ven => ven.id == response.data.event.venue_id.id);
                 if (foundVenue) {
@@ -199,18 +157,12 @@ const UpdateEvent = () => {
                 
                 
                 setLocation(response.data.event.location);
-                // onValueDateSched[0](response.data.event.date_sched_start);
-                // onValueDateSched[1](response.data.event.date_sched_end);
                 onValueDateSched([
                   new Date(response.data.event.date_sched_start),
                   new Date(response.data.event.date_sched_end)
                 ]);
                 onValueRegDeadline(new Date(response.data.event.date_reg_deadline));
-                
-                // console.log(JSON.stringify(response.data.media))
                 if (response.data.media.length > 0) {
-                  // setImageFileName(response.data.media[0].file_name);
-                  // setImageUrl(response.data.media[0].url);
                   setImages(response.data.media[0].url)
                 }
 
@@ -253,11 +205,6 @@ const UpdateEvent = () => {
               <span class="label-text">Venue</span>
             </div>
             <select class="select select-bordered" value={venue} onChange={(e) => setVenue(e.target.value)} required>
-              {/* <option disabled selected>Venue</option> */}
-             
-               {/* {venueList.map((venue, index) => (
-                  <option key={index} value={venue.name}>{venue.name}</option>
-                ))} */}
                  {venueList && venueList.length > 0 &&
                     venueList.map((venue, index) => (
                       <option key={index} value={venue.id}>{venue.name}</option>
@@ -270,11 +217,6 @@ const UpdateEvent = () => {
               <span class="label-text">Category</span>
             </div>
             <select class="select select-bordered" value={category} onChange={(e) => setCategory(e.target.value)} required>
-              {/* <option disabled selected>Category</option> */}
-             
-              {/* {categoryList.map((category, index) => (
-                <option key={index} value={category.name}>{category.name}</option>
-              ))} */}
               {categoryList && categoryList.length > 0 &&
                 categoryList.map((category, index) => (
                   <option key={index} value={category.id}>{category.name}</option>
@@ -282,13 +224,6 @@ const UpdateEvent = () => {
               }
             </select>
           </label>
-
-          {/* <div className="form-control">
-              <label className="label">
-              <span className="label-text">Description</span>
-              </label>
-              <input type="text" placeholder="Last Name" name="last_name"  className="input input-bordered" required />
-          </div> */}
           <label class="form-control">
             <div class="label">
               <span class="label-text">Description</span>
@@ -318,8 +253,6 @@ const UpdateEvent = () => {
           
           <div className="form-control mt-6 grid grid-flow-col gap-2">
               <input className='btn btn-primary' type="submit" value="Submit" />
-              {/* <Navigate to={-1} replace /> */}
-              {/* <input className="btn btn-neutral" type="button" value="Close" onClick={()=>{navigate("/dashboard", { state: { from: loc } })}}/> */}
               <input className="btn btn-neutral" type="button" value="Close" onClick={()=>{navigate(-1)}}/>
           </div>
           </form>

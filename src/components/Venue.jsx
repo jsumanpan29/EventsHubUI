@@ -24,6 +24,29 @@ const Venue = () => {
   const [editingVenueId, setEditingVenueId] = useState(null);
   const [deleteVenueId, setDeleteVenueId] = useState(null);
 
+  const getVenues = async () => {
+    try {
+        let response; // Declare the variable outside the condition
+
+        let url = '/venues?page=' + currentPage
+        if (searchInput) {
+            url+= '&keyword='+searchInput
+        } 
+        response = await axios.get(url, {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
+          }
+        });
+
+          setVenues(response.data.venues)
+          setTotalPage(response.data.pagination.total)
+          setPerPage(response.data.pagination.per_page)
+      } catch (e) {
+          console.log(e);
+      }
+  }
+
   const openAddVenueDialog = () => {
     setFormData({
         name: '',
@@ -64,60 +87,17 @@ const Venue = () => {
   };
 
   useEffect(() => {
-    const getVenues = async () => {
-        try {
-              // const response = await axios.get('/venues', {
-            let response; // Declare the variable outside the condition
-
-            let url = '/venues?page=' + currentPage
-            if (searchInput) {
-                url+= '&keyword='+searchInput
-            } 
-            response = await axios.get(url, {
-              headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
-              }
-            });
-
-            // const response = await axios.get('/venues?page='+currentPage, {
-            //       headers: {
-            //           'Accept': 'application/json',
-            //           'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
-            //       }
-            //   });
-
-
-            //   if(response.data){
-                  // console.log(response.data.venues)
-            //   }
-              // console.log(JSON.parse(Cookies.get('user')).token)
-              setVenues(response.data.venues)
-              // console.log(response.data.users.data)
-              setTotalPage(response.data.pagination.total)
-              setPerPage(response.data.pagination.per_page)
-              // console.log(response.data.pagination)
-          } catch (e) {
-              console.log(e);
-          }
-      }
+    
       getVenues();
       
-  }, [currentPage,isDialogOpen,deleteVenueId,searchInput]);
+  }, [currentPage,isDialogOpen,deleteVenueId]);
   
   const venueSubmit = async(e) => {
     e.preventDefault()
     console.log(editingVenueId) 
 
     if (editingVenueId) {
-      // Handle editing existing user logic using editingUserId
-      // Example: Update the user's details
-      // if (formData.password !== formData.passwordConfirm) {
-      //   setError('Passwords do not match.');
-      //   return;
-      // }
       try {
-        // console.warn(email,password)
           const response = await axios.post('/venue/'+editingVenueId+'/update',  
           JSON.stringify({ 
               name: formData.name,
@@ -133,7 +113,6 @@ const Venue = () => {
           );
       
           console.log('Venue Updated successfully:', response.data);
-          // add_user.close()
       } catch (err) {
           if (err?.response) {
               console.log("Error: Response=")
@@ -148,14 +127,7 @@ const Venue = () => {
       
       
     } else {
-
-          // if (formData.password !== formData.passwordConfirm) {
-          //   setError('Passwords do not match.');
-          //   // console.log('Passwords do not match.')
-          //   return;
-          // }
           try {
-              // console.warn(email,password)
               const response = await axios.post('/venues',  
               JSON.stringify({ 
                 name: formData.name,
@@ -192,9 +164,7 @@ const Venue = () => {
 
 const venueDelete = async(e) => {
   e.preventDefault()
-  // console.log("delete")
   try {
-      // console.warn(email,password)
       const response = await axios.delete('/venue/'+deleteVenueId+'/delete', 
           {
               headers:
@@ -206,7 +176,6 @@ const venueDelete = async(e) => {
       );
   
       console.log('Venue deleted successfully:', response.data);
-      // add_user.close()
   } catch (err) {
       if (err?.response) {
           console.log("Error: Response=")
@@ -228,13 +197,12 @@ const venueDelete = async(e) => {
                 <div className="join">
                     <div>
                         <div>
-                        {/* <input className="input input-bordered w-full sm:w-64 md:w-80 lg:w-96 xl:w-120 join-item" placeholder="Search"/> */}
                         <input className="input input-bordered w-full sm:w-64 md:w-80 lg:w-96 xl:w-120 join-item" placeholder="Search" value={searchInput} onChange={handleSearchInput}/>
                         </div>
                     </div>
                     
                     <div className="indicator">
-                        <button className="btn join-item">Search</button>
+                        <button className="btn join-item" onClick={getVenues}>Search</button>
                     </div>
                 </div>
           </div>
@@ -243,11 +211,6 @@ const venueDelete = async(e) => {
           <div class="overflow-x-auto">
             {/* 5 events per page */}
             <table className='table'>
-              {/* <thead>
-                <tr>
-                  <th className='text-center'>Users</th>
-                </tr>
-              </thead> */}
                   <thead>
                     <tr>
                       <th>Name</th>
@@ -261,21 +224,10 @@ const venueDelete = async(e) => {
                   Array.isArray(venues) && venues.length > 0 ? (
                     venues.map((venue, index) => (
                     <tr key={venue.id} className={index % 2 === 0 ? 'bg-base-200' : ''}>
-                      {/* <td>
-                        <div className='flex'>
-                          <div className='flex-none'>
-                            
-                          </div>
-                          <div className='flex-auto mx-5'>
-                            <p>{user.first_name + " " + user.last_name}</p>
-                          </div>
-                        </div>
-                      </td> */}
                        <td>
                           <div class="flex items-center gap-3">
                             <div>
                               <div class="font-bold">{venue.name}</div>
-                              {/* <div class="text-sm opacity-50">United States</div> */}
                             </div>
                           </div>
                         </td>
@@ -298,18 +250,10 @@ const venueDelete = async(e) => {
               </tbody>
             </table>
           </div>
-          {/* <div className="join items-center justify-center w-full">
-                      <button className="join-item btn">1</button>
-                      <button className="join-item btn">2</button>
-                      <button className="join-item btn btn-disabled">...</button>
-                      <button className="join-item btn">99</button>
-                      <button className="join-item btn">100</button>
-          </div> */}
           <ReactPaginate
             previousLabel={'«'}
             nextLabel={'»'}
             breakLabel={'...'}
-            // pageCount={Math.ceil( totalPage / perPage )}
             pageCount={Math.ceil( totalPage / perPage )}
             marginPagesDisplayed={2}
             pageRangeDisplayed={2}
@@ -334,9 +278,7 @@ const venueDelete = async(e) => {
                       <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                     </form>
                     <h3 class="font-bold text-lg text-center">{editingVenueId !== null ? 'Edit Venue' :'Add Venue'}</h3>
-                    {/* <p class="py-4">Press ESC key or click on ✕ button to close</p> */}
                     <form className="card-body" onSubmit={venueSubmit}>
-                    {/* onSubmit={eventSubmit} */}
                     <div className="form-control">
                         <label className="label">
                         <span className="label-text">Name</span>

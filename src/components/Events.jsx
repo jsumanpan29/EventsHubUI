@@ -1,17 +1,17 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
 import axios from '../../api/axios'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { format } from 'date-fns'
-import { LuTag,LuUser2,LuNavigation } from "react-icons/lu";
+import { LuTag,LuUser2,LuNavigation,LuCalendar,LuCalendarClock } from "react-icons/lu";
 import DateRangePicker from '@wojtekmaj/react-daterange-picker';
-import Cookies from 'js-cookie'
 import ReactPaginate from 'react-paginate';
 
-// const Events = ({events}) => {
 const Events = () => {
 
-
+    const location = useLocation();
+    
+    let searchInputFromHome;
     const [searchInput, setSearchInput] = useState('');
     const [attendanceInput, setAttendanceInput] = useState('');
     const [sortInput, setSortInput] = useState('regDeadlineAsc');
@@ -79,7 +79,6 @@ const Events = () => {
             prevCheckboxes.filter((checkboxValue) => checkboxValue !== value)
           );
         }
-        // setVenuesInput(venueCheckboxes.join(", "))
       };
 
       const handleCategoryChange = (event) => {
@@ -92,18 +91,19 @@ const Events = () => {
             prevCheckboxes.filter((checkboxValue) => checkboxValue !== value)
           );
         }
-        // setCategoriesInput(categoryCheckboxes.join(", "))
       };
 
       const getEvents = async () => {
         try {
-            //   const response = await axios.get('/events', {
-            // console.log("TEST")
-            
+            searchInputFromHome = location?.state?.searchInput
             let response; // Declare the variable outside the condition
 
             let url = '/events?page=' + currentPage
             
+            if (searchInputFromHome){
+                url+= '&keyword='+searchInputFromHome
+                searchInputFromHome=''
+            }
             if (searchInput) {
                 url+= '&keyword='+searchInput
             } 
@@ -127,9 +127,6 @@ const Events = () => {
                   'Accept': 'application/json',
                 }
               });
-            //   console.log(response)
-           
-              // console.log(JSON.parse(Cookies.get('user')).token)
               setEvents(response.data.events)
               setTotalPage(response.data.pagination.total)
               setPerPage(response.data.pagination.per_page)
@@ -137,7 +134,6 @@ const Events = () => {
               console.log(e);
           }
       }
-
       useEffect(() => {
         const formattedFromDate = valueDateSched ? formatDate(valueDateSched[0]) : '';
         const formattedToDate = valueDateSched ? formatDate(valueDateSched[1]) : '';
@@ -171,64 +167,10 @@ const Events = () => {
         setCategoriesInput(categoryCheckboxes.join(", "));
     }, [categoryCheckboxes]);
 
-    useEffect(() => {
-        console.log("Checked Checkboxes (String): ", attendanceInput);
-    }, [attendanceInput]);
-    
-    useEffect(() => {
-        console.log('Selected sort value:', sortInput);
-    }, [sortInput]);
 
     useEffect(() => {
-        console.log('Date Sched:', datesInput);
-    }, [datesInput]);
-
-    useEffect(() => {
-        const getEvents = async () => {
-            try {
-                //   const response = await axios.get('/events', {
-                
-                let response; // Declare the variable outside the condition
-
-                let url = '/events?page=' + currentPage
-                
-                if (searchInput) {
-                    url+= '&keyword='+searchInput
-                } 
-                if (sortInput) {
-                    url+= '&sort='+sortInput
-                } 
-                if (attendanceInput) {
-                    url+= '&attendance='+attendanceInput
-                }
-                if (venuesInput) {
-                    url+= '&venues='+venuesInput
-                }  
-                if (categoriesInput) {
-                    url+= '&categories='+categoriesInput
-                } 
-                if(datesInput){
-                    url+=datesInput
-                }
-                   response = await axios.get(url, {
-                    headers: {
-                      'Accept': 'application/json',
-                    }
-                  });
-                  console.log(response)
-               
-                  // console.log(JSON.parse(Cookies.get('user')).token)
-                  setEvents(response.data.events)
-                  setTotalPage(response.data.pagination.total)
-                  setPerPage(response.data.pagination.per_page)
-              } catch (e) {
-                  console.log(e);
-              }
-          }
           getEvents();
-          
-      }, [currentPage,searchInput, attendanceInput, sortInput, venuesInput,categoriesInput,datesInput]);
-
+      }, [currentPage]);
       
   useEffect(() => {
     const getVenues = async () => {
@@ -236,7 +178,6 @@ const Events = () => {
             const response = await axios.get('/venues', {
                   headers: {
                       'Accept': 'application/json',
-                    //   'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
                   }
               });
 
@@ -254,7 +195,6 @@ const Events = () => {
             const response = await axios.get('/categories', {
                   headers: {
                       'Accept': 'application/json',
-                    //   'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
                   }
               });
               setCategories(response.data.categories)
@@ -265,41 +205,10 @@ const Events = () => {
       getCategories();
       
   }, []);
-//   useEffect(() => {
-//     console.log('Selected Venues:', venueCheckboxes);
-//   }, [venueCheckboxes]);
-
-//   useEffect(() => {
-//     console.log('Selected Categories:', categoryCheckboxes);
-//   }, [categoryCheckboxes]);
-  useEffect(() => {
-    console.log('Selected Venues:', venuesInput);
-  }, [venuesInput]);
-
-  useEffect(() => {
-    console.log('Selected Categories:', categoriesInput);
-  }, [categoriesInput]);
     
     const handlePageClick = (selectedPage) => {
-        // console.log(selectedPage)
         setCurrentPage(selectedPage.selected + 1);
     };
-
-    //   const onDetails = (eventId) => {
-    //     // if (cookies.user.user.role == '0') {
-    //     //     toast.error('You need to be admin to enable action!', {
-    //     //         position: "bottom-right",
-    //     //         autoClose: 5000,
-    //     //         hideProgressBar: false,
-    //     //         closeOnClick: true,
-    //     //         pauseOnHover: true,
-    //     //         draggable: true,
-    //     //         progress: undefined,
-    //     //     });
-    //     // } else {
-    //         navigate('/events/'+eventId, { state: { id: eventId } });
-    //     // }
-    //   }
   return (
     <>
     <div className="flex flex-col w-full">
@@ -320,19 +229,11 @@ const Events = () => {
     </div>
     <div className="min-h-screen bg-base-300">
         <div className="container grid grid-cols-4 pt-0 m-auto gap-x-8">
-            <div className="lg:col-span-1">
+            <div className="col-span-4 xl:col-span-1">
                 <nav id="filters" className="flex flex-col w-full">
                     <div className="flex items-center justify-center h-14 text-white font-bold text-3xl">
                         Filters
                     </div>
-                    {/* <div tabIndex={0} className="collapse collapse-arrow border border-base-300 bg-base-200">
-                        <div className="collapse-title text-xl font-medium">
-                            Venue
-                        </div>
-                        <div className="collapse-content"> 
-                            <p>tabIndex={0} attribute is necessary to make the div focusable</p>
-                        </div>
-                    </div> */}
                     <div className="collapse collapse-arrow bg-base-100 mb-3">
                         <input type="checkbox" /> 
                         <div className="collapse-title text-xl font-medium">
@@ -474,18 +375,12 @@ const Events = () => {
                     </div>
                 </nav>
             </div>
-            <div className="col-span-4 mt-1 lg:col-span-3 static">
+            <div className="col-span-4 mt-1 xl:col-span-3 static">
                 
                 <div className='mb-3'>
                 {
                         Array.isArray(events) ? (
                         events.map((event,index) =>(
-                            // <a href={'/events/'+event.id} className="relative flex flex-col sm:flex-row items-center">
-                            // <Link to={{
-                            //         pathname: '/events/' + event.id,
-                            //         state: {id: event.id},
-                            // }}>
-                            // <Link key={event.id} to={'/events/' + event.id} state={{ id: event.id }}>
                             <Link key={event.id} to={'/events/' + event.id}>
                                 <div className='relative flex flex-col sm:flex-row items-center bg-base-100 mb-7 rounded-lg'>
                                     <div className="avatar">
@@ -495,8 +390,8 @@ const Events = () => {
                                     </div>
                                     <div class="flex flex-col w-full">
                                         <div className='text-2xl font-bold pb-1'><h1>{event.name}</h1></div>
-                                        <div className='text-sm pb-1 flex'><p className='pr-3'>{format(new Date(event.date_sched_start), 'MMM dd - ') + format(new Date(event.date_sched_end), 'MMM dd, yyyy') }</p>
-                                                                        <p>{' Reg. Deadline: '+ format(new Date(event.date_reg_deadline), 'MMM dd, yyyy') }</p>
+                                        <div className='text-sm pb-1 flex'><p className='pr-3 flex'><LuCalendar size={18} className='mr-1.5' />{format(new Date(event.date_sched_start), 'MMM dd - ') + format(new Date(event.date_sched_end), 'MMM dd, yyyy') }</p>
+                                                                        <p className='flex'><LuCalendarClock size={18} className='mr-1.5' />{' Reg. Deadline: '+ format(new Date(event.date_reg_deadline), 'MMM dd, yyyy') }</p>
                                         </div>
                                         <div className='grid grid-cols-3 lg:grid-cols-5 pb-1'>
                                             <div className='text-sm flex '><LuTag size={18} className='mr-1.5' />{event.category_id.name}</div>
@@ -507,7 +402,6 @@ const Events = () => {
                                 </div>
                                
                             </Link>
-                            // </a>
                         ))
                         ) : (
                             <p>No events available</p>
@@ -520,7 +414,6 @@ const Events = () => {
                     previousLabel={'«'}
                     nextLabel={'»'}
                     breakLabel={'...'}
-                    // pageCount={Math.ceil( totalPage / perPage )}
                     pageCount={Math.ceil( totalPage / perPage )}
                     marginPagesDisplayed={2}
                     pageRangeDisplayed={2}
@@ -531,15 +424,7 @@ const Events = () => {
                     disabledClassName={'btn-disabled'}
                     previousClassName = {'join-item btn'}
                     nextClassName = {'join-item btn'}
-                    // forcePage={currentPage - 1}
                 />
-                {/* <div className="join items-center justify-center w-full">
-                    <button className="join-item btn">1</button>
-                    <button className="join-item btn">2</button>
-                    <button className="join-item btn btn-disabled">...</button>
-                    <button className="join-item btn">99</button>
-                    <button className="join-item btn">100</button>
-                </div> */}
 
             </div> 
 

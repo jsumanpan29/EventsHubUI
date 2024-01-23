@@ -23,6 +23,28 @@ const Category = () => {
   const [editingCategoryId, setEditingCategoryId] = useState(null);
   const [deleteCategoryId, setDeleteCategoryId] = useState(null);
 
+  const getCategories = async () => {
+    try {
+        let response; // Declare the variable outside the condition
+
+        let url = '/categories?page=' + currentPage
+        if (searchInput) {
+            url+= '&keyword='+searchInput
+        } 
+        response = await axios.get(url, {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
+          }
+        });
+          setCategories(response.data.categories)
+          setTotalPage(response.data.pagination.total)
+          setPerPage(response.data.pagination.per_page)
+      } catch (e) {
+          console.log(e);
+      }
+  }
+
   const openAddCategoryDialog = () => {
     setFormData({
         name: ''
@@ -62,44 +84,10 @@ const Category = () => {
   };
   
   useEffect(() => {
-    const getCategories = async () => {
-        try {
-            let response; // Declare the variable outside the condition
-
-            let url = '/categories?page=' + currentPage
-            if (searchInput) {
-                url+= '&keyword='+searchInput
-            } 
-            response = await axios.get(url, {
-              headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
-              }
-            });
-            // const response = await axios.get('/categories?page='+currentPage, {
-            //       headers: {
-            //           'Accept': 'application/json',
-            //           'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
-            //       }
-            //   });
-
-
-            //   if(response.data){
-                  // console.log(response.data)
-            //   }
-              // console.log(JSON.parse(Cookies.get('user')).token)
-              setCategories(response.data.categories)
-              // console.log(response.data.users.data)
-              setTotalPage(response.data.pagination.total)
-              setPerPage(response.data.pagination.per_page)
-              // console.log(response.data.pagination)
-          } catch (e) {
-              console.log(e);
-          }
-      }
+   
       getCategories();
       
-  }, [currentPage,isDialogOpen,deleteCategoryId,searchInput]);
+  }, [currentPage,isDialogOpen,deleteCategoryId]);
   
   const categorySubmit = async(e) => {
     e.preventDefault()
@@ -107,7 +95,6 @@ const Category = () => {
 
     if (editingCategoryId) {
       try {
-        // console.warn(email,password)
           const response = await axios.post('/category/'+editingCategoryId+'/update',  
           JSON.stringify({ 
               name: formData.name
@@ -122,7 +109,6 @@ const Category = () => {
           );
       
           console.log('Category Updated successfully:', response.data);
-          // add_user.close()
       } catch (err) {
           if (err?.response) {
               console.log("Error: Response=")
@@ -138,7 +124,6 @@ const Category = () => {
       
     } else {
           try {
-              // console.warn(email,password)
               const response = await axios.post('/categories',  
               JSON.stringify({ 
                 name: formData.name
@@ -172,9 +157,7 @@ const Category = () => {
 
     const categoryDelete = async(e) => {
     e.preventDefault()
-    // console.log("delete")
     try {
-        // console.warn(email,password)
         const response = await axios.delete('/category/'+deleteCategoryId+'/delete', 
             {
                 headers:
@@ -186,7 +169,6 @@ const Category = () => {
         );
     
         console.log('Category deleted successfully:', response.data);
-        // add_user.close()
     } catch (err) {
         if (err?.response) {
             console.log("Error: Response=")
@@ -214,7 +196,7 @@ const Category = () => {
                     </div>
                     
                     <div className="indicator">
-                        <button className="btn join-item">Search</button>
+                        <button className="btn join-item" onClick={getCategories}>Search</button>
                     </div>
                 </div>
           </div>
@@ -223,11 +205,6 @@ const Category = () => {
           <div class="overflow-x-auto">
             {/* 5 events per page */}
             <table className='table'>
-              {/* <thead>
-                <tr>
-                  <th className='text-center'>Users</th>
-                </tr>
-              </thead> */}
                   <thead>
                     <tr>
                       <th>Name</th>
@@ -245,7 +222,6 @@ const Category = () => {
                           <div class="flex items-center gap-3">
                             <div>
                               <div class="font-bold">{category.name}</div>
-                              {/* <div class="text-sm opacity-50">United States</div> */}
                             </div>
                           </div>
                         </td>
@@ -293,9 +269,7 @@ const Category = () => {
                       <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                     </form>
                     <h3 class="font-bold text-lg text-center">{editingCategoryId !== null ? 'Edit Category' :'Add Category'}</h3>
-                    {/* <p class="py-4">Press ESC key or click on ✕ button to close</p> */}
                     <form className="card-body" onSubmit={categorySubmit}>
-                    {/* onSubmit={eventSubmit} */}
                     <div className="form-control">
                         <label className="label">
                         <span className="label-text">Name</span>

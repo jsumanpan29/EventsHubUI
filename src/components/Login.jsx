@@ -8,7 +8,6 @@ const Login = () => {
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
-    //   const [events, setEvents] = useState([]);
     const navigate = useNavigate()
 
     const { userCookie, setCookie, firstName, removeCookie } = useUserContext(); 
@@ -16,7 +15,6 @@ const Login = () => {
     const loginSubmit = async (e) => {
         e.preventDefault()
         try {
-            // console.warn(email,password)
             const response = await axios.post('/login',
                 JSON.stringify({ email, password }),
                 {
@@ -28,8 +26,6 @@ const Login = () => {
             );
             const user = response?.data;
             console.log(JSON.stringify(user))
-            // Cookies.remove('user')
-            // Cookies.set('user', JSON.stringify(user));
             removeCookie('user')
             setCookie('user', JSON.stringify(user))
             navigate("/dashboard", { replace: true, state: { loginSuccess: true } });
@@ -63,9 +59,6 @@ const Login = () => {
                                     <span className="label-text">Password</span>
                                 </label>
                                 <input type="password" onChange={(e) => setPassword(e.target.value)} placeholder="Password" className="input input-bordered" required />
-                                <label className="label">
-                                    <a href="#" className="label-text-alt link link-hover">Forgot password?</a>
-                                </label>
                             </div>
                             <div className="form-control mt-6">
                                 <input className='btn btn-primary' type="submit" value="Login" />

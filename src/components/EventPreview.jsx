@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { format } from 'date-fns'
-import { LuTag,LuUser2,LuNavigation } from "react-icons/lu";
+import { LuTag,LuUser2,LuNavigation,LuCalendar,LuCalendarClock } from "react-icons/lu";
 import axios from '../../api/axios'
 import Cookies from 'js-cookie'
 
@@ -9,8 +9,6 @@ const EventPreview = ({}) => {
     const {eId} = useParams();
     const loc = useLocation();
     const navigate = useNavigate();
-    // const { id } = useParams();
-    // const event = products.find((p) => p.id === parseInt(id));
 
     const [eventID, setEventID] = useState('');
     const [name, setName] = useState('');
@@ -27,7 +25,6 @@ const EventPreview = ({}) => {
 
     useEffect(() => {
         const getEvents = async () => {
-                  // try { const response = await axios.get('/event/'+state.id, {  
                   try { const response = await axios.get('/event/'+eId+'/auth', {  
                     headers: {
                         'Accept': 'application/json',
@@ -35,7 +32,6 @@ const EventPreview = ({}) => {
                     }
                   });
                   if(response.data){
-                    // console.log(response.data)
                     setEventID(response.data.event.id)
                     setName(response.data.event.name);
                     setDescription(response.data.event.description);
@@ -46,8 +42,6 @@ const EventPreview = ({}) => {
                     setEventSchedStart(response.data.event.date_sched_start);
                     setEventSchedEnd(response.data.event.date_sched_end);
                     setEventRegDeadline(response.data.event.date_reg_deadline);
-                    
-                    // console.log(JSON.stringify(response.data.media))
                     if (response.data.media.length > 0) {
                       setImageFileName(response.data.media[0].file_name);
                       setImageUrl(response.data.media[0].url);
@@ -66,22 +60,28 @@ const EventPreview = ({}) => {
             <>
              <div className="flex justify-between items-center">
              <h1 className="text-5xl font-bold pt-10 pb-5">{name}</h1>
-             {/* <button class="btn btn-error" onClick={()=>{<Navigate to={-1} replace />}}> */}
              <button class="btn btn-error" onClick={()=>{navigate(-1, { state: { from: loc } })}}>
 
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                 Close Preview
             </button>
              </div>
-            <img src={imageUrl} alt={imageFileName} className="w-full h-128 shadow-2xl" />
+            <div class="flex justify-center items-center h-[600px] w-128 bg-gray-800">
+                {
+                  imageUrl ?
+                  <img src={imageUrl} alt={imageFileName} className="object-cover h-full w-full shadow-2xl" />
+                  :
+                  <img src='' alt='' className="object-cover h-full w-full shadow-2xl" />
+                }
+            </div>
             <div className='grid grid-cols-5 py-4 gap-12 place-items-center px-6'>
               
               <div className='text-sm flex '><LuTag size={18} className='mr-1.5' />{categoryName}</div>
               <div className='text-sm flex'><LuUser2 size={18} className='mr-1.5' />{estAttendants + '+'}</div>
-              <div className='text-sm flex'>{format(new Date(eventSchedStart), 'MMM dd - ') + format(new Date(eventSchedEnd), 'MMM dd, yyyy') }</div>
+              <div className='text-sm flex'><LuCalendar size={18} className='mr-1.5' />{format(new Date(eventSchedStart), 'MMM dd - ') + format(new Date(eventSchedEnd), 'MMM dd, yyyy') }</div>
               <div className='text-sm flex'><LuNavigation size={18} className='mr-1.5' />{venueName + ", " + eventLocation}</div>
               <div className='text-sm flex'>
-                  {' Reg. Deadline: '+ format(new Date(eventRegDeadline), 'MMM dd, yyyy') }
+              <LuCalendarClock size={18} className='mr-1.5' />{' Reg. Deadline: '+ format(new Date(eventRegDeadline), 'MMM dd, yyyy') }
               </div>
               
             </div>

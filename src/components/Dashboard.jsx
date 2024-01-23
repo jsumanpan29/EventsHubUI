@@ -84,7 +84,6 @@ const Dashboard = () => {
   
   const userRole = JSON.parse(Cookies.get('user'))?.user.roles.id
   const [eventAttended, setEventAttended] = useState([])
-  const [activeEventsAttended, setActiveEventsAttended] = useState([])
   const [deleteEventId, setDeleteEventId] = useState(null);
 
   const [totalUsers, setTotalUsers] = useState('')
@@ -96,40 +95,84 @@ const Dashboard = () => {
   const [totalCategoriesIncrease, setTotalCategoriesIncrease] = useState('')
   const [totalEventsIncrease, setTotalEventsIncrease] = useState('')
   const [totalVenuesIncrease, setTotalVenuesIncrease] = useState('')
-  // const [activeEventsCurrentPage, setActiveEventsCurrentPage] = useState(1);
-  // const [activeEventsTotalPage, setActiveEventsTotalPage] = useState(1);
-  // const [activeEventsPerPage, setActiveEventsPerPage] = useState(1);
-
-  const [inactiveEventsAttended, setInactiveEventsAttended] = useState([])
-  const [expiredEventsAttended, setExpiredEventsAttended] = useState([])
   const { events, fetchEvents, removeEvent, currentPage, totalPage, perPage, setCurrentPage, handleEventsSearch, searchEventsQuery} = useEventContext();
   const { activeEvents, inactiveEvents, expiredEvents, activeEventsTotalPage, activeEventsPerPage, activeEventsCurrentPage, inactiveEventsTotalPage, inactiveEventsPerPage, inactiveEventsCurrentPage, expiredEventsTotalPage, expiredEventsPerPage, expiredEventsCurrentPage, fetchActiveEvents, fetchInactiveEvents, fetchExpiredEvents, setActiveEventsCurrentPage, setInactiveEventsCurrentPage, setExpiredEventsCurrentPage, handleSearch, searchQuery} = useMerchantContext();
+
+  const [searchInputUsersByEvent, setSearchInputUsersByEvent] = useState('');
+  const [usersByEvent, setUsersByEvent] = useState([])
+  const [usersByEventId, setUsersByEventId] = useState('')
+  const [userToRemoveId, setUserToRemoveId] = useState('')
+  const [usersByEventCurrentPage, setUsersByEventCurrentPage] = useState(1);
+  const [usersByEventTotalPage, setUsersByEventTotalPage] = useState(1);
+  const [usersByEventPerPage, setUsersByEventPerPage] = useState(1);
 
   const memoizedFetchActiveEvents = useCallback(fetchActiveEvents, [activeEventsCurrentPage]);
   const memoizedFetchInactiveEvents = useCallback(fetchInactiveEvents, [inactiveEventsCurrentPage]);
   const memoizedFetchExpiredEvents = useCallback(fetchExpiredEvents, [expiredEventsCurrentPage]);
 
+  const getUsersByEvent = async (event_id) => {
+    try {
+          let response; 
+          
+          let url = '/event_attendee/event/'+ event_id + '?page=' + currentPage
+          if (searchInputUsersByEvent) {
+              url+= '&keyword='+searchInputUsersByEvent
+          } 
+          response = await axios.get(url, {
+            headers: {
+              'Accept': 'application/json',
+              'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
+            }
+          });
+          setUsersByEvent(response.data.eventAttendees)
+          setUsersByEventTotalPage(response.data.pagination.total)
+          setUsersByEventPerPage(response.data.pagination.per_page)
+         
+      } catch (e) {
+          console.log(e);
+      }
+  }
+
+  const removeUserByEvent = async () => {
+    try {
+      let response; 
+
+      let url = '/event_attendee/event/'+usersByEventId+'/user/'+userToRemoveId+'/delete'
+
+      response = await axios.delete(url,
+      {
+         headers:{
+            'Accept': 'application/json',
+            'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token 
+         }
+      }
+      ); // Your API endpoint for deleting events
+
+    } catch (error) {
+      console.error('Error:', error);
+    }
+    setUserToRemoveId(null)
+    delete_user.close()
+    getUsersByEvent(usersByEventId)
+  };
+
   useEffect(() => {
-    
-    // const user = JSON.parse(userCookie);
     if (Cookies.get('user') && userRole == 3) {
       fetchEvents(); // Fetch events using the context provider function
     }
-
-    // if (Cookies.get('user') && userRole == 2) {
-    //   // fetchEvents();
-    //   fetchActiveEvents();
-    //   fetchInactiveEvents();
-    //   fetchExpiredEvents();
-    // }
   }, [searchEventsQuery]);
 
-  // useEffect(() => {
-  //   // Fetch events when this component mounts or when currentPage changes
-  //   if (Cookies.get('user') && userRole == 2) {
-  //   fetchActiveEvents();
-  // }
-  // }, [fetchActiveEvents, activeEventsCurrentPage]);
+  const handSearchInputUsersByEvent = (e) => {
+      setSearchInputUsersByEvent(e.target.value);
+      setUsersByEventCurrentPage(1);
+  };
+
+    const close_check_attendees = () => {
+        setUsersByEvent('')
+        setUsersByEventId('')
+        setSearchInputUsersByEvent('')
+        check_attendees.close()
+    }
   useEffect(() => {
     if (Cookies.get('user') && userRole == 1) {
       const getStatTotalUsers = async () => {
@@ -140,12 +183,6 @@ const Dashboard = () => {
                 'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
               }
             });
-
-            //   if(response.data){
-                  // console.log(response.data.events)
-            //   }
-              // console.log(JSON.parse(Cookies.get('user')).token)
-              // console.log(response.data)
               setTotalUsers(response.data.total_users)
               setTotalUsersIncrease(response.data.percentage_increase_since_last_month)
           } catch (e) {
@@ -160,12 +197,6 @@ const Dashboard = () => {
                 'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
               }
             });
-
-            //   if(response.data){
-                  // console.log(response.data.events)
-            //   }
-              // console.log(JSON.parse(Cookies.get('user')).token)
-              // console.log(response.data)
               setTotalVenues(response.data.total_venues)
               setTotalVenuesIncrease(response.data.percentage_increase_since_last_month)
           } catch (e) {
@@ -180,12 +211,6 @@ const Dashboard = () => {
                 'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
               }
             });
-
-            //   if(response.data){
-                  // console.log(response.data.events)
-            //   }
-              // console.log(JSON.parse(Cookies.get('user')).token)
-              // console.log(response.data)
               setTotalCategories(response.data.total_categories)
               setTotalCategoriesIncrease(response.data.percentage_increase_since_last_month)
           } catch (e) {
@@ -200,12 +225,6 @@ const Dashboard = () => {
                 'Authorization': `Bearer ` + JSON.parse(Cookies.get('user')).token
               }
             });
-
-            //   if(response.data){
-                  // console.log(response.data.events)
-            //   }
-              // console.log(JSON.parse(Cookies.get('user')).token)
-              // console.log(response.data)
               setTotalEvents(response.data.total_events)
               setTotalEventsIncrease(response.data.percentage_increase_since_last_month)
           } catch (e) {
@@ -238,8 +257,6 @@ const Dashboard = () => {
                     breakpoint: 480,
                     options: {
                       chart: {
-                        // width: 200,
-
                       },
                       legend: {
                         position: 'bottom',
@@ -266,7 +283,6 @@ const Dashboard = () => {
             });
 
             const dataTopEventsByAttendance = response.data.data;
-            // console.log(dataTopEventsByAttendance)
             const stateTopEventsByAttendance = {
               series: dataTopEventsByAttendance.map(item => item.total_events),
               labels: dataTopEventsByAttendance.map(item => item.venue),
@@ -283,7 +299,6 @@ const Dashboard = () => {
                     breakpoint: 480,
                     options: {
                       chart: {
-                        // width: 200,
                       },
                       legend: {
                         position: 'bottom',
@@ -310,32 +325,7 @@ const Dashboard = () => {
             });
 
             const dataTopEventsByAttendance = response.data.data;
-            // console.log(dataTopEventsByAttendance)
             const stateTopEventsByAttendance = {
-              // series: dataTopEventsByAttendance.map(item => item.total_events),
-              // labels: dataTopEventsByAttendance.map(item => item.venue),
-              // options: {
-              //   labels: dataTopEventsByAttendance.map(item => item.venue),
-              //   chart: {
-              //     type: 'donut',
-              //   },
-              //   title: {
-              //     text: "Events Distribution By Venue"
-              //   },
-              //   responsive: [
-              //     {
-              //       breakpoint: 480,
-              //       options: {
-              //         chart: {
-              //           // width: 200,
-              //         },
-              //         legend: {
-              //           position: 'bottom',
-              //         },
-              //       },
-              //     },
-              //   ],
-              // },
               series: [{
                 name: "Attendees",
                 data: dataTopEventsByAttendance.map(item => item.attendees_count)
@@ -374,7 +364,6 @@ const Dashboard = () => {
                 }
               },
             };
-            console.log(stateTopEventsByAttendance)
             setEventsByAttendance(stateTopEventsByAttendance);
             
           } catch (e) {
@@ -400,7 +389,6 @@ const Dashboard = () => {
     if (Cookies.get('user') && userRole == 2) {
       memoizedFetchActiveEvents();
     }
-    // console.log(activeEvents)
   }, [memoizedFetchActiveEvents, deleteEventId]);
 
   useEffect(() => {
@@ -408,7 +396,6 @@ const Dashboard = () => {
     if (Cookies.get('user') && userRole == 2) {
       memoizedFetchInactiveEvents();
     }
-    // console.log(activeEvents)
   }, [memoizedFetchInactiveEvents, deleteEventId]);
 
   useEffect(() => {
@@ -416,11 +403,9 @@ const Dashboard = () => {
     if (Cookies.get('user') && userRole == 2) {
       memoizedFetchExpiredEvents();
     }
-    // console.log(activeEvents)
   }, [memoizedFetchExpiredEvents]);
 
   const handleActiveEventsPageClick = (selectedPage) => {
-    console.log(activeEventsCurrentPage)
     setActiveEventsCurrentPage(selectedPage.selected + 1);
   };
 
@@ -431,9 +416,23 @@ const Dashboard = () => {
   const handleExpiredEventsPageClick = (selectedPage) => {
     setExpiredEventsCurrentPage(selectedPage.selected + 1);
   };
+
+  const handleUsersByEventPageClick = (selectedPage) => {
+    setUsersByEventCurrentPage(selectedPage.selected + 1);
+  };
+
+  const handleSearchButtonClick = () => {
+    fetchActiveEvents();
+    fetchExpiredEvents();
+    fetchInactiveEvents();
+  };
+
+  const handleRemoveUserByEvent = (user_id) => {
+      setUserToRemoveId(user_id)
+      delete_user.showModal()
+  }
+
   useEffect(() => {
-        //     setCart(eventAttended.user_events);
-        // console.log("Nav: "+events)
         if (Cookies.get('user') && userRole == 3) { 
         setEventAttended(events)
         }
@@ -446,9 +445,7 @@ const Dashboard = () => {
 
   const eventDelete = async(e) => {
     e.preventDefault()
-    // console.log("delete")
     try {
-        // console.warn(email,password)
         const response = await axios.delete('/event/'+deleteEventId+'/delete', 
             {
                 headers:
@@ -458,9 +455,6 @@ const Dashboard = () => {
                 },
             },
         );
-    
-        // console.log('Event deleted successfully:', response.data);
-        // add_user.close()
     } catch (err) {
         if (err?.response) {
             console.log("Error: Response=")
@@ -477,85 +471,100 @@ const Dashboard = () => {
   }
 
   const openDeleteEventDialog = (event) => {
-    // setIsDialogOpen(true);
-    // setEditingUserId(null); // Resetting the editing user ID
     console.log('Deleting event:', event);
       setDeleteEventId(event.id)
       delete_event.showModal();
   };
 
-//   useEffect(() => {
-//     if (Cookies.get('user') && userRole == 2) { 
-//       setActiveEventsAttended(activeEvents)
-//       console.log("activeEvents: "+ JSON.stringify(activeEvents))
-//     }
-// }, [activeEvents]);
-
-// useEffect(() => {
-//   //     setCart(eventAttended.user_events);
-//   // console.log("Nav: "+events)
-//   if (Cookies.get('user') && userRole == 2) { 
-//     setInactiveEventsAttended(inactiveEvents)
-//     console.log("inactiveEvents: "+JSON.stringify(inactiveEvents))
-//   }
-//   // console.log(eventAttended)
-// }, [inactiveEvents]);
-
-// useEffect(() => {
-//   //     setCart(eventAttended.user_events);
- 
-//   if (Cookies.get('user') && userRole == 2) { 
-//     setExpiredEventsAttended(expiredEvents)
-//     console.log("expiredEvents: "+ JSON.stringify(expiredEvents))
-//   }
-//   // console.log(eventAttended)
-// }, [expiredEvents]);
-
+  const checkAttendeesDialog = (event) => {
+    getUsersByEvent(event.id)
+    setUsersByEventId(event.id)
+      check_attendees.showModal();
+  };
 
   switch (userRole) {
     case 1:
       return (<>
         <div className='flex justify-center items-center py-7'>
-          <div className="stats shadow">
-    
-          <div className="stat">
+          <div className='flex flex-col md:flex-row 2xl:hidden'>
+          <div className=" stats-vertical shadow">
+            <div className="stat gap-0 ">
+              <div className="stat-figure text-secondary text-3xl">
+              <LuUser2 />
+              </div>
+              <div className="stat-title">Total Users</div>
+              <div className="stat-value text-secondary">{totalUsers}</div>
+              <div className="stat-desc">{totalUsersIncrease}% more than last month</div>
+            </div>
+            <div className="stat gap-0">
+              <div className="stat-figure text-secondary text-3xl">
+              <LuList />
+              </div>
+              <div className="stat-title">Total Categories</div>
+              <div className="stat-value text-secondary">{totalCategories}</div>
+              <div className="stat-desc">{totalCategoriesIncrease}% more than last month</div>
+            </div>
+          </div>
+          <div className=" stats-vertical shadow"> 
+            
+            <div className="stat gap-0">
+              <div className="stat-figure text-secondary text-3xl">
+              <LuWarehouse />
+              </div>
+              <div className="stat-title">Total Venues</div>
+              <div className="stat-value text-secondary">{totalVenues}</div>
+              <div className="stat-desc">{totalVenuesIncrease}% more than last month</div>
+            </div>
+            
+            <div className="stat gap-0">
+              <div className="stat-figure text-secondary text-3xl">
+              <LuFlag />
+              </div>
+              <div className="stat-title">Total Events</div>
+              <div className="stat-value text-secondary">{totalEvents}</div>
+              <div className="stat-desc">{totalEventsIncrease}% more than last month</div>
+            </div>
+          </div>
+          </div>
+        
+          <div className="hidden 2xl:flex stats stats-horizontal shadow">
+            <div className="stat gap-0 ">
+              <div className="stat-figure text-secondary text-3xl">
+              <LuUser2 />
+              </div>
+              <div className="stat-title">Total Users</div>
+              <div className="stat-value text-secondary">{totalUsers}</div>
+              <div className="stat-desc">{totalUsersIncrease}% more than last month</div>
+            </div>
+            <div className="stat gap-0">
+              <div className="stat-figure text-secondary text-3xl">
+              <LuWarehouse />
+              </div>
+              <div className="stat-title">Total Venues</div>
+              <div className="stat-value text-secondary">{totalVenues}</div>
+              <div className="stat-desc">{totalVenuesIncrease}% more than last month</div>
+            </div>
+            
+            <div className="stat gap-0">
+              <div className="stat-figure text-secondary text-3xl">
+              <LuList />
+              </div>
+              <div className="stat-title">Total Categories</div>
+              <div className="stat-value text-secondary">{totalCategories}</div>
+              <div className="stat-desc">{totalCategoriesIncrease}% more than last month</div>
+            </div>
+            
+            <div className="stat gap-0">
             <div className="stat-figure text-secondary text-3xl">
-            <LuUser2 />
+              <LuFlag />
+              </div>
+              <div className="stat-title">Total Events</div>
+              <div className="stat-value text-secondary">{totalEvents}</div>
+              <div className="stat-desc">{totalEventsIncrease}% more than last month</div>
             </div>
-            <div className="stat-title">Total Users</div>
-            <div className="stat-value text-secondary">{totalUsers}</div>
-            <div className="stat-desc">{totalUsersIncrease}% more than last month</div>
           </div>
-          <div className="stat">
-            <div className="stat-figure text-secondary text-3xl">
-            <LuWarehouse />
-            </div>
-            <div className="stat-title">Total Venues</div>
-            <div className="stat-value text-secondary">{totalVenues}</div>
-            <div className="stat-desc">{totalVenuesIncrease}% more than last month</div>
-          </div>
-          
-          <div className="stat">
-          <div className="stat-figure text-secondary text-3xl">
-            <LuList />
-            </div>
-            <div className="stat-title">Total Categories</div>
-            <div className="stat-value text-secondary">{totalCategories}</div>
-            <div className="stat-desc">{totalCategoriesIncrease}% more than last month</div>
-          </div>
-          
-          <div className="stat">
-          <div className="stat-figure text-secondary text-3xl">
-            <LuFlag />
-            </div>
-            <div className="stat-title">Total Events</div>
-            <div className="stat-value text-secondary">{totalEvents}</div>
-            <div className="stat-desc">{totalEventsIncrease}% more than last month</div>
-          </div>
-           
-        </div>
       </div>
-      <div className='flex justify-center items-center py-3 gap-5'>
+      <div className='flex flex-col lg:flex-row justify-center items-center py-3 gap-5'>
         <div className='card bg-base-100 min-h-[275px] max-h-[600px]' >
           <Chart options={eventsByCategory.options} series={eventsByCategory.series} type="donut" width="380" height="380"/>
         </div>
@@ -564,7 +573,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className='py-3 px-10'>
+      <div className='py-3 px-10 '>
       <Chart options={eventsByAttendance.options} series={eventsByAttendance.series} type="bar" height="400"/>
       </div>
       
@@ -582,14 +591,13 @@ const Dashboard = () => {
                     </div>
                     
                     <div className="indicator">
-                        <button className="btn join-item">Search</button>
+                        <button className="btn join-item" onClick={handleSearchButtonClick}>Search</button>
                     </div>
                 </div>
           </div>
         </div>
         <div className='col-span-1 mb-10 mx-6 bg-base-100'>   
           <div class="overflow-x-auto">
-            {/* 5 events per page */}
             <table className='table'>
               <thead>
                 <tr>
@@ -607,13 +615,10 @@ const Dashboard = () => {
                             <img src={event.media[0]?.url} alt={`Event ${event.id}`} className="w-24 h-16" />
                           </div>
                           <div className='flex-auto mx-5 grid grid-flow-row'>
-                           <div className='row-span-1'><a className='row-span-1 text-gray-400 hover:underline'><Link key={event.id} to={'/merchant/preview/' + event.id}>{event.name}</Link></a></div>
-                           <div className='row-span-1'><a className='row-span-1 text-blue-500 hover:underline'><Link key={event.id} to={'/merchant/edit_event/' + event.id}> Edit</Link></a></div>
-                            <div className='row-span-1'><a className='row-span-1 text-red-500 hover:underline cursor-pointer' onClick={() => openDeleteEventDialog(event)}>Delete</a></div>
+                           <div className='row-span-1'><a className='font-bold row-span-1 text-gray-400 hover:underline'><Link key={event.id} to={'/merchant/preview/' + event.id}>{event.name}</Link></a></div>
+                           <div className='row-span-1'><a className='row-span-1 text-gray-400 hover:underline cursor-pointer' onClick={() => checkAttendeesDialog(event)}>Check Attendees</a></div>
+                            <div className='row-span-1 flex gap-3'><a className='row-span-1 text-blue-500 hover:underline'><Link key={event.id} to={'/merchant/edit_event/' + event.id}> Edit</Link></a><a className='row-span-1 text-red-500 hover:underline cursor-pointer' onClick={() => openDeleteEventDialog(event)}>Delete</a></div>
                           </div>
-                          {/* <div className='flex-auto mx-5'>
-                            <p>{event.name}</p>
-                          </div> */}
                         </div>
                       </td>
                     </tr>
@@ -626,22 +631,12 @@ const Dashboard = () => {
               </tbody>
             </table>
           </div>
-          {/* <div className="join items-center justify-center w-full">
-                      <button className="join-item btn">1</button>
-                      <button className="join-item btn">2</button>
-                      <button className="join-item btn btn-disabled">...</button>
-                      <button className="join-item btn">99</button>
-                      <button className="join-item btn">100</button>
-          </div> */}
-         
-
           {
             activeEvents ? 
                   <ReactPaginate
                   previousLabel={'«'}
                   nextLabel={'»'}
                   breakLabel={'...'}
-                  // pageCount={Math.ceil( totalPage / perPage )}
                   pageCount={Math.ceil( activeEventsTotalPage / activeEventsPerPage )}
                   marginPagesDisplayed={2}
                   pageRangeDisplayed={2}
@@ -659,7 +654,6 @@ const Dashboard = () => {
                   previousLabel={'«'}
                   nextLabel={'»'}
                   breakLabel={'...'}
-                  // pageCount={Math.ceil( totalPage / perPage )}
                   pageCount={1}
                   marginPagesDisplayed={2}
                   pageRangeDisplayed={2}
@@ -692,7 +686,7 @@ const Dashboard = () => {
                           <div className='flex-none'>
                             <img src={event.media[0]?.url} alt={`Event ${event.id}`} className="w-24 h-16" />
                           </div>
-                          <div className='flex-auto mx-5'>
+                          <div className='flex-auto mx-5 font-bold'>
                             <p>{event.name}</p>
                           </div>
                         </div>
@@ -713,7 +707,6 @@ const Dashboard = () => {
                 previousLabel={'«'}
                 nextLabel={'»'}
                 breakLabel={'...'}
-                // pageCount={Math.ceil( totalPage / perPage )}
                 pageCount={Math.ceil( expiredEventsTotalPage / expiredEventsPerPage )}
                 marginPagesDisplayed={2}
                 pageRangeDisplayed={2}
@@ -725,14 +718,12 @@ const Dashboard = () => {
                 previousClassName = {'join-item btn'}
                 nextClassName = {'join-item btn'}
                 forcePage={expiredEventsCurrentPage - 1}
-                // forcePage={currentPage - 1}
             />
             :
                 <ReactPaginate
                 previousLabel={'«'}
                 nextLabel={'»'}
                 breakLabel={'...'}
-                // pageCount={Math.ceil( totalPage / perPage )}
                 pageCount={1}
                 marginPagesDisplayed={2}
                 pageRangeDisplayed={2}
@@ -744,7 +735,6 @@ const Dashboard = () => {
                 previousClassName = {'join-item btn'}
                 nextClassName = {'join-item btn'}
                 forcePage={expiredEventsCurrentPage - 1}
-                // forcePage={currentPage - 1}
             />
           }
           
@@ -768,7 +758,7 @@ const Dashboard = () => {
                             <img src={event.media[0]?.url} alt={`Event ${event.id}`} className="w-24 h-16" />
                           </div>
                           <div className='flex-auto mx-5 grid grid-flow-row'>
-                           <div className='row-span-1'><a className='row-span-1 text-gray-400 hover:underline'><Link key={event.id} to={'/merchant/preview/' + event.id}>{event.name}</Link></a></div>
+                           <div className='row-span-1 font-bold '><a className='row-span-1 text-gray-400 hover:underline'><Link key={event.id} to={'/merchant/preview/' + event.id}>{event.name}</Link></a></div>
                            <div className='row-span-1'><a className='row-span-1 text-blue-500 hover:underline'><Link key={event.id} to={'/merchant/edit_event/' + event.id}> Edit</Link></a></div>
                             <div className='row-span-1'><a className='row-span-1 text-red-500 hover:underline cursor-pointer' onClick={() => openDeleteEventDialog(event)}>Delete</a></div>
                           </div>
@@ -790,7 +780,6 @@ const Dashboard = () => {
                     previousLabel={'«'}
                     nextLabel={'»'}
                     breakLabel={'...'}
-                    // pageCount={Math.ceil( totalPage / perPage )}
                     pageCount={Math.ceil( inactiveEventsTotalPage / inactiveEventsPerPage )}
                     marginPagesDisplayed={2}
                     pageRangeDisplayed={2}
@@ -802,14 +791,12 @@ const Dashboard = () => {
                     previousClassName = {'join-item btn'}
                     nextClassName = {'join-item btn'}
                     forcePage={inactiveEventsCurrentPage - 1}
-                    // forcePage={currentPage - 1}
                 />
             :
                     <ReactPaginate
                     previousLabel={'«'}
                     nextLabel={'»'}
                     breakLabel={'...'}
-                    // pageCount={Math.ceil( totalPage / perPage )}
                     pageCount={1}
                     marginPagesDisplayed={2}
                     pageRangeDisplayed={2}
@@ -821,7 +808,6 @@ const Dashboard = () => {
                     previousClassName = {'join-item btn'}
                     nextClassName = {'join-item btn'}
                     forcePage={inactiveEventsCurrentPage - 1}
-                    // forcePage={currentPage - 1}
                 />
           }
         </div>
@@ -839,6 +825,99 @@ const Dashboard = () => {
                     </div>
                   </div>
         </dialog>
+
+        <dialog id="check_attendees" class="modal modal-bottom sm:modal-middle">
+                  <div class="modal-box">
+                    <h3 class="font-bold text-xl">Attendees</h3>
+                    <div className="grid pt-4 place-items-center">
+                        <div className="join">
+                            <div>
+                                <div>
+                                <input className="input input-bordered w-full sm:w-64 md:w-80 lg:w-96 xl:w-120 join-item" placeholder="Search" value={searchInputUsersByEvent} onChange={handSearchInputUsersByEvent}/>
+                                </div>
+                            </div>
+                            
+                            <div className="indicator">
+                                <button className="btn join-item" onClick={()=>getUsersByEvent(usersByEventId)}>Search</button>
+                            </div>
+                        </div>
+                    </div>
+                    <form method="dialog">
+                      <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={close_check_attendees}>✕</button>
+                    </form>
+                    <div>
+                      <div className="overflow-x-auto">
+                        <table className="table">
+                          <thead>
+                            <tr>
+                              <th>Full Name</th>
+                              <th>Email</th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          {
+                            Array.isArray(usersByEvent) && usersByEvent.length > 0 ? (
+                              usersByEvent.map((user, index) => (
+                              <tr key={user.id} className={index % 2 === 0 ? 'bg-base-200' : ''}>
+                              
+                                  <td>
+                                    <div class="flex items-center gap-3">
+                                      <div>
+                                      <div class="font-bold">{user.first_name + " " + user.last_name}</div>
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td>
+                                  {user.email}
+                                  </td>
+                                  
+                                  <th>
+                                    <button class="btn btn-ghost btn-xs" onClick={()=>handleRemoveUserByEvent(user.id)}>Remove</button>
+                                  </th>
+                              </tr>
+                            ))
+                              ) : (
+                                <p>No Users available</p>
+
+                            )
+                          }
+                            
+                          </tbody>
+                        </table>
+                      </div>
+                      <ReactPaginate
+                        previousLabel={'«'}
+                        nextLabel={'»'}
+                        breakLabel={'...'}
+                        pageCount={Math.ceil( usersByEventTotalPage / usersByEventPerPage )}
+                        marginPagesDisplayed={2}
+                        pageRangeDisplayed={2}
+                        onPageChange={handleUsersByEventPageClick}
+                        containerClassName={'join items-center justify-center w-full mb-6'}
+                        pageClassName={'join-item btn'}
+                        activeClassName={'btn-active'}
+                        disabledClassName={'btn-disabled'}
+                        previousClassName = {'join-item btn'}
+                        nextClassName = {'join-item btn'}
+                        forcePage={usersByEventCurrentPage - 1}
+                            />
+                    </div>
+                  </div>
+        </dialog>
+
+        <dialog id="delete_user" class="modal modal-bottom sm:modal-middle">
+                  <div class="modal-box">
+                    <h3 class="font-bold text-lg">Remove</h3>
+                    <p class="py-4">Are you sure you want to remove user from the event?</p>
+                    <div class="modal-action">
+                      <form method="dialog" onSubmit={removeUserByEvent}>
+                        <button class="btn mr-2" type="submit">Confirm</button>
+                        <button class="btn" type="button" onClick={()=>delete_user.close()}>Close</button>
+                      </form>
+                    </div>
+                  </div>
+        </dialog>
         </div>
       );
     case 3:
@@ -846,7 +925,6 @@ const Dashboard = () => {
         <div className='grid-flow-col grid-cols-3 m-10'>
             <div className='col-span-1 navbar bg-base-100'>
             <div className="navbar-start">
-              {/* <a href="" className="btn btn-ghost text-xl">My Events</a> */}
               <h3 className='text-xl font-medium'>MY EVENTS</h3>
             </div>
             </div>
@@ -871,18 +949,6 @@ const Dashboard = () => {
                   <thead>
                   </thead>
                   <tbody>
-                  {/* <tr class="bg-base-200">
-                      <td>
-                        <div className='flex'>
-                          <div className='flex-none'>
-                            <img src="" alt="" className="w-24 h-16" />
-                          </div>
-                          <div className='flex-auto mx-5'>
-                            <p>Event</p>
-                          </div>
-                        </div>
-                      </td>
-                    </tr> */}
                     {
                   Array.isArray(eventAttended) ? (
                     eventAttended.map((event, index) => (
@@ -890,13 +956,6 @@ const Dashboard = () => {
                       <td>
                         <div className='flex'>
                           <div className='flex-none'>
-                            {/* {event?.media && event?.media?.length > 0 && (
-                                                    <img
-                                                        src={event.media[0]?.url || ''}
-                                                        alt={`Event ${event.id}`}
-                                                        className="w-24 h-16"
-                                                    />
-                                                )} */}
                             {
                                 event.media && event.media.length > 0 ?
                                 <img
@@ -926,19 +985,11 @@ const Dashboard = () => {
                   </tbody>
                 </table>
           </div>
-          {/* <div className="join items-center justify-center w-full mt-5">
-                      <button className="join-item btn">1</button>
-                      <button className="join-item btn">2</button>
-                      <button className="join-item btn btn-disabled">...</button>
-                      <button className="join-item btn">99</button>
-                      <button className="join-item btn">100</button>
-          </div> */}
           <ReactPaginate
                     previousLabel={'«'}
                     nextLabel={'»'}
                     breakLabel={'...'}
                     pageCount={Math.ceil( totalPage / perPage )}
-                    // pageCount={Math.ceil( inactiveEventsTotalPage / inactiveEventsPerPage )}
                     marginPagesDisplayed={2}
                     pageRangeDisplayed={2}
                     onPageChange={handleEventsPageClick}
@@ -948,7 +999,6 @@ const Dashboard = () => {
                     disabledClassName={'btn-disabled'}
                     previousClassName = {'join-item btn'}
                     nextClassName = {'join-item btn'}
-                    // forcePage={inactiveEventsCurrentPage - 1}
                     forcePage={currentPage - 1}
                 />
           </div>
