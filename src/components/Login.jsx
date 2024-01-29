@@ -25,7 +25,6 @@ const Login = () => {
                 },
             );
             const user = response?.data;
-            console.log(JSON.stringify(user))
             removeCookie('user')
             setCookie('user', JSON.stringify(user))
             navigate("/dashboard", { replace: true, state: { loginSuccess: true } });
